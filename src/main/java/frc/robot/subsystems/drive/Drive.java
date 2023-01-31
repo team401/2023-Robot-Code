@@ -1,94 +1,102 @@
 package frc.robot.subsystems.drive;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants.CANDevices;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.RobotState;
+import frc.robot.Constants.CANDevices;
 
+/**
+ * Subsystem that manages all things related to robot driving
+ */
 public class Drive extends SubsystemBase {
 
-    private DriveModule[] modules = new DriveModule[4];
-    private DriveAngle angle;
-    private PIDController[] rotationPIDs = new PIDController[4];
+    /**
+     * Used to set module states and get data for RobotState
+     */
+    private final DriveModule[] driveModules = new DriveModule[4];
+
+    /**
+     * Used to get the rotation of the robot
+     */
+    private final DriveAngle driveAngle = new DriveAngle();
+
+    /**
+     * The positions of each module used to update RobotState
+     */
+    private SwerveModulePosition modulePositions[] = new SwerveModulePosition[4];
+
+    /**
+     * The desired state for each swerve module
+     */
     private SwerveModuleState[] goalModuleStates = new SwerveModuleState[4];
-    private SwerveModulePosition[] currentModulePositions = new SwerveModulePosition[4];
-    private SwerveDriveOdometry odometry;
 
-    // If true, modules will run velocity control from the setpoint velocities in
-    // moduleStates
-    // If false, modules will not run velocity control from the setpoint velocities
-    // in moduleStates,
-    // and module drive motors will not be commanded to do anything. This allows
-    // other setters,
-    // such as the "setDriveVoltages" to have control of the modules.
-    private boolean velocityControlEnabled = false;
+    /**
+     * The controllers used to calculate the output volts for the rotation motors
+     */
+    private PIDController[] rotationPIDs = new PIDController[4];
 
+    /**
+     * True if drive should be slow, false if drive should be going at max speed
+     */
+    private boolean babyMode = false;
+
+    /**
+     * Initialize all the modules, data arrays, and RobotState
+     */
     public Drive() {
 
-        modules[0] = new DriveModule(CANDevices.frontLeftDriveMotorID, CANDevices.frontLeftRotationMotorID,
-                CANDevices.frontLeftRotationEncoderID, DriveConstants.frontLeftAngleOffset);
-        modules[1] = new DriveModule(CANDevices.frontRightDriveMotorID, CANDevices.frontRightRotationMotorID,
-                CANDevices.frontRightRotationEncoderID, DriveConstants.frontRightAngleOffset);
-        modules[2] = new DriveModule(CANDevices.backLeftDriveMotorID, CANDevices.backLeftRotationMotorID,
-                CANDevices.backLeftRotationEncoderID, DriveConstants.backLeftAngleOffset);
-        modules[3] = new DriveModule(CANDevices.backRightDriveMotorID, CANDevices.backRightRotationMotorID,
-                CANDevices.backRightRotationEncoderID, DriveConstants.backRightAngleOffset);
-        
-        angle = new DriveAngle();
+        driveModules[0] = new DriveModule(CANDevices.frontLeftDriveMotorID, CANDevices.frontLeftRotationMotorID,
+            CANDevices.frontLeftRotationEncoderID, DriveConstants.frontLeftAngleOffset);
+        driveModules[1] = new DriveModule(CANDevices.frontRightDriveMotorID, CANDevices.frontRightRotationMotorID,
+            CANDevices.frontRightRotationEncoderID, DriveConstants.frontRightAngleOffset);
+        driveModules[2] = new DriveModule(CANDevices.backLeftDriveMotorID, CANDevices.backLeftRotationMotorID,
+            CANDevices.backLeftRotationEncoderID, DriveConstants.backLeftAngleOffset);
+        driveModules[3] = new DriveModule(CANDevices.backRightDriveMotorID, CANDevices.backRightRotationMotorID,
+            CANDevices.backRightRotationEncoderID, DriveConstants.backRightAngleOffset);
 
         for (int i = 0; i < 4; i++) {
+            driveModules[i].zeroEncoders();
+            modulePositions[i] = new SwerveModulePosition();
+            goalModuleStates[i] = new SwerveModuleState();
+
             rotationPIDs[i] = new PIDController(DriveConstants.rotationKp, 0, DriveConstants.rotationKd);
             rotationPIDs[i].enableContinuousInput(-Math.PI, Math.PI);
-            goalModuleStates[i] = new SwerveModuleState();
-            currentModulePositions[i] = new SwerveModulePosition();
+            driveModules[i].setDrivePD(DriveConstants.driveKp, DriveConstants.driveKd);
+
+            modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
+            modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
         }
 
-        for (DriveModule module : modules) {
-            module.zeroEncoders();
+        for (int i = 0; i < 4; i++) {
+            modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
+            modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
         }
 
-        angle.resetHeading();
-
-        odometry = new SwerveDriveOdometry(DriveConstants.kinematics, new Rotation2d(), currentModulePositions, new Pose2d());
+        RobotState.getInstance().initializePoseEstimator(getRotation(), modulePositions);
 
     }
 
+    /**
+     * Updates RobotState with the drive observations for pose estimation
+     */
     @Override
     public void periodic() {
-        // Display match time for driver
-        SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
-        // Read inputs from module IO layers and tell the logger about them
-        for (int i = 0; i < 4; i++) {
-            modules[i].updateVariables();
-        }
-        angle.updateHeading();
+        SmartDashboard.putNumber("Angle", driveAngle.getHeading());
 
-        // Update odometry and report to RobotState
-        Rotation2d headingRotation = new Rotation2d(MathUtil.angleModulus(angle.headingRad));
-        SwerveModuleState[] measuredStates = new SwerveModuleState[4];
-        for (int i = 0; i < 4; i++) {
-            measuredStates[i] = new SwerveModuleState(modules[i].driveVelocityRadPerS * DriveConstants.wheelRadiusM,
-                    new Rotation2d(MathUtil.angleModulus(modules[i].rotationPositionRad)));
-            currentModulePositions[i].distanceMeters = modules[i].drivePositionRad * DriveConstants.wheelRadiusM;
-            currentModulePositions[i].angle = new Rotation2d(MathUtil.angleModulus(modules[i].rotationPositionRad));
-        }
-
-        // Optimize and set setpoints for each individual module
+        // Driving
         for (int i = 0; i < 4; i++) {
             // Wrap encoder value to be within -pi, pi radians
-            Rotation2d moduleRotation = new Rotation2d(MathUtil.angleModulus(modules[i].rotationPositionRad));
+            Rotation2d moduleRotation = new Rotation2d(driveModules[i].getRotationPosition());
 
             // Optimize each module state
             SwerveModuleState optimizedState = SwerveModuleState.optimize(goalModuleStates[i], moduleRotation);
@@ -96,88 +104,93 @@ public class Drive extends SubsystemBase {
             double speedSetpointMPerS = optimizedState.speedMetersPerSecond;
 
             // Set module speed
-            if (velocityControlEnabled) {
-                double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
-                double ffVolts = DriveConstants.driveModel.calculate(speedRadPerS);
-
-                modules[i].setDriveVelocity(speedRadPerS, ffVolts);
-            }
+            double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
+            double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
+            driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
 
             // Set module rotation
-            double rotationVoltage = rotationPIDs[i].calculate(rotationSetpointRadians, moduleRotation.getRadians());
-            modules[i].setRotationVoltage(rotationVoltage);
+            double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
+            driveModules[i].setRotationVoltage(rotationVoltage);
         }
+
+        // Pose estimation
+        for (int i = 0; i < 4; i++) {
+            modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
+            modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
+            SmartDashboard.putNumber("DriveStator"+i, driveModules[i].getDriveStatorCurrent());
+            SmartDashboard.putNumber("RotationStator"+i, driveModules[i].getRotationStatorCurrent());
+        }
+        RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
+
+        SmartDashboard.putNumber("Roll", driveAngle.getRoll());
+        SmartDashboard.putNumber("Pitch", driveAngle.getPitch());
+
     }
 
     /**
-     * Sets the target module states for each module. This can be used to
-     * individually control each module.
-     * 
-     * @param states The array of states for each module
+     * Set the desired state for each module (velocity and angle)
+     * @param states an array of SwerveModuleStates representing the desired state for each swerve module [frontLeft, frontRight, backLeft, backRight]
      */
     public void setGoalModuleStates(SwerveModuleState[] states) {
-        velocityControlEnabled = true;
-        goalModuleStates = states;
-    }
-
-    /**
-     * Sets the raw voltages of the module drive motors. Heading is still set from
-     * the angles set in
-     * setGoalModuleStates. Note that this method disables velocity control until
-     * setModuleStates or
-     * setGoalChassisSpeeds is called again.
-     * 
-     * The primary use of this is to characterize the drive.
-     * 
-     * @param voltages The array of voltages to set in the modules
-     */
-    public void setDriveVoltages(double[] voltages) {
-        velocityControlEnabled = false;
         for (int i = 0; i < 4; i++) {
-            modules[i].setDriveVoltage(voltages[i]);
+            goalModuleStates[i] = states[i];
         }
     }
 
     /**
-     * Sets the goal chassis speeds for the entire chassis.
-     * 
-     * @param speeds The target speed for the chassis
+     * Set the desired velocities of the robot drive (xVelocity, yVelocity, omegaVelocity)
+     * @param speeds the desired speed of the robot
      */
     public void setGoalChassisSpeeds(ChassisSpeeds speeds) {
-        SwerveModuleState[] moduleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, DriveConstants.maxSpeedMPerS);
+        speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.33 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.33 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.33 : 1));
+        SwerveModuleState[] goalModuleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(goalModuleStates, DriveConstants.maxDriveSpeed);
+        if (speeds.vxMetersPerSecond == 0 && speeds.vyMetersPerSecond == 0 && speeds.omegaRadiansPerSecond == 0) {
+            goalModuleStates = new SwerveModuleState[] {
+                new SwerveModuleState(0, modulePositions[0].angle), 
+                new SwerveModuleState(0, modulePositions[1].angle),
+                new SwerveModuleState(0, modulePositions[2].angle),
+                new SwerveModuleState(0, modulePositions[3].angle)
+            };
+        }
+        setGoalModuleStates(goalModuleStates);
+    }
 
-        setGoalModuleStates(moduleStates);
+
+    /**
+     * @return the rotation of the robot in radians from the gyro
+     */
+    public Rotation2d getRotation() {
+        return new Rotation2d(MathUtil.angleModulus(driveAngle.getHeading()));
     }
 
     /**
-     * Returns the average angular speed of each wheel. This is used to characterize
-     * the drive.
-     * 
-     * @return The average speed of each module in rad/s
+     * Sets the heading (apparent rotation) of the robot to zero
      */
-    public double getAverageSpeedRadPerS() {
-        double sum = 0;
-        for (int i = 0; i < 4; i++) {
-            sum += modules[i].driveVelocityRadPerS;
-        }
-        return sum / 4.0;
-    }
-
-    public Pose2d getPose() {
-        return odometry.getPoseMeters();
-    }
-
-    public Rotation2d getRotation() {
-        return new Rotation2d(MathUtil.angleModulus(angle.headingRad));
-    }
-
     public void resetHeading() {
-        angle.resetHeading();
+        driveAngle.resetHeading();
     }
 
-    public void resetOdometry(Pose2d pose) {
-        odometry.resetPosition(new Rotation2d(MathUtil.angleModulus(angle.headingRad)), currentModulePositions, pose);
+    /**
+     * @return the roll of the gyro in radians
+     */
+    public double getRoll() {
+        return driveAngle.getRoll();
+    }
+
+    /**
+     * @param baby true to make the drive slow, false to make it go max speeds
+     */
+    public void setBabyMode(boolean baby) {
+        babyMode = baby;
+    }
+
+    /**
+     * Used to pass the current field to vehicle to RobotState, needs to pass through drive because driveModulePositions and rotation are needed to set fieldToVehicle
+     * @param fieldToVehicle the current fieldToVehicle pose
+     */
+    public void setFieldToVehicle(Pose2d fieldToVehicle) {
+        RobotState.getInstance().setFieldToVehicle(getRotation(), modulePositions, fieldToVehicle);
     }
 
 }

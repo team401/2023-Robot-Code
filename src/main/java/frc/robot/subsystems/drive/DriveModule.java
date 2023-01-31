@@ -3,20 +3,19 @@ package frc.robot.subsystems.drive;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.DemandType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveModule {
-
-    public double driveVelocityRadPerS;
-    public double drivePositionRad;
-    public double rotationPositionRad;
 
     private final TalonFX driveMotor;
     private final TalonFX rotationMotor;
@@ -43,10 +42,9 @@ public class DriveModule {
 
     public DriveModule(int driveMotorID, int rotationMotorID, int cancoderID, double measuredOffsetsRadians) {
 
-        driveMotor = new TalonFX(driveMotorID, CANDevices.canivoreName);
-        rotationMotor = new TalonFX(rotationMotorID, CANDevices.canivoreName);
-        rotationEncoder = new CANCoder(cancoderID, CANDevices.canivoreName);
-        
+        driveMotor = new TalonFX(driveMotorID);
+        rotationMotor = new TalonFX(rotationMotorID);
+        rotationEncoder = new CANCoder(cancoderID);
 
         driveMotor.configFactoryDefault(1000);
         rotationMotor.configFactoryDefault(1000);
@@ -57,11 +55,15 @@ public class DriveModule {
         rotationMotor.setNeutralMode(NeutralMode.Brake);
 
         driveMotor.setInverted(true);
+        rotationMotor.setInverted(true);
         
         driveMotor.configVoltageCompSaturation(12, 1000);
         driveMotor.enableVoltageCompensation(true);
         rotationMotor.configVoltageCompSaturation(12, 1000);
         rotationMotor.enableVoltageCompensation(true);
+
+        driveMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 80, 1));
+        rotationMotor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 70, 80, 1));
 
         driveMotor.configNeutralDeadband(0, 1000);
         rotationMotor.configNeutralDeadband(0, 1000);
@@ -74,22 +76,29 @@ public class DriveModule {
 
     }
 
-    public void updateVariables() {
-        
-        drivePositionRad = driveMotor.getSelectedSensorPosition() 
-            / 2048.0 * 2.0 * Math.PI / DriveConstants.driveWheelGearReduction;
+    public double getDrivePosition() {
+        return driveMotor.getSelectedSensorPosition() / 2048.0 * 2.0 * Math.PI / DriveConstants.driveWheelGearReduction;
+    }
 
-        driveVelocityRadPerS = driveMotor.getSelectedSensorVelocity() 
-            / 2048.0 * 10.0 * 2.0 * Math.PI / DriveConstants.driveWheelGearReduction;
-            
-        //Using relative encoder in the CANCoder
-        rotationPositionRad = Units.degreesToRadians(rotationEncoder.getPosition()) - initialOffsetRadians;
+    public double getRotationPosition() {
+        return MathUtil.angleModulus(Units.degreesToRadians(rotationEncoder.getPosition())) - initialOffsetRadians;
+    }
 
+    public double getRotationVelocity() {
+        return Units.degreesToRadians(rotationEncoder.getVelocity());
+    }
+
+    public double getDriveVelocityMPerS() {
+        return driveMotor.getSelectedSensorVelocity() / 2048.0 * 10.0 * 2.0 * Math.PI / DriveConstants.driveWheelGearReduction;
     }
 
     public void zeroEncoders() {
         rotationEncoder.setPositionToAbsolute(1000);
         driveMotor.setSelectedSensorPosition(0, 0, 1000);
+    }
+
+    public SwerveModuleState getModuleState() {
+        return new SwerveModuleState(getDriveVelocityMPerS(), new Rotation2d(getRotationPosition()));
     }
 
     public void setRotationVoltage(double volts) {
@@ -101,7 +110,6 @@ public class DriveModule {
     }
 
     public void setDriveVelocity(double velocityRadPerS, double ffVolts) {
-        // Convert rad/s to motor velocity
         double velocityTicksPer100ms = velocityRadPerS * 2048.0 / 10.0 / 2.0 / Math.PI * DriveConstants.driveWheelGearReduction;
 
         driveMotor.set(ControlMode.Velocity, velocityTicksPer100ms, DemandType.ArbitraryFeedForward, ffVolts / 12.0);
@@ -110,6 +118,14 @@ public class DriveModule {
     public void setDrivePD(double p, double d) {
         driveMotor.config_kP(0, p);
         driveMotor.config_kD(0, d);
+    }
+
+    public double getDriveStatorCurrent() {
+        return driveMotor.getStatorCurrent();
+    }
+
+    public double getRotationStatorCurrent() {
+        return rotationMotor.getStatorCurrent();
     }
     
 }

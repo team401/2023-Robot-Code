@@ -8,6 +8,7 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -45,13 +46,15 @@ public class DriveWithJoysticks extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double xMPerS = xProcessor.processJoystickInputs(xPercent.getAsDouble() * 0.75) * DriveConstants.maxSpeedMPerS;
-    double yMPerS = yProcessor.processJoystickInputs(yPercent.getAsDouble() * 0.75) * DriveConstants.maxSpeedMPerS;
-    double omegaRadPerS = omegaProcessor.processJoystickInputs(omegaPercent.getAsDouble()) * DriveConstants.maxAngularSpeedRadPerS;
+    double xMPerS = xProcessor.processJoystickInputs(xPercent.getAsDouble() * 0.75) * DriveConstants.maxDriveSpeed;
+    double yMPerS = yProcessor.processJoystickInputs(yPercent.getAsDouble() * 0.75) * DriveConstants.maxDriveSpeed;
+    double omegaRadPerS = omegaProcessor.processJoystickInputs(omegaPercent.getAsDouble()) * DriveConstants.maxTurnRate;
+
+    SmartDashboard.putNumber("XMPerS", xMPerS);
 
     //Convert to field relative speeds
     ChassisSpeeds targetSpeeds = fieldRelative
-      ? ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, yMPerS, omegaRadPerS, drive.getRotation()) 
+      ? ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, yMPerS, omegaRadPerS, drive.getRotation())
       : new ChassisSpeeds(xMPerS, yMPerS, omegaRadPerS);
 
     drive.setGoalChassisSpeeds(targetSpeeds);

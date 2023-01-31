@@ -8,13 +8,14 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.subsystems.drive.Drive;
 
 public class RobotContainer {
     
-    Drive drive = new Drive();
+    private final Drive drive = new Drive();
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
@@ -44,6 +45,11 @@ public class RobotContainer {
     private void configureBindings() {
         new Trigger(() -> rightStick.getRawButtonPressed(2))
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
+
+        new JoystickButton(leftStick, 1)
+            .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
+            .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+    
     }
 
     private void configureAutos() {
@@ -52,5 +58,5 @@ public class RobotContainer {
 
     public Command getAutonomousCommand() {
         return null;
-    }
+    }   
 }
