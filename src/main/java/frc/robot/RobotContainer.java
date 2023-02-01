@@ -6,12 +6,15 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.commands.pivot.MovePivot;
 
 public class RobotContainer {
     
@@ -20,6 +23,7 @@ public class RobotContainer {
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
     private final XboxController gamepad = new XboxController(2);
+    private final PivotSubsystem pivot = new PivotSubsystem();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -49,7 +53,21 @@ public class RobotContainer {
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
-    
+
+        new JoystickButton(gamepad, Button.kB.value)
+            .onTrue(new MovePivot(pivot, Math.PI / 4));
+
+        new JoystickButton(gamepad, Button.kA.value)
+            .onTrue(new MovePivot(pivot, Math.PI / 2));
+
+        new JoystickButton(gamepad, Button.kRightBumper.value)
+            .onTrue(new InstantCommand(() -> pivot.setVolts(4)))
+            .onFalse(new InstantCommand(() -> pivot.setVolts(0)));
+        new JoystickButton(gamepad, Button.kLeftBumper.value)
+            .onTrue(new InstantCommand(() -> pivot.setVolts(-4)))
+            .onFalse(new InstantCommand(() -> pivot.setVolts(0)));
+
+
     }
 
     private void configureAutos() {

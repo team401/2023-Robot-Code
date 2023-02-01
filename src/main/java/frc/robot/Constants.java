@@ -33,6 +33,9 @@ public final class Constants {
 
         public static final int pigeonIMU = 20;
 
+        public static final int leftPivotMotorID = 14;
+        public static final int rightPivotMotorID = 13;
+
     }
     
     public static final class DriveConstants {
@@ -54,6 +57,7 @@ public final class Constants {
         public static final double rotationKp = 4.7;
         public static final double rotationKd = 0.1;
 
+
         public static final SwerveDriveKinematics kinematics = 
             new SwerveDriveKinematics(
                 new Translation2d(trackWidth / 2.0, wheelBase / 2.0), //front left
@@ -70,6 +74,28 @@ public final class Constants {
         public static final double driveJoystickDeadbandPercent = 0.075;
         public static final double driveMaxJerk = 200.0;
 
+    }
+
+    public static final class PivotConstants {
+        //TODO: Set all
+
+        public static final double encoderOffsetRad = -Units.rotationsToRadians(0.18);
+
+        public static final double armToMotorGearRatio = 1 / 90;
+
+        public static final double maxFwdRotationRad = Units.degreesToRadians(-30);
+        public static final double maxBackRotationRad = Units.degreesToRadians(210);
+
+        public static final double kP = 0;
+        public static final double kV = 0.0;
+        public static final double kA = 0.0;
+        public static final double kG = 0.0;
+        public static final double kS = 0.0;
+        public static final double extraKg = 0.0;
+    }
+
+    public static final class TelescopeConstants {
+        public static final double maxPosM = 0.0; //TODO: Find Value
     }
 
 }
