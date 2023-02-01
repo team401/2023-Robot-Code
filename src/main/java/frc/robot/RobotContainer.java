@@ -13,17 +13,21 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.commands.pivot.MovePivot;
 
 public class RobotContainer {
     
     private final Drive drive = new Drive();
+    private final PivotSubsystem pivot = new PivotSubsystem();
+    private final TelescopeSubsystem telescope = new TelescopeSubsystem();
+    private final WristSubsystem wrist = new WristSubsystem();
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
     private final XboxController gamepad = new XboxController(2);
-    private final PivotSubsystem pivot = new PivotSubsystem();
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
@@ -55,14 +59,15 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new MovePivot(pivot, Math.PI / 4));
+            .onTrue(new MovePivot(pivot, telescope, Math.PI / 4));
 
         new JoystickButton(gamepad, Button.kA.value)
-            .onTrue(new MovePivot(pivot, Math.PI / 2));
+            .onTrue(new MovePivot(pivot, telescope, Math.PI / 2));
 
         new JoystickButton(gamepad, Button.kRightBumper.value)
             .onTrue(new InstantCommand(() -> pivot.setVolts(4)))
             .onFalse(new InstantCommand(() -> pivot.setVolts(0)));
+            
         new JoystickButton(gamepad, Button.kLeftBumper.value)
             .onTrue(new InstantCommand(() -> pivot.setVolts(-4)))
             .onFalse(new InstantCommand(() -> pivot.setVolts(0)));

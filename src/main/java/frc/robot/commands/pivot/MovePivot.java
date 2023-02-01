@@ -16,10 +16,11 @@ import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.subsystems.PivotSubsystem;
 // import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.TelescopeSubsystem;
 
 public class MovePivot extends CommandBase{
     private PivotSubsystem pivot;
-    // private TelescopeSubsystem telescope;
+    private TelescopeSubsystem telescope;
 
     private TrapezoidProfile profile;
     private State goalState; 
@@ -28,7 +29,7 @@ public class MovePivot extends CommandBase{
 
     public double time;
 
-    public MovePivot(PivotSubsystem pivot, /*TelescopeSubsystem telescope,*/ double posRad, 
+    public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, double posRad, 
     double velRadS) {
         this.pivot = pivot;
         // this.telescope = telescope;
@@ -38,8 +39,8 @@ public class MovePivot extends CommandBase{
         // addRequirements(this.pivot);
     }
 
-    public MovePivot(PivotSubsystem pivot, /*TelescopeSubsystem telescope,*/ double posRad) {
-        this(pivot, /*telescope,*/ posRad, 0);
+    public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, double posRad) {
+        this(pivot, telescope, posRad, 0);
     } 
 
     @Override

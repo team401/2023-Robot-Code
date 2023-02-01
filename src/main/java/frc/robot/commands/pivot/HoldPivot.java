@@ -5,18 +5,19 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
 // import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.TelescopeSubsystem;
 
 public class HoldPivot extends CommandBase {
     private PivotSubsystem pivot;
-    // private TelescopeSubsystem telescope;
+    private TelescopeSubsystem telescope;
 
     private State goalState;
 
     public double time;
 
-    public HoldPivot(PivotSubsystem pivot/*, TelescopeSubsystem telescope*/) {
+    public HoldPivot(PivotSubsystem pivot, TelescopeSubsystem telescope) {
         this.pivot = pivot;
-        // this.telescope = telescope;
+        this.telescope = telescope;
 
         addRequirements(this.pivot);
     }
@@ -29,7 +30,7 @@ public class HoldPivot extends CommandBase {
     @Override
     public void execute() {
         // Calculate output from feedforward & PID
-        double pivotOut = pivot.calculateControl(goalState, 0);
+        double pivotOut = pivot.calculateControl(goalState, telescope.getPositionM());
 
         pivot.setVolts(pivotOut);
    }

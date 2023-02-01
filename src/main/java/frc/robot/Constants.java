@@ -36,6 +36,10 @@ public final class Constants {
         public static final int leftPivotMotorID = 14;
         public static final int rightPivotMotorID = 13;
 
+        public static final int telescopeMotorID = 9000;
+
+        public static final int wristMotorID = 80000;
+
     }
     
     public static final class DriveConstants {
@@ -96,6 +100,26 @@ public final class Constants {
 
     public static final class TelescopeConstants {
         public static final double maxPosM = 0.0; //TODO: Find Value
+
+        public static final double wheelRadiusM = 0.0; //TODO: Find Value
+
+        public static final double kP = 0;
+        public static final double kV = 0.0;
+        public static final double kA = 0.0;
+        public static final double kG = 0.0;
+        public static final double kS = 0.0;
+    }
+
+    public static final class WristConstants {
+        //TODO: set all values
+        public static final double positiveLimitRad = 0.0;
+        public static final double negativeLimitRad = 0.0;
+
+        public static final double kP = 0;
+        public static final double kV = 0.0;
+        public static final double kA = 0.0;
+        public static final double kG = 0.0;
+        public static final double kS = 0.0;
     }
 
 }
