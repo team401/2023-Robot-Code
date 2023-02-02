@@ -8,13 +8,11 @@ import frc.robot.subsystems.WristSubsystem;
 public class CharacterizeWrist {
     public class FindKS extends CommandBase {
         private WristSubsystem wrist;
-        private PivotSubsystem pivot;
 
         private double volts;
 
-        public FindKS(WristSubsystem w, PivotSubsystem p) {
+        public FindKS(WristSubsystem w) {
             wrist = w;
-            pivot = p;
         }
 
         @Override
