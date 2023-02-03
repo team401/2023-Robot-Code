@@ -5,7 +5,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.subsystems.PivotSubsystem;
 
+/**
+ * Set of commands meant to characterize the pivot
+ */
 public class CharacterizePivot {
+    /**
+     * Command to find the kS constant of the pivot. <p>
+     * 
+     * Must be done visually. Bind this command to a button and hold the 
+     * button until the pivot visually moves. Release the button immediatly 
+     * when it begins moving, and the estimated kS will be printed on 
+     * SmartDashboard.
+     */
     public class FindKS extends CommandBase {
         private PivotSubsystem pivot;
 
@@ -29,6 +40,13 @@ public class CharacterizePivot {
         }
     }
 
+    /**
+     * Command to find the kV constant of the pivot. <p>
+     * 
+     * Finds the velocity of the pivot when given 1 volt exactly when it passes
+     * the 90-degree point, in order to ignore the effects of gravity. Prints
+     * the speed to SmartDashboard when the command ends.
+     */
     public class FindKV extends CommandBase {
         private PivotSubsystem pivot;
 
@@ -53,6 +71,12 @@ public class CharacterizePivot {
         }
     }
 
+    /**
+     * Finds the kG constant of the pivot. <p>
+     * 
+     * Very simmilar to finding the kV, but makes the speed measurement at 
+     * 0 degrees: level with the ground.
+     */
     public class FindKG extends CommandBase{
         private PivotSubsystem pivot;
 

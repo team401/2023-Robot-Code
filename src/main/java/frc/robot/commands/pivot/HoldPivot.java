@@ -7,13 +7,16 @@ import frc.robot.subsystems.PivotSubsystem;
 // import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
+/**
+ * Command that holds the pivot at the position of its desiredSetpoint 
+ * variable. Should be set as a default command for the pivot and only stopped
+ * through interruption.
+ */
 public class HoldPivot extends CommandBase {
     private PivotSubsystem pivot;
     private TelescopeSubsystem telescope;
 
     private State goalState;
-
-    public double time;
 
     public HoldPivot(PivotSubsystem pivot, TelescopeSubsystem telescope) {
         this.pivot = pivot;

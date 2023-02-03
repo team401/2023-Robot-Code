@@ -18,6 +18,10 @@ import frc.robot.subsystems.PivotSubsystem;
 // import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
+/**
+ * Command that moves the pivot from its current location to a new setpoint.<n>
+ * Uses a trapizoidal motion profile, and ends when the profile completes.
+ */
 public class MovePivot extends CommandBase{
     private PivotSubsystem pivot;
     private TelescopeSubsystem telescope;
@@ -27,8 +31,18 @@ public class MovePivot extends CommandBase{
     private double posRad;
     private double velRadS;
 
+    //TODO: Replace with timer to appease Sullivan
     public double time;
 
+    /**
+     * Constructs an instance of this command. The position should be field-
+     * relative to the front of the robot.
+     * @param pivot the pivot subsystem
+     * @param telescope the telescope subsystem
+     * @param posRad the setpoint position of the pivot in radians. Again,
+     * this should be field-relative to the front.
+     * @param velRadS the setpoint velocity.
+     */
     public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, double posRad, 
     double velRadS) {
         this.pivot = pivot;
@@ -39,26 +53,37 @@ public class MovePivot extends CommandBase{
         // addRequirements(this.pivot);
     }
 
+    /**
+     * Constructs an instance of this command. The position should be field-
+     * relative to the front of the robot.
+     * @param pivot the pivot subsystem
+     * @param telescope the telescope subsystem
+     * @param posRad the setpoint position of the pivot in radians. Again,
+     * this should be field-relative to the front.
+     */
     public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, double posRad) {
         this(pivot, telescope, posRad, 0);
     } 
 
     @Override
     public void initialize() {
-        // Create the trapezoid motion in .02s intervals based on max vel and accel,
-        // as well as the current starting state
         goalState = new TrapezoidProfile.State(posRad, velRadS);
         
+        // Shift the setpoint to the back of the robot if the pivot is flagged
+        // as such.
         if (pivot.atBack) {
             goalState.position = Math.PI - goalState.position;
         }
 
+        // Create the trapezoid motion in .02s intervals based on max vel and accel,
+        // as well as the current starting state
         time = 0;
         profile = new TrapezoidProfile(pivot.getConstraintsRad(), goalState,
             new State(pivot.getPositionRad(), pivot.getVelRadS()));
 
         SmartDashboard.putNumber("Real Pivot time", profile.totalTime());
 
+        // Marks setpoint in pivot subsystem for the hold command
         pivot.setDesiredSetpointRad(goalState);
 
         pivot.resetPID();
@@ -72,6 +97,7 @@ public class MovePivot extends CommandBase{
 
         SmartDashboard.putNumber("GOING", System.currentTimeMillis());
 
+        //TODO: change to actual feedforward
         // Calculate output from feedforward & PID
         // double pivotOut = pivot.calculateControl(setpoint, 0);
         double pivotOut = pivot.controller.calculate(pivot.getPositionRad(), setpoint.position);
@@ -81,6 +107,7 @@ public class MovePivot extends CommandBase{
 
     @Override
     public boolean isFinished() {
+        //TODO: return profile.isFinished()
         return false;
     }
 }
