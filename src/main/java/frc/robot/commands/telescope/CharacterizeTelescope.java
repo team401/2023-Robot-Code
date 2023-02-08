@@ -27,7 +27,7 @@ public class CharacterizeTelescope {
         @Override
         public void execute() {
             telescope.setVolts(volts);
-            volts += 0.01;
+            volts += 0.005;
             SmartDashboard.putNumber("Telescope kS Volts", volts);
         }
 
@@ -57,7 +57,7 @@ public class CharacterizeTelescope {
 
         @Override
         public void initialize() {
-            telescope.setVolts(1);
+            telescope.setVolts(7);
         }
 
         @Override
@@ -70,5 +70,32 @@ public class CharacterizeTelescope {
             telescope.setVolts(0);
         }
     }
-    
+
+    public static class FindKA extends CommandBase {
+        private TelescopeSubsystem telescope;
+        private double lastVel;
+
+        public FindKA (TelescopeSubsystem t) {
+            telescope = t;
+        }
+
+        @Override
+        public void initialize() {
+            telescope.setVolts(7);
+            lastVel = 0;
+        }
+
+        @Override
+        public void execute() {
+            double newVoltage = telescope.getVel();
+            double acceleration = (newVoltage - lastVel)/0.020;
+            SmartDashboard.putNumber("Telescope Acceleration", acceleration);
+            lastVel = newVoltage;
+        }
+
+        @Override
+        public void end(boolean interrupted) {
+            telescope.setVolts(0);
+        }
+    }
 }

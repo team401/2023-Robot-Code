@@ -140,5 +140,6 @@ public class TelescopeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Telescope Velocity", getVel());
         SmartDashboard.putNumber("Telescope Desired Position", currentSetpoint.position);
         SmartDashboard.putBoolean("Telescope Dead", dead);
+        SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
     }
 }

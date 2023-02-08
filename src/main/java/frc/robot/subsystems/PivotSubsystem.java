@@ -101,6 +101,12 @@ public class PivotSubsystem extends SubsystemBase {
         return constraintsRad;
     }
 
+    /**
+     * 
+     * @param setpointRad
+     * @param telescopePosM
+     * @return
+     */
     public double calculateControl(TrapezoidProfile.State setpointRad, double telescopePosM) {
         return controller.calculate(getPositionRad(), setpointRad.position)
             + feedforward.calculate(setpointRad.position, setpointRad.velocity)
@@ -134,16 +140,28 @@ public class PivotSubsystem extends SubsystemBase {
         currentSetpointRad = stateRad;
     }
 
+    /**
+     * Sets the output power of the motors in volts if the boundry conditions
+     * are not exceeded. If the pivot is out of bounds or dead, the voltage
+     * will be set to 0.
+     * @param input The voltage to set
+     */
     public void setVolts(double input) {
-        if (!dead && checkSoftLimits(input)) {
+        if (!dead && withinSoftLimits(input)) {
             rightMotor.set(ControlMode.PercentOutput, input / 12);
             SmartDashboard.putNumber("Pivot Commanded V", input);
-            SmartDashboard.putNumber("motor vel", rightMotor.getSelectedSensorVelocity());
         } else {
             rightMotor.set(ControlMode.PercentOutput, 0);
         }
     }
 
+    /**
+     * Sets the output power of the motors in volts, even if it is past the max
+     * rotations or dead. Voltage is divided in half. <p>
+     * 
+     * ONLY USED BY HUMANS. Do not have PID or feedforward use this method.
+     * @param input The voltage to set
+     */
     public void overrideVolts(double input) {
         rightMotor.set(ControlMode.PercentOutput, input / 24);
     }
@@ -197,7 +215,7 @@ public class PivotSubsystem extends SubsystemBase {
         lastEncoderPos = encoder.getAbsolutePosition();
     }
 
-    private boolean checkSoftLimits(double input) {
+    private boolean withinSoftLimits(double input) {
         if (input > 0 && getPositionRad() > PivotConstants.maxBackRotationRad) {
             return false;
         }
