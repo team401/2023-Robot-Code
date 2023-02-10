@@ -22,8 +22,8 @@ public class RobotContainer {
     
     private final Drive drive = new Drive();
     private final PivotSubsystem pivot = new PivotSubsystem();
-    private final TelescopeSubsystem telescope = new TelescopeSubsystem();
-    private final WristSubsystem wrist = new WristSubsystem();
+    // private final TelescopeSubsystem telescope = new TelescopeSubsystem();
+    // private final WristSubsystem wrist = new WristSubsystem();
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
@@ -58,11 +58,11 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
-        new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new MovePivot(pivot, telescope, Math.PI / 4));
+        // new JoystickButton(gamepad, Button.kB.value)
+        //     .onTrue(new MovePivot(pivot, telescope, Math.PI / 4));
 
-        new JoystickButton(gamepad, Button.kA.value)
-            .onTrue(new MovePivot(pivot, telescope, Math.PI / 2));
+        // new JoystickButton(gamepad, Button.kA.value)
+        //     .onTrue(new MovePivot(pivot, telescope, Math.PI / 2));
 
         new JoystickButton(gamepad, Button.kRightBumper.value)
             .onTrue(new InstantCommand(() -> pivot.setVolts(4)))
