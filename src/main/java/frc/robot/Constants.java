@@ -33,17 +33,17 @@ public final class Constants {
 
         public static final int pigeonIMU = 20;
 
-        public static final int leftPivotMotorID = 13;
-        public static final int rightPivotMotorID = 14;
+        public static final int leftPivotMotorID = 14;
+        public static final int rightPivotMotorID = 13;
         
         public static final int pivotEncoderID = 0;
 
-        public static final int telescopeMotorID = 15;
+        public static final int telescopeMotorID = 18;
 
-        public static final int wristMotorID = 15;
+        public static final int wristMotorID = 17;
 
-        public static final int rightIntakeMotorID = 900;
-        public static final int leftIntakeMotorID = 800;
+        public static final int rightIntakeMotorID = 15;
+        public static final int leftIntakeMotorID = 16;
 
     }
     
