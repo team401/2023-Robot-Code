@@ -9,10 +9,12 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 
+import edu.wpi.first.hal.CANData;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.DriveConstants;
 
 public class DriveModule {
@@ -42,9 +44,9 @@ public class DriveModule {
 
     public DriveModule(int driveMotorID, int rotationMotorID, int cancoderID, double measuredOffsetsRadians) {
 
-        driveMotor = new TalonFX(driveMotorID);
-        rotationMotor = new TalonFX(rotationMotorID);
-        rotationEncoder = new CANCoder(cancoderID);
+        driveMotor = new TalonFX(driveMotorID, CANDevices.canivoreName);
+        rotationMotor = new TalonFX(rotationMotorID, CANDevices.canivoreName);
+        rotationEncoder = new CANCoder(cancoderID, CANDevices.canivoreName);
 
         driveMotor.configFactoryDefault(1000);
         rotationMotor.configFactoryDefault(1000);
