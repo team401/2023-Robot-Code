@@ -124,4 +124,20 @@ public final class Constants {
         public static final double kS = 0.0;
     }
 
+    public static final class ArmPositions {
+        public static final double[] mid = new double[] 
+            {Units.degreesToRadians(15),
+            0.5,
+            Units.degreesToRadians(0)};
+            
+        public static final double[] low = new double[] 
+            {Units.degreesToRadians(-10),
+            0.2,
+            Units.degreesToRadians(0)};
+
+        public static final double[] high = new double[] 
+            {Units.degreesToRadians(80),
+            0.7,
+            Units.degreesToRadians(0)};
+    }
 }
