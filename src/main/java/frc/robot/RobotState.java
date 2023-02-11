@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.GamePieceMode;
 
 public class RobotState {
 
@@ -51,7 +52,7 @@ public class RobotState {
             3,
             new Color8Bit(Color.kBlue)));
 
-
+    private GamePieceMode gamePieceMode = GamePieceMode.ConeUp;
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
@@ -73,9 +74,10 @@ public class RobotState {
         poseEstimator.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
-    /**
-     * Inverts the remembered side of the arm.
-     */
+    public Pose2d getFieldToVehicle() {
+        return poseEstimator.getEstimatedPosition();
+    }
+
     public void invertBack() {
         atBack = !atBack;
     }
@@ -90,15 +92,19 @@ public class RobotState {
         SmartDashboard.putData("Arm Mechanism", mechanism);
     }
 
-    public Pose2d getFieldToVehicle() {
-        return poseEstimator.getEstimatedPosition();
-    }
 
-    /**
-     * Whether the arm is in the front or the back
-     */
     public boolean atBack() {
         return atBack;
     }
+
+    public GamePieceMode getMode() {
+        return gamePieceMode;
+    }
+
+    public void setMode(Constants.GamePieceMode mode) {
+        gamePieceMode = mode;
+    }
+
+
     
 }

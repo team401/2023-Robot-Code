@@ -51,6 +51,8 @@ public class WristSubsystem extends SubsystemBase {
         
 
         controller.setTolerance(0.05);
+
+        SmartDashboard.putNumber("Wrist test setpoint", 0);
     }
 
     public double getPositionRad() {
@@ -71,6 +73,14 @@ public class WristSubsystem extends SubsystemBase {
      */
     public TrapezoidProfile.State getDesiredSetpointRad() {
         return currentSetpointRad;
+    }
+
+    public void jogSetpointForward() {
+        currentSetpointRad.position += Math.PI / 24;
+    }
+
+    public void jogSetpointBack() {
+        currentSetpointRad.position -= Math.PI / 24;
     }
     
     public TrapezoidProfile.Constraints getConstraintsRad() {

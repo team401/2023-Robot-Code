@@ -52,8 +52,8 @@ public class PivotSubsystem extends SubsystemBase {
         PivotConstants.kA);
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(180),
-            Units.degreesToRadians(90));
+            Units.degreesToRadians(30),
+            Units.degreesToRadians(10));
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = 
@@ -83,11 +83,14 @@ public class PivotSubsystem extends SubsystemBase {
             80,
             1)
         );
+
+        SmartDashboard.putNumber("Pivot test setpoint", 0);
     }
 
     public double getPositionRad() {
         // return -(encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad);
-        return simPos;
+        return encoder.getAbsolutePosition();
+        // return simPos;
     }
 
     public double getVelRadS() {
@@ -138,6 +141,14 @@ public class PivotSubsystem extends SubsystemBase {
         currentSetpointRad = stateRad;
     }
 
+    public void jogSetpointForward() {
+        currentSetpointRad.position += Math.PI / 24;
+    }
+
+    public void jogSetpointBack() {
+        currentSetpointRad.position -= Math.PI / 24;
+    }
+
     public void setSimPos(double pos) {
         simPos = pos;
     }
@@ -168,6 +179,7 @@ public class PivotSubsystem extends SubsystemBase {
         rightMotor.set(ControlMode.PercentOutput, input / 24);
     }
 
+
     /**
      * 'Kills' the subsystem. The motor will be stopped and no loger respond to input
      */
@@ -192,12 +204,14 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
 
+
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Pivot Position", getPositionRad());
         SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
         SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
-        SmartDashboard.putNumber("Pivot Desired Setpoint", getDesiredSetpointRad().position);
+        SmartDashboard.putNumber("Pivot Desired Setpoint", currentSetpointRad.position);
+
         SmartDashboard.putBoolean("Pivot Dead", dead);
 
         SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());

@@ -38,12 +38,12 @@ public class MoveTelescope extends CommandBase {
 
 
     public MoveTelescope(TelescopeSubsystem telescope,
-        PivotSubsystem pivot, double posM, double pivotPosRad) {
+        PivotSubsystem pivot, double[] positions) {
 
         this.telescope = telescope;
         this.pivot = pivot;
-        this.posM = posM;
-        this.pivotPosRad = pivotPosRad;
+        this.posM = positions[1];
+        this.pivotPosRad = positions[0];
 
 
         addRequirements(telescope);

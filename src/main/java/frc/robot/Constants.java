@@ -42,6 +42,9 @@ public final class Constants {
 
         public static final int wristMotorID = 15;
 
+        public static final int rightIntakeMotorID = 900;
+        public static final int leftIntakeMotorID = 800;
+
     }
     
     public static final class DriveConstants {
@@ -92,7 +95,7 @@ public final class Constants {
         public static final double maxFwdRotationRad = Units.degreesToRadians(-30);
         public static final double maxBackRotationRad = Units.degreesToRadians(210);
 
-        public static final double kP = 0;
+        public static final double kP = 0.0;
         public static final double kV = 0.0;
         public static final double kA = 0.0;
         public static final double kG = 0.0;
@@ -125,19 +128,47 @@ public final class Constants {
     }
 
     public static final class ArmPositions {
-        public static final double[] mid = new double[] 
+        public static final double[] testMid = new double[] 
             {Units.degreesToRadians(15),
             0.5,
             Units.degreesToRadians(0)};
             
-        public static final double[] low = new double[] 
+        public static final double[] testLow = new double[] 
             {Units.degreesToRadians(-10),
             0.2,
             Units.degreesToRadians(0)};
 
-        public static final double[] high = new double[] 
+        public static final double[] testHigh = new double[] 
             {Units.degreesToRadians(80),
             0.7,
             Units.degreesToRadians(0)};
+
+        public static final double[] intakeConeUpShelf = new double[] {};
+        public static final double[] intakeCubeShelf = new double[] {};
+        public static final double[] intakeCubeGround = new double[] {};
+        public static final double[] intakeConeUpGround = new double[] {};
+        public static final double[] placeConeUpHigh = new double[] {};
+        public static final double[] placeConeUpMid = new double[] {};
+        public static final double[] placeCubeHigh = new double[] {};
+        public static final double[] placeCubeMid = new double[] {};
+        public static final double[] stow = new double[] {};
+
     }
+
+    public static enum GamePieceMode {
+        Cube,
+        ConeUp,
+        ConeForward,
+        ConeBackward
+    }
+
+    public static enum Position {
+        Ground,
+        Mid,
+        High,
+        Shelf,
+        Stow
+    }
+
+
 }

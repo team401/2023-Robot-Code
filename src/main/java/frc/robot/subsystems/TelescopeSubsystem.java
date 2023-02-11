@@ -46,6 +46,8 @@ public class TelescopeSubsystem extends SubsystemBase{
         
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         motor.setSensorPhase(false);
+
+        SmartDashboard.putNumber("Telescope test setpoint", 0);
     }
 
     public double getPositionM() {
@@ -105,6 +107,14 @@ public class TelescopeSubsystem extends SubsystemBase{
      */
     public void setDesiredSetpoint(TrapezoidProfile.State state) {
         currentSetpoint = state;
+    }
+
+    public void jogSetpointForward() {
+        currentSetpoint.position += 0.05;
+    }
+
+    public void jogSetpointBackward() {
+        currentSetpoint.position -= 0.05;
     }
 
     public void setSimPos(double pos) {
