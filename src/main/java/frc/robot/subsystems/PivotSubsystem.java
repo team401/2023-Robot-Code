@@ -24,7 +24,7 @@ import frc.robot.Constants.TelescopeConstants;
 public class PivotSubsystem extends SubsystemBase {
     /**Primary Motor/ Leader */
     private TalonFX rightMotor = new TalonFX(CANDevices.rightPivotMotorID, CANDevices.canivoreName);
-    private DutyCycleEncoder encoder = new DutyCycleEncoder(0);
+    private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
     private TalonFX leftMotor = new TalonFX(CANDevices.leftPivotMotorID, CANDevices.canivoreName);
 
     /**Whether the pivot is in the front or the back*/

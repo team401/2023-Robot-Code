@@ -35,6 +35,8 @@ public final class Constants {
 
         public static final int leftPivotMotorID = 13;
         public static final int rightPivotMotorID = 14;
+        
+        public static final int pivotEncoderID = 0;
 
         public static final int telescopeMotorID = 15;
 
