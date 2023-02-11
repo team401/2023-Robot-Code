@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -13,10 +14,16 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
@@ -27,13 +34,12 @@ public class PivotSubsystem extends SubsystemBase {
     private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
     private TalonFX leftMotor = new TalonFX(CANDevices.leftPivotMotorID, CANDevices.canivoreName);
 
-    /**Whether the pivot is in the front or the back*/
-    public boolean atBack = false;
-
     // For safety; detect when encoder stops sending new data
     private double lastEncoderPos;
     private int cycleCount = 0;
     private boolean dead = false;
+
+    private double simPos;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
@@ -80,7 +86,8 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getPositionRad() {
-        return -(encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad);
+        // return -(encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad);
+        return simPos;
     }
 
     public double getVelRadS() {
@@ -124,15 +131,6 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     /**
-     * Inverts the remembered side of the arm.<p>
-     * Has no effect on subsystem logic but can be used by commands to change a 
-     * setpoint to the other side of the robot.
-     */
-    public void invertSide() {
-        atBack = !atBack;
-    }
-
-    /**
      * @param state The setpoint state the telescope should be driven to.
      * Has no effect on the function of this subsytem.
      */
@@ -140,6 +138,10 @@ public class PivotSubsystem extends SubsystemBase {
         currentSetpointRad = stateRad;
     }
 
+    public void setSimPos(double pos) {
+        simPos = pos;
+    }
+ 
     /**
      * Sets the output power of the motors in volts if the boundry conditions
      * are not exceeded. If the pivot is out of bounds or dead, the voltage
@@ -197,7 +199,10 @@ public class PivotSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
         SmartDashboard.putNumber("Pivot Desired Setpoint", getDesiredSetpointRad().position);
         SmartDashboard.putBoolean("Pivot Dead", dead);
-        SmartDashboard.putBoolean("Pivot At Back", atBack);
+
+        SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());
+
+        RobotState.getInstance().putPivotDisplay(getPositionRad());
 
         if (DriverStation.isEnabled()) checkIfDead();
     }

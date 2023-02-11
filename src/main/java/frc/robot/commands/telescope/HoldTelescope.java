@@ -33,6 +33,7 @@ public class HoldTelescope extends CommandBase {
 
         double output = telescope.calculateControl(goalState, pivot.getPositionRad());
 
-        telescope.setVolts(output);
+        // telescope.setVolts(output);
+        telescope.setSimPos(goalState.position);
     }
 }

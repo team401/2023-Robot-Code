@@ -6,7 +6,15 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.SendableBuilder.BackendKind;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.Constants.DriveConstants;
 
 public class RobotState {
@@ -20,6 +28,30 @@ public class RobotState {
     }
     
     private SwerveDrivePoseEstimator poseEstimator;
+
+    /**Whether the arm is supposed to be in the front or the back*/
+    private boolean atBack = false;
+
+    private Mechanism2d mechanism = new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
+    private MechanismRoot2d root = mechanism.getRoot("arm", 2.5, 2.5);
+
+    private MechanismLigament2d pivotLigament = root.append(
+        new MechanismLigament2d(
+            "pivot",
+            0.4,
+            0,
+            4,
+            new Color8Bit(Color.kBlack)));
+    
+    private MechanismLigament2d telescopeLigament = pivotLigament.append(
+        new MechanismLigament2d(
+            "telescope",
+            0,
+            0,
+            3,
+            new Color8Bit(Color.kBlue)));
+
+
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
@@ -41,8 +73,32 @@ public class RobotState {
         poseEstimator.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
+    /**
+     * Inverts the remembered side of the arm.
+     */
+    public void invertBack() {
+        atBack = !atBack;
+    }
+
+    public void putPivotDisplay(double posRad) {
+        pivotLigament.setAngle(Units.radiansToDegrees(posRad));
+        SmartDashboard.putData("Arm Mechanism", mechanism);
+    }
+
+    public void putTelescopeDisplay(double posM) {
+        telescopeLigament.setLength(posM);
+        SmartDashboard.putData("Arm Mechanism", mechanism);
+    }
+
     public Pose2d getFieldToVehicle() {
         return poseEstimator.getEstimatedPosition();
+    }
+
+    /**
+     * Whether the arm is in the front or the back
+     */
+    public boolean atBack() {
+        return atBack;
     }
     
 }

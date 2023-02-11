@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.TelescopeConstants;
 
@@ -24,6 +25,8 @@ public class TelescopeSubsystem extends SubsystemBase{
     // For safety; detect when encoder stops sending new data
     private double lastEncoderPos;
     private boolean dead = true;
+
+    private double simPos;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
@@ -47,8 +50,10 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     public double getPositionM() {
         // 4096 units per rotation, multiply rotations by diameter
-        return motor.getSelectedSensorPosition() / 4096
-            * 2 * Math.PI * TelescopeConstants.wheelRadiusM;
+        // return motor.getSelectedSensorPosition() / 4096
+        //     * 2 * Math.PI * TelescopeConstants.wheelRadiusM;
+
+        return simPos;
     }
 
     public double getVel() {
@@ -98,8 +103,12 @@ public class TelescopeSubsystem extends SubsystemBase{
      * @param state The setpoint state the telescope should be driven to.
      * Has no effect on the function of this subsytem.
      */
-    public void updateDesiredSetpoint(TrapezoidProfile.State state) {
+    public void setDesiredSetpoint(TrapezoidProfile.State state) {
         currentSetpoint = state;
+    }
+
+    public void setSimPos(double pos) {
+        simPos = pos;
     }
 
     /**
@@ -141,5 +150,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Telescope Desired Position", currentSetpoint.position);
         SmartDashboard.putBoolean("Telescope Dead", dead);
         SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
+
+        RobotState.getInstance().putTelescopeDisplay(getPositionM());
     }
 }

@@ -33,8 +33,9 @@ public class HoldPivot extends CommandBase {
     @Override
     public void execute() {
         // Calculate output from feedforward & PID
-        double pivotOut = pivot.calculateControl(goalState, telescope.getPositionM());
+        // double pivotOut = pivot.calculateControl(goalState, telescope.getPositionM());
 
-        pivot.setVolts(pivotOut);
+        // pivot.setVolts(pivotOut);
+        pivot.setSimPos(goalState.position);
    }
 }

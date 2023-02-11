@@ -14,6 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
@@ -59,7 +60,7 @@ public class MoveTelescope extends CommandBase {
 
         State holdState = new State(0.05, 0);
 
-        if (pivot.atBack) {
+        if (RobotState.getInstance().atBack()) {
             pivotGoal.position = Math.PI - pivotGoal.position;
         }
        
@@ -81,36 +82,24 @@ public class MoveTelescope extends CommandBase {
             telescope.getConstraints(),
             pivotProfile.totalTime());
 
-        telescope.updateDesiredSetpoint(goalState);
+        telescope.setDesiredSetpoint(goalState);
         telescope.resetPID();
-
-        SmartDashboard.putBoolean("Reached Actual Profile", false);
     }
 
     @Override
     public void execute() {
 
         State setpoint = helper.calculate(timer.get());
-        SmartDashboard.putNumber("MoveTime", timer.get());
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
-        telescope.setVolts(output);
+        // telescope.setVolts(output);
 
-        SmartDashboard.putNumber("TelescopeSetpoint", setpoint.position);
-
-        SmartDashboard.putNumber("TelescopeVelocity", telescope.getVel());
-        SmartDashboard.putNumber("TelescopeSetpointVelocity", setpoint.velocity);
+        telescope.setSimPos(setpoint.position);
     }
 
     @Override
     public boolean isFinished() {
         return helper.isFinished(timer.get());
-    }
-
-    @Override
-    public void end(boolean interrupted) {
-        SmartDashboard.putNumber("Finishing", System.currentTimeMillis());
-
     }
 }

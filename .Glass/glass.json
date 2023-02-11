@@ -1,0 +1,43 @@
+{
+  "NetworkTables": {
+    "Persistent Values": {
+      "open": false
+    },
+    "Retained Values": {
+      "open": false
+    },
+    "transitory": {
+      "SmartDashboard": {
+        "Arm Mechanism": {
+          "open": true
+        },
+        "Pivot Mechanism": {
+          "arm": {
+            "open": true,
+            "pivot": {
+              "open": true
+            }
+          },
+          "open": true
+        },
+        "open": true
+      }
+    },
+    "types": {
+      "/FMSInfo": "FMSInfo",
+      "/SmartDashboard/Arm Mechanism": "Mechanism2d",
+      "/SmartDashboard/Pivot Mechanism": "Mechanism2d"
+    },
+    "windows": {
+      "/SmartDashboard/Arm Mechanism": {
+        "window": {
+          "visible": true
+        }
+      }
+    }
+  },
+  "NetworkTables Settings": {
+    "mode": "Client (NT4)",
+    "serverTeam": "localhost"
+  }
+}

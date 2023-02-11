@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.subsystems.PivotSubsystem;
@@ -50,7 +51,7 @@ public class MovePivot extends CommandBase{
         this.posRad = posRad;
         this.velRadS = velRadS;
 
-        // addRequirements(this.pivot);
+        addRequirements(this.pivot);
     }
 
     /**
@@ -71,7 +72,7 @@ public class MovePivot extends CommandBase{
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
-        if (pivot.atBack) {
+        if (RobotState.getInstance().atBack()) {
             goalState.position = Math.PI - goalState.position;
         }
 
@@ -96,18 +97,20 @@ public class MovePivot extends CommandBase{
         time += 0.02;
 
         SmartDashboard.putNumber("GOING", System.currentTimeMillis());
+        SmartDashboard.putNumberArray("MovePivot State", new double[] {setpoint.position, setpoint.velocity});
 
         //TODO: change to actual feedforward
         // Calculate output from feedforward & PID
         // double pivotOut = pivot.calculateControl(setpoint, 0);
-        double pivotOut = pivot.controller.calculate(pivot.getPositionRad(), setpoint.position);
-        SmartDashboard.putNumber("pivotOut", pivotOut);
-        pivot.setVolts(pivotOut);
+        // double pivotOut = pivot.controller.calculate(pivot.getPositionRad(), setpoint.position);
+        // SmartDashboard.putNumber("pivotOut", pivotOut);
+        // pivot.setVolts(pivotOut);
+        pivot.setSimPos(setpoint.position);
     }
 
     @Override
     public boolean isFinished() {
-        //TODO: return profile.isFinished()
-        return false;
+        return profile.isFinished(time);
+        // return false;
     }
 }
