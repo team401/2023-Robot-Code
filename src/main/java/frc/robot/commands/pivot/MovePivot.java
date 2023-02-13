@@ -10,6 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
@@ -32,8 +33,7 @@ public class MovePivot extends CommandBase{
     private double posRad;
     private double velRadS;
 
-    //TODO: Replace with timer to appease Sullivan
-    public double time;
+    public Timer timer = new Timer();
 
     /**
      * Constructs an instance of this command. The position should be field-
@@ -76,13 +76,12 @@ public class MovePivot extends CommandBase{
             goalState.position = Math.PI - goalState.position;
         }
 
-        // Create the trapezoid motion in .02s intervals based on max vel and accel,
+        // Create the trapezoid motion based on max vel and accel,
         // as well as the current starting state
-        time = 0;
+        timer.reset();
+        timer.start();
         profile = new TrapezoidProfile(pivot.getConstraintsRad(), goalState,
             new State(pivot.getPositionRad(), pivot.getVelRadS()));
-
-        SmartDashboard.putNumber("Real Pivot time", profile.totalTime());
 
         // Marks setpoint in pivot subsystem for the hold command
         pivot.setDesiredSetpointRad(goalState);
@@ -92,11 +91,8 @@ public class MovePivot extends CommandBase{
 
     @Override
     public void execute() {
-        // Profile should be sampled every .02 seconds, with 0 being the beginning of the profile
-        State setpoint = profile.calculate(time);
-        time += 0.02;
+        State setpoint = profile.calculate(timer.get());
 
-        SmartDashboard.putNumber("GOING", System.currentTimeMillis());
         SmartDashboard.putNumberArray("MovePivot State", new double[] {setpoint.position, setpoint.velocity});
 
         //TODO: change to actual feedforward
@@ -110,7 +106,7 @@ public class MovePivot extends CommandBase{
 
     @Override
     public boolean isFinished() {
-        return profile.isFinished(time);
+        return profile.isFinished(timer.get());
         // return false;
     }
 }

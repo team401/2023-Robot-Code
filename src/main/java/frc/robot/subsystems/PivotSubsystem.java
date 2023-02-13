@@ -89,8 +89,8 @@ public class PivotSubsystem extends SubsystemBase {
 
     public double getPositionRad() {
         // return -(encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad);
-        return encoder.getAbsolutePosition();
-        // return simPos;
+        // return encoder.getAbsolutePosition();
+        return simPos;
     }
 
     public double getVelRadS() {

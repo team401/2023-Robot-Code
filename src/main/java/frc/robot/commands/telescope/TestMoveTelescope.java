@@ -32,6 +32,7 @@ public class TestMoveTelescope extends CommandBase {
 
         double output = telescope.calculateControl(goalState, 0);
 
-        telescope.setVolts(output);
+        // telescope.setVolts(output);
+        telescope.setSimPos(goalState.position);
     }
 }

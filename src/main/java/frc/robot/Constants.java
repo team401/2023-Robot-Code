@@ -151,7 +151,7 @@ public final class Constants {
         public static final double[] placeConeUpMid = new double[] {};
         public static final double[] placeCubeHigh = new double[] {};
         public static final double[] placeCubeMid = new double[] {};
-        public static final double[] stow = new double[] {};
+        public static final double[] stow = new double[] {0.39, 0.05, 0.0};
 
     }
 

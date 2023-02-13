@@ -33,8 +33,9 @@ public class RobotState {
     /**Whether the arm is supposed to be in the front or the back*/
     private boolean atBack = false;
 
-    private Mechanism2d mechanism = new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
-    private MechanismRoot2d root = mechanism.getRoot("arm", 2.5, 2.5);
+    private Mechanism2d displayMechanism = 
+        new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
+    private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 2.5);
 
     private MechanismLigament2d pivotLigament = root.append(
         new MechanismLigament2d(
@@ -42,7 +43,7 @@ public class RobotState {
             0.4,
             0,
             4,
-            new Color8Bit(Color.kBlack)));
+            new Color8Bit(Color.kPurple)));
     
     private MechanismLigament2d telescopeLigament = pivotLigament.append(
         new MechanismLigament2d(
@@ -52,7 +53,15 @@ public class RobotState {
             3,
             new Color8Bit(Color.kBlue)));
 
-    private GamePieceMode gamePieceMode = GamePieceMode.ConeUp;
+    private MechanismLigament2d wrisLigament = telescopeLigament.append(
+        new MechanismLigament2d(
+            "wrist",
+            0.2,
+            0,
+            3,
+            new Color8Bit(Color.kCoral)));
+
+    private GamePieceMode gamePieceMode = GamePieceMode.Cube;
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
@@ -84,12 +93,27 @@ public class RobotState {
 
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
-        SmartDashboard.putData("Arm Mechanism", mechanism);
+
+        switch(getMode()) {
+            case Cube:
+                pivotLigament.setColor(new Color8Bit(Color.kPurple));
+                break;
+            default:
+                pivotLigament.setColor(new Color8Bit(Color.kYellow));
+            break;
+        }
+
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        SmartDashboard.putData("Arm Mechanism", mechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
+    }
+
+    public void putWristDisplay(double posRad) {
+        wrisLigament.setAngle(Units.radiansToDegrees(posRad));
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
 

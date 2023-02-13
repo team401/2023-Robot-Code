@@ -31,6 +31,7 @@ import frc.robot.commands.pivot.TestMovePivot;
 import frc.robot.commands.telescope.HoldTelescope;
 import frc.robot.commands.telescope.MoveTelescope;
 import frc.robot.commands.telescope.TestMoveTelescope;
+import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.commands.wrist.TestMoveWrist;
 
@@ -74,6 +75,7 @@ public class RobotContainer {
 
         pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
         telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
+        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
@@ -87,7 +89,7 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(new TestMovePivot(pivot));
+            .onTrue(new TestMovePivot(pivot, telescope));
 
         new JoystickButton(gamepad, Button.kA.value)
             .onTrue(new TestMoveWrist(wrist, pivot));
@@ -133,7 +135,7 @@ public class RobotContainer {
             .onTrue(getMoveCommand(Position.Shelf)); // move to shelf
             
         new JoystickButton(gamepad, Button.kY.value)
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()))
+            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack())) // flip
             .onTrue(new InstantCommand(() -> {
                 if (rumbling) {
 					gamepad.setRumble(RumbleType.kBothRumble, 0);
@@ -141,7 +143,7 @@ public class RobotContainer {
 					gamepad.setRumble(RumbleType.kBothRumble, 1);
 				}
 				rumbling = !rumbling;
-            })); // flip
+            }));
 
         new JoystickButton(gamepad, Button.kB.value)
             .onTrue(pivot.killCommand())

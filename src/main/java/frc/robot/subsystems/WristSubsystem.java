@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
 
@@ -43,6 +44,8 @@ public class WristSubsystem extends SubsystemBase {
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
 
+    private double simPos = 0.0;
+
     public WristSubsystem() {
         motor.setInverted(false);
         motor.setInverted(InvertType.None);
@@ -56,7 +59,8 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double getPositionRad() {
-        return motor.getSelectedSensorPosition() / 4096 * 2 * Math.PI;
+        // return motor.getSelectedSensorPosition() / 4096 * 2 * Math.PI;
+        return simPos;
     }
 
     public double getVelRadS() {
@@ -113,6 +117,10 @@ public class WristSubsystem extends SubsystemBase {
      */
     public void updateDesiredSetpointRad(TrapezoidProfile.State state) {
         currentSetpointRad = state;
+    }
+
+    public void setSimPosRad(double pos) {
+        simPos = pos;
     }
 
     /**
@@ -177,6 +185,8 @@ public class WristSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Amps", getAmps());
         SmartDashboard.putBoolean("Wrist Dead", dead);
         SmartDashboard.putBoolean("Wrist At Back", atBack);
+
+        RobotState.getInstance().putWristDisplay(getPositionRad());
 
         checkIfDead();
     }
