@@ -88,7 +88,7 @@ public final class Constants {
     public static final class PivotConstants {
         //TODO: Set all
 
-        public static final double encoderOffsetRad = -Units.rotationsToRadians(0.18);
+        public static final double encoderOffsetRad = -Units.rotationsToRadians(0.1775);
 
         public static final double armToMotorGearRatio = 1 / 90;
 
@@ -104,11 +104,14 @@ public final class Constants {
     }
 
     public static final class TelescopeConstants {
-        public static final double maxPosM = 0.0; //TODO: Find Value
+        public static final double maxPosM = 0.8; //TODO: Find Value
+        public static final double minPosM = 0.05;
 
-        public static final double wheelRadiusM = 0.0; //TODO: Find Value
+        // public static final double wheelRadiusM = Units.inchesToMeters(0.75); 
+        // public static final double gearRatio = 16.0 / 60.0;
+        public static final double conversionM = 0.00865;
 
-        public static final double kP = 0;
+        public static final double kP = 25;
         public static final double kV = 0.0;
         public static final double kA = 0.0;
         public static final double kG = 0.0;
@@ -120,10 +123,12 @@ public final class Constants {
         public static final double positiveLimitRad = 0.0;
         public static final double negativeLimitRad = 0.0;
 
-        public static final double kP = 0;
-        public static final double kV = 0.0;
-        public static final double kA = 0.0;
-        public static final double kG = 0.0;
+        public static final double gearRatio = 78.0 / 8;
+
+        public static final double kP = 5;
+        public static final double kV = 0.16; // estimate
+        public static final double kA = 0.01; // estimate
+        public static final double kG = 0.6;
         public static final double kS = 0.0;
     }
 

@@ -61,7 +61,7 @@ public class PivotSubsystem extends SubsystemBase {
 
 
     public PivotSubsystem() {
-        rightMotor.setInverted(InvertType.InvertMotorOutput);
+        rightMotor.setInverted(InvertType.None);
 
         leftMotor.follow(rightMotor);
         leftMotor.setInverted(InvertType.OpposeMaster);
@@ -88,9 +88,9 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getPositionRad() {
-        // return -(encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad);
+        return encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad;
         // return encoder.getAbsolutePosition();
-        return simPos;
+        // return simPos;
     }
 
     public double getVelRadS() {
@@ -168,6 +168,10 @@ public class PivotSubsystem extends SubsystemBase {
         }
     }
 
+    public void stop() {
+        rightMotor.set(ControlMode.PercentOutput, 0);
+    }
+
     /**
      * Sets the output power of the motors in volts, even if it is past the max
      * rotations or dead. Voltage is divided in half. <p>
@@ -176,7 +180,7 @@ public class PivotSubsystem extends SubsystemBase {
      * @param input The voltage to set
      */
     public void overrideVolts(double input) {
-        rightMotor.set(ControlMode.PercentOutput, input / 24);
+        rightMotor.set(ControlMode.PercentOutput, input / 12);
     }
 
 
@@ -218,7 +222,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         RobotState.getInstance().putPivotDisplay(getPositionRad());
 
-        if (DriverStation.isEnabled()) checkIfDead();
+        //if (DriverStation.isEnabled()) checkIfDead();
     }
 
     private void checkIfDead() {

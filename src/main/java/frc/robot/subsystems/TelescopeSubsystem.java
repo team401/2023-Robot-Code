@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -24,7 +25,7 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     // For safety; detect when encoder stops sending new data
     private double lastEncoderPos;
-    private boolean dead = true;
+    private boolean dead = false;
 
     private double simPos;
 
@@ -35,7 +36,8 @@ public class TelescopeSubsystem extends SubsystemBase{
     private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
         TelescopeConstants.kS,
         TelescopeConstants.kV);
-    private final TrapezoidProfile.Constraints constraints = new TrapezoidProfile.Constraints(1, 1);
+    private final TrapezoidProfile.Constraints constraints = 
+        new TrapezoidProfile.Constraints(0.2, 0.5);
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.02, 0);
@@ -47,24 +49,28 @@ public class TelescopeSubsystem extends SubsystemBase{
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         motor.setSensorPhase(false);
 
+        motor.configStatorCurrentLimit(
+            new StatorCurrentLimitConfiguration(true, 40, 50, 0.5));
+
         SmartDashboard.putNumber("Telescope test setpoint", 0);
     }
 
     public double getPositionM() {
         // 4096 units per rotation, multiply rotations by diameter
-        // return motor.getSelectedSensorPosition() / 4096
-        //     * 2 * Math.PI * TelescopeConstants.wheelRadiusM;
+        return motor.getSelectedSensorPosition() / 4096
+            * 2 * Math.PI  * TelescopeConstants.conversionM;//* TelescopeConstants.wheelRadiusM
+            //* TelescopeConstants.gearRatio;
 
-        return simPos;
+        // return simPos;
     }
 
     public double getVel() {
         return motor.getSelectedSensorVelocity() / 4096
-            * 2 * Math.PI * TelescopeConstants.wheelRadiusM * 10;
+            * 2 * Math.PI * TelescopeConstants.conversionM * 10;
     }
 
     public double getAmps() {
-        return motor.getStatorCurrent();
+        return Math.abs(motor.getStatorCurrent());
     }
 
      /**
@@ -87,6 +93,7 @@ public class TelescopeSubsystem extends SubsystemBase{
      * @return The result of the calculation. Add kG * sine of the pivot angle
      */
     public double calculateControl(TrapezoidProfile.State setpoint, double pivotAngleRad) {
+        SmartDashboard.putNumber("Telescope calculated", controller.calculate(getPositionM(), setpoint.position));
         return controller.calculate(getPositionM(), setpoint.position)
             + feedforward.calculate(setpoint.velocity)
             // Compensates for weight of telescope as the pivot goes up
@@ -133,6 +140,14 @@ public class TelescopeSubsystem extends SubsystemBase{
             motor.set(ControlMode.PercentOutput, input / 12);
     }
 
+    public void overrideVolts(double input) {
+        motor.set(ControlMode.PercentOutput, input / 12);
+    }
+
+    public void stop() {
+        motor.set(ControlMode.PercentOutput, 0);
+    }
+
     /**
      * 'Kills' the subsystem. The motor will be stopped and no loger respond to input
      */
@@ -160,6 +175,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Telescope Desired Position", currentSetpoint.position);
         SmartDashboard.putBoolean("Telescope Dead", dead);
         SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Telescope Amps", getAmps());
 
         RobotState.getInstance().putTelescopeDisplay(getPositionM());
     }

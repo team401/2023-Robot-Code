@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
@@ -23,11 +24,10 @@ public class WristSubsystem extends SubsystemBase {
     private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
 
     public boolean homed = false;
-    public boolean atBack = false; // If true, the arm is backwards
 
     // For safety; detect when encoder stops sending new data
     private double lastEncoderPos;
-    private boolean dead = true;
+    private boolean dead = false;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
@@ -59,16 +59,17 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double getPositionRad() {
-        // return motor.getSelectedSensorPosition() / 4096 * 2 * Math.PI;
-        return simPos;
+        return motor.getSelectedSensorPosition() / 2048 * 2 * Math.PI / 26 * Math.PI;
+            // * WristConstants.gearRatio;
+        // return simPos;
     }
 
     public double getVelRadS() {
-        return motor.getSelectedSensorVelocity() / 4096 * 2 * Math.PI * 10;
+        return motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10;
     }
 
     public double getAmps() {
-        return motor.getStatorCurrent();
+        return Math.abs(motor.getStatorCurrent());
     }
 
     /**
@@ -128,21 +129,7 @@ public class WristSubsystem extends SubsystemBase {
      * the position the wrist should be at when it goes all the way to the arm.
      */
     public void resetOffset() {
-        if (!atBack)
-            motor.setSelectedSensorPosition(
-                Units.degreesToRotations(141.0) * 4096);
-        else
-            motor.setSelectedSensorPosition(
-                Units.radiansToRotations(-2.02) * 4096);
-    }
-
-    /**
-     * Inverts the remembered side of the arm.<p>
-     * Has no effect on subsystem logic but can be used by commands to change a 
-     * setpoint to the other side of the robot.
-     */
-    public void invertSide() {
-        atBack = !atBack; //side;
+        motor.setSelectedSensorPosition(2.97 / (2 * Math.PI) * 2048 * 26 / Math.PI);
     }
 
     public void setVolts(double input) {
@@ -150,9 +137,17 @@ public class WristSubsystem extends SubsystemBase {
             if (getPositionRad() > WristConstants.positiveLimitRad && input > 0 && homed) return;
             if (getPositionRad() < WristConstants.negativeLimitRad && input < 0 && homed) return;
 
-            motor.set(ControlMode.PercentOutput, input);
+            motor.set(ControlMode.PercentOutput, input / 12);
             return;
         }
+        motor.set(ControlMode.PercentOutput, 0);
+    }
+
+    public void overrideVolts(double input) {
+        motor.set(ControlMode.PercentOutput, input / 12);
+    }
+
+    public void stop() {
         motor.set(ControlMode.PercentOutput, 0);
     }
 
@@ -184,11 +179,11 @@ public class WristSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Desired Position", currentSetpointRad.position);
         SmartDashboard.putNumber("Wrist Amps", getAmps());
         SmartDashboard.putBoolean("Wrist Dead", dead);
-        SmartDashboard.putBoolean("Wrist At Back", atBack);
+        SmartDashboard.putNumber("Wrist Voltage", motor.getMotorOutputVoltage());
 
         RobotState.getInstance().putWristDisplay(getPositionRad());
 
-        checkIfDead();
+        // checkIfDead();
     }
 
     private void checkIfDead() {

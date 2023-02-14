@@ -5,6 +5,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 
@@ -27,10 +28,10 @@ public class TestMoveWrist extends CommandBase {
     @Override
     public void initialize() {
         goalState = new State(
-            SmartDashboard.getNumber("Wrist test setpoint", 0),
+            1,
             0);
 
-        if (wrist.atBack)
+        if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
 
         timer.reset();
@@ -49,13 +50,14 @@ public class TestMoveWrist extends CommandBase {
 
         double output = wrist.calculateControl(setpoint, getAdjustedAngle());
 
-        // wrist.setVolts(output);
-        wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
+        wrist.setVolts(output);
+        // wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
     }
 
     @Override
     public boolean isFinished() {
-        return profile.isFinished(timer.get());
+        // return profile.isFinished(timer.get());
+        return false;
     }
 
     private double getAdjustedAngle() {

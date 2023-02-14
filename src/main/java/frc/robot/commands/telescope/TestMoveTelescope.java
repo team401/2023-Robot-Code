@@ -24,7 +24,8 @@ public class TestMoveTelescope extends CommandBase {
 
     @Override
     public void initialize() {
-        goalState = new State(SmartDashboard.getNumber("Telescope test setpoint", 0), 0);
+        goalState = new State(/*SmartDashboard.getNumber("Telescope test setpoint", 0.4)*/0.4, 0);
+        telescope.resetPID();
     }
 
     @Override
@@ -32,7 +33,7 @@ public class TestMoveTelescope extends CommandBase {
 
         double output = telescope.calculateControl(goalState, 0);
 
-        // telescope.setVolts(output);
-        telescope.setSimPos(goalState.position);
+        telescope.setVolts(output);
+        // telescope.setSimPos(goalState.position);
     }
 }

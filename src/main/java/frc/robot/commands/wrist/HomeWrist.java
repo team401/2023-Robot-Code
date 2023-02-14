@@ -11,38 +11,45 @@ import frc.robot.subsystems.WristSubsystem;
 
 public class HomeWrist extends CommandBase {
     private WristSubsystem wrist;
-    
-    //Supplier for position of pivot
-    private DoubleSupplier pivotPosRad;
 
     private Timer timer;
+    private Timer otherTimer;
+    private boolean otherTimerStarted = false;
 
-    public HomeWrist(WristSubsystem wrist, DoubleSupplier pivotPosRad) {
+    public HomeWrist(WristSubsystem wrist) {
         this.wrist = wrist;
 
         timer = new Timer();
+        otherTimer = new Timer();
 
         addRequirements(wrist);
-    
-        this.pivotPosRad = pivotPosRad;
     }
 
     public void initialize() {
 
-        wrist.setVolts(!wrist.atBack ? 4 : -4);
+        wrist.setVolts(1);
 
         timer.start();
         timer.reset();
+
+        otherTimer.reset();
+        otherTimer.stop();
     }
 
     public void execute() {
-        if (Math.abs(wrist.getAmps()) < 20) {
+        if (Math.abs(wrist.getAmps()) < 30) {
             timer.reset();
+        }
+        if (timer.hasElapsed(0.1) && !otherTimerStarted) {
+            otherTimer.reset();
+            otherTimer.start();
+            otherTimerStarted = true;
+            wrist.stop();
         }
     }
 
     public boolean isFinished() {
-        return timer.hasElapsed(0.1);
+        return otherTimer.hasElapsed(0.3);
     }
 
     public void end(boolean interrupted) {
@@ -51,9 +58,9 @@ public class HomeWrist extends CommandBase {
             wrist.homed = true;
         }
     
-        wrist.updateDesiredSetpointRad(
-            new TrapezoidProfile.State(
-                wrist.getPositionRad() + pivotPosRad.getAsDouble() - 0.3, 0));
+        // wrist.updateDesiredSetpointRad(
+        //     new TrapezoidProfile.State(
+        //         wrist.getPositionRad() + pivotPosRad.getAsDouble() - 0.3, 0));
 
         wrist.setVolts(0);
     }

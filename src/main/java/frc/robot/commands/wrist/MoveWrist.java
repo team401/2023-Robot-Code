@@ -6,6 +6,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 
@@ -39,7 +40,7 @@ public class MoveWrist extends CommandBase {
 
         goalState = new TrapezoidProfile.State(posRad, velRadS);
 
-        if (wrist.atBack)
+        if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
 
         timer.reset();
