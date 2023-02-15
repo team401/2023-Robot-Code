@@ -48,6 +48,8 @@ public class TestMoveWrist extends CommandBase {
     public void execute() {
         State setpoint = profile.calculate(timer.get());
 
+        SmartDashboard.putNumber("SetpointPositionWrist", setpoint.position);
+
         double output = wrist.calculateControl(setpoint, getAdjustedAngle());
 
         wrist.setVolts(output);

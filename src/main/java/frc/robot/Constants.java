@@ -125,7 +125,8 @@ public final class Constants {
 
         public static final double gearRatio = 78.0 / 8;
 
-        public static final double kP = 5;
+        public static final double kP = 7;
+        public static final double kI = 5;
         public static final double kV = 0.16; // estimate
         public static final double kA = 0.01; // estimate
         public static final double kG = 0.6;

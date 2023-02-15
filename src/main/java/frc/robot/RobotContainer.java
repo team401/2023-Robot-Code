@@ -102,9 +102,17 @@ public class RobotContainer {
         // new JoystickButton(gamepad, Button.kA.value)
         //     .onTrue(new TestMoveWrist(wrist, pivot));
         
+        // new JoystickButton(gamepad, Button.kB.value)
+            // .onTrue(new TestMoveWrist(wrist, pivot))
+            // .onTrue(new TestMoveTelescope(telescope));
+
         new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new TestMoveWrist(wrist, pivot))
-            .onTrue(new TestMoveTelescope(telescope));
+            .onTrue(new InstantCommand(intake::runBackward))
+            .onFalse(new InstantCommand(intake::stopMotor));
+
+        new JoystickButton(gamepad, Button.kX.value)
+            .onTrue(new InstantCommand(intake::runForward))
+            .onFalse(new InstantCommand(intake::stopMotor));
     }
 
     private void configureCompBindings() {
@@ -218,10 +226,10 @@ public class RobotContainer {
 
     public void enabledInit() {
         if (!telescope.homed) {
-            new HomeTelescope(telescope).schedule();
+            //new HomeTelescope(telescope).schedule();
         }
         if (!wrist.homed) {
-            new HomeWrist(wrist).schedule();
+            //new HomeWrist(wrist).schedule();
         }
     }
 }

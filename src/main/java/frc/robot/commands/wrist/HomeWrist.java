@@ -27,7 +27,7 @@ public class HomeWrist extends CommandBase {
 
     public void initialize() {
 
-        wrist.setVolts(1);
+        wrist.setVolts(2);
 
         timer.start();
         timer.reset();
@@ -37,10 +37,10 @@ public class HomeWrist extends CommandBase {
     }
 
     public void execute() {
-        if (Math.abs(wrist.getAmps()) < 30) {
+        if (Math.abs(wrist.getAmps()) < 40) {
             timer.reset();
         }
-        if (timer.hasElapsed(0.1) && !otherTimerStarted) {
+        if (timer.hasElapsed(0.25) && !otherTimerStarted) {
             otherTimer.reset();
             otherTimer.start();
             otherTimerStarted = true;

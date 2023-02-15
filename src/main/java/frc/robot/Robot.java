@@ -21,18 +21,22 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-//   private PowerDistribution pdh = new PowerDistribution(0, ModuleType.kRev);
+  private PowerDistribution pdh;
 
-  /**
-   * This function is run when the robot is first started up and should be used for any
-   * initialization code.
-   */
-  @Override
-  public void robotInit() {
+  public Robot() {
+}
+
+/**
+ * This function is run when the robot is first started up and should be used for any
+ * initialization code.
+ */
+@Override
+public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
-    // pdh.setSwitchableChannel(false);
+    pdh = new PowerDistribution(1, ModuleType.kRev);
+    pdh.setSwitchableChannel(false);
   }
 
   /**
@@ -54,7 +58,7 @@ public class Robot extends TimedRobot {
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
   public void disabledInit() {
-    // pdh.setSwitchableChannel(false);
+    pdh.setSwitchableChannel(false);
   }
 
   @Override
@@ -71,7 +75,7 @@ public class Robot extends TimedRobot {
     }
 
     m_robotContainer.enabledInit();
-    // pdh.setSwitchableChannel(true);
+    pdh.setSwitchableChannel(true);
   }
 
   /** This function is called periodically during autonomous. */
@@ -89,7 +93,7 @@ public class Robot extends TimedRobot {
     }
 
     m_robotContainer.enabledInit();
-    // pdh.setSwitchableChannel(true);
+    pdh.setSwitchableChannel(true);
   }
 
   /** This function is called periodically during operator control. */

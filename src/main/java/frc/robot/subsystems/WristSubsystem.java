@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -32,14 +33,14 @@ public class WristSubsystem extends SubsystemBase {
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the pivot subsytem.
-    private final PIDController controller = new PIDController(WristConstants.kP, 0, 0);
+    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
         WristConstants.kG,
         WristConstants.kV);
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
-        Units.degreesToRadians(90),
-        Units.degreesToRadians(45));
+        Units.degreesToRadians(360),
+        Units.degreesToRadians(360));
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
@@ -51,11 +52,11 @@ public class WristSubsystem extends SubsystemBase {
         motor.setInverted(InvertType.None);
 
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+
+        motor.setNeutralMode(NeutralMode.Brake);
         
 
         controller.setTolerance(0.05);
-
-        SmartDashboard.putNumber("Wrist test setpoint", 0);
     }
 
     public double getPositionRad() {
@@ -175,11 +176,13 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void periodic() {
+
         SmartDashboard.putNumber("Wrist Position", getPositionRad());
         SmartDashboard.putNumber("Wrist Desired Position", currentSetpointRad.position);
         SmartDashboard.putNumber("Wrist Amps", getAmps());
         SmartDashboard.putBoolean("Wrist Dead", dead);
         SmartDashboard.putNumber("Wrist Voltage", motor.getMotorOutputVoltage());
+        SmartDashboard.putBoolean("Wrist Homed", homed);
 
         RobotState.getInstance().putWristDisplay(getPositionRad());
 

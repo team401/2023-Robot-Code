@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.fasterxml.jackson.databind.ser.std.CalendarSerializer;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -14,24 +13,32 @@ public class IntakeSubsystem extends SubsystemBase {
         CANDevices.rightIntakeMotorID, MotorType.kBrushed);
     
     public IntakeSubsystem() {
+        
+        leftMotor.restoreFactoryDefaults();
+        rightMotor.restoreFactoryDefaults();
+
         leftMotor.setInverted(true);
-
-        rightMotor.follow(leftMotor);
-
+        
         leftMotor.setSmartCurrentLimit(30);
         rightMotor.setSmartCurrentLimit(30);
         
+        leftMotor.burnFlash();
+        rightMotor.burnFlash();
+
     }
 
     public void runForward() {
+        leftMotor.set(0.45);
         rightMotor.set(0.45);
     }
 
     public void runBackward() {
+        leftMotor.set(-0.45);
         rightMotor.set(-0.45);
     }
 
     public void stopMotor() {
+        leftMotor.stopMotor();
         rightMotor.stopMotor();
     }
 
