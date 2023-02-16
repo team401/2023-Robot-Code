@@ -27,9 +27,11 @@ import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.commands.pivot.CharacterizePivot;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
 import frc.robot.commands.pivot.TestMovePivot;
+import frc.robot.commands.telescope.CharacterizeTelescope;
 import frc.robot.commands.telescope.HoldTelescope;
 import frc.robot.commands.telescope.HomeTelescope;
 import frc.robot.commands.telescope.MoveTelescope;
@@ -92,27 +94,19 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
+        new JoystickButton(gamepad, Button.kB.value)
+            .onTrue(new InstantCommand(() -> telescope.setVolts(0.25)))
+            .onFalse(new InstantCommand(telescope::stop));
+
         // new JoystickButton(gamepad, Button.kB.value)
-        //     .onTrue(new InstantCommand(() -> pivot.overrideVolts(1)))
-        //     .onFalse(new InstantCommand(pivot::stop));
+        //     .onTrue(new MovePivot(pivot, telescope, () -> 0.2))
+        //     .onTrue(new MoveTelescope(telescope, pivot, () -> 0.06, () -> 0.2))
+        //     .onFalse(new InstantCommand(() -> pivot.stop(), pivot));
 
         // new JoystickButton(gamepad, Button.kX.value)
-        //     .onTrue(new TestMovePivot(pivot, telescope));
-
-        // new JoystickButton(gamepad, Button.kA.value)
-        //     .onTrue(new TestMoveWrist(wrist, pivot));
-        
-        // new JoystickButton(gamepad, Button.kB.value)
-            // .onTrue(new TestMoveWrist(wrist, pivot))
-            // .onTrue(new TestMoveTelescope(telescope));
-
-        new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new InstantCommand(intake::runBackward))
-            .onFalse(new InstantCommand(intake::stopMotor));
-
-        new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(new InstantCommand(intake::runForward))
-            .onFalse(new InstantCommand(intake::stopMotor));
+        //     .onTrue(new MovePivot(pivot, telescope, () -> 3))
+        //     .onTrue(new MoveTelescope(telescope, pivot, () -> 0.5, () -> 3))
+        //     .onFalse(new InstantCommand(() -> pivot.stop(), pivot));
     }
 
     private void configureCompBindings() {
@@ -206,17 +200,18 @@ public class RobotContainer {
             new MovePivot(
                 pivot,
                 telescope,
-                positions[0]).schedule();
+                () -> positions[0]).schedule();
 
             new MoveTelescope(
                 telescope, 
                 pivot, 
-                positions).schedule();
+                () -> positions[1],
+                () -> positions[0]).schedule();
                 
             new MoveWrist(
                 wrist, 
                 pivot, 
-                positions[2]).schedule();
+                () -> positions[2]).schedule();
         });
     }
 

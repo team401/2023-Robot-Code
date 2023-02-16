@@ -1,6 +1,9 @@
 package frc.robot.commands.telescope;
 
 
+import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
+
 import org.ejml.dense.row.linsol.AdjustableLinearSolver_DDRM;
 
 import edu.wpi.first.math.MathUtil;
@@ -31,19 +34,22 @@ public class MoveTelescope extends CommandBase {
 
     private State pivotGoal;
 
-    private double posM;
-    private double pivotPosRad;
+    private DoubleSupplier goalM;
+    private DoubleSupplier pivotGoalRad;
 
     private Timer timer = new Timer();
 
 
-    public MoveTelescope(TelescopeSubsystem telescope,
-        PivotSubsystem pivot, double[] positions) {
-
+    public MoveTelescope(
+        TelescopeSubsystem telescope,
+        PivotSubsystem pivot,
+        DoubleSupplier goalM,
+        DoubleSupplier pivotGoalRad) {
+        
+        this.goalM = goalM;
+        this.pivotGoalRad = pivotGoalRad;
         this.telescope = telescope;
         this.pivot = pivot;
-        this.posM = positions[1];
-        this.pivotPosRad = positions[0];
 
 
         addRequirements(telescope);
@@ -55,8 +61,8 @@ public class MoveTelescope extends CommandBase {
         timer.reset();
         timer.start();
 
-        goalState = new State(posM, 0);
-        pivotGoal = new State(pivotPosRad, 0);
+        goalState = new State(goalM.getAsDouble(), 0);
+        pivotGoal = new State(pivotGoalRad.getAsDouble(), 0);
 
         State holdState = new State(0.05, 0);
 
@@ -93,9 +99,9 @@ public class MoveTelescope extends CommandBase {
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
-        // telescope.setVolts(output);
+        telescope.setVolts(output);
 
-        telescope.setSimPos(setpoint.position);
+        // telescope.setSimPos(setpoint.position);
     }
 
     @Override

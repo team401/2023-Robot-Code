@@ -17,10 +17,10 @@ public class CharacterizePivot {
      * when it begins moving, and the estimated kS will be printed on 
      * SmartDashboard.
      */
-    public class FindKS extends CommandBase {
+    public static class FindKS extends CommandBase {
         private PivotSubsystem pivot;
 
-        private double volts;
+        private double volts = 0.0;
 
         public FindKS(PivotSubsystem pivot) {
             this.pivot = pivot;
@@ -29,7 +29,7 @@ public class CharacterizePivot {
         @Override
         public void execute() {
             pivot.setVolts(volts);
-            volts += 0.01;
+            volts += 0.005;
 
             SmartDashboard.putNumber("Pivot kS Volts", volts);
         }
@@ -47,7 +47,7 @@ public class CharacterizePivot {
      * the 90-degree point, in order to ignore the effects of gravity. Prints
      * the speed to SmartDashboard when the command ends.
      */
-    public class FindKV extends CommandBase {
+    public static class FindKV extends CommandBase {
         private PivotSubsystem pivot;
 
         public FindKV(PivotSubsystem pivot) {
@@ -56,18 +56,18 @@ public class CharacterizePivot {
 
         @Override
         public void initialize() {
-            pivot.setVolts(1);
+            pivot.setVolts(2);
         }
 
         @Override
         public boolean isFinished() {
-            return pivot.getPositionRad() == Math.PI / 2;
+            return pivot.getPositionRad() < Math.PI / 2 + 0.05 && pivot.getPositionRad() > Math.PI / 2 - 0.05;
         }
 
         @Override
         public void end(boolean isFinished) {
-            pivot.setVolts(0);
             SmartDashboard.putNumber("Pivot Speed at Top Rad/s", pivot.getVelRadS());
+            pivot.setVolts(0);
         }
     }
 

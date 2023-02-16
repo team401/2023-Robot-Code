@@ -34,9 +34,11 @@ public class PivotSubsystem extends SubsystemBase {
     private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
     private TalonFX leftMotor = new TalonFX(CANDevices.leftPivotMotorID, CANDevices.canivoreName);
 
-    // For safety; detect when encoder stops sending new data
+    
     private double lastEncoderPos;
-    private int cycleCount = 0;
+    private double velocityRadS;
+    
+    // For safety; detect when encoder stops sending new data
     private boolean dead = false;
 
     private double simPos;
@@ -44,7 +46,10 @@ public class PivotSubsystem extends SubsystemBase {
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the telescope subsytem.
-    public final PIDController controller = new PIDController(PivotConstants.kP, 0, 0);
+    public final PIDController controller = new PIDController(
+        PivotConstants.kP, 
+        0, 
+        PivotConstants.kD);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         PivotConstants.kS,
         PivotConstants.kG,
@@ -52,8 +57,8 @@ public class PivotSubsystem extends SubsystemBase {
         PivotConstants.kA);
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(30),
-            Units.degreesToRadians(10));
+            Units.degreesToRadians(540),
+            Units.degreesToRadians(540));
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = 
@@ -66,8 +71,8 @@ public class PivotSubsystem extends SubsystemBase {
         leftMotor.follow(rightMotor);
         leftMotor.setInverted(InvertType.OpposeMaster);
 
-        leftMotor.setNeutralMode(NeutralMode.Coast);
-        rightMotor.setNeutralMode(NeutralMode.Coast);
+        leftMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
 
         rightMotor.configStatorCurrentLimit(
             new StatorCurrentLimitConfiguration(
@@ -94,9 +99,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getVelRadS() {
-        return rightMotor.getSelectedSensorVelocity() 
-            * 4096 * 2 * Math.PI * 10 
-            * PivotConstants.armToMotorGearRatio;
+        return velocityRadS;
     }
 
     /**
@@ -118,6 +121,13 @@ public class PivotSubsystem extends SubsystemBase {
      * @return
      */
     public double calculateControl(TrapezoidProfile.State setpointRad, double telescopePosM) {
+        SmartDashboard.putNumber(
+            "Pivot PID", 
+            controller.calculate(getPositionRad(), setpointRad.position));
+        SmartDashboard.putNumber(
+            "Pivot Feedforward",
+            feedforward.calculate(setpointRad.position, setpointRad.velocity));
+
         return controller.calculate(getPositionRad(), setpointRad.position)
             + feedforward.calculate(setpointRad.position, setpointRad.velocity)
             // Compensates for telescope extention
@@ -222,20 +232,26 @@ public class PivotSubsystem extends SubsystemBase {
 
         RobotState.getInstance().putPivotDisplay(getPositionRad());
 
+        findVel();
+
         //if (DriverStation.isEnabled()) checkIfDead();
     }
 
     private void checkIfDead() {
-        if (lastEncoderPos == encoder.getAbsolutePosition()) {
-            cycleCount++;
-            if (cycleCount > 25) {
-                die();
-                return;
-            }
-        } else {
-            cycleCount = 0;
+        if (!encoder.isConnected()) {
+            die();
         }
-        lastEncoderPos = encoder.getAbsolutePosition();
+
+        // if (lastEncoderPos == encoder.getAbsolutePosition()) {
+        //     cycleCount++;
+        //     if (cycleCount > 25) {
+        //         die();
+        //         return;
+        //     }
+        // } else {
+        //     cycleCount = 0;
+        // }
+        // lastEncoderPos = encoder.getAbsolutePosition();
     }
 
     private boolean withinSoftLimits(double input) {
@@ -246,5 +262,10 @@ public class PivotSubsystem extends SubsystemBase {
             return false;
         }
         return true;
+    }
+
+    private void findVel() {
+        velocityRadS = (getPositionRad() - lastEncoderPos) / 0.02;
+        lastEncoderPos = getPositionRad();
     }
 }

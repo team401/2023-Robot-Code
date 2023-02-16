@@ -37,10 +37,10 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kS,
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
-        new TrapezoidProfile.Constraints(0.2, 0.5);
+        new TrapezoidProfile.Constraints(0.5, 0.5);
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
-    private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.02, 0);
+    private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
 
     public TelescopeSubsystem() {
         motor.setInverted(InvertType.None);

@@ -1,5 +1,7 @@
 package frc.robot.commands.wrist;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
@@ -17,28 +19,22 @@ public class MoveWrist extends CommandBase {
     private TrapezoidProfile profile;
     private State goalState;
 
-    private double posRad;
-    private double velRadS;
+    private DoubleSupplier posRad;
 
     private Timer timer;
 
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad, double velRadS) {
+    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, DoubleSupplier posRad) {
         this.wrist = wrist;
         this.pivot = pivot;
         this.posRad = posRad;
-        this.velRadS = velRadS;
 
         addRequirements(this.wrist);
-    }
-
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad) {
-        this(wrist, pivot, posRad, 0);
     }
 
     @Override
     public void initialize() {
 
-        goalState = new TrapezoidProfile.State(posRad, velRadS);
+        goalState = new TrapezoidProfile.State(posRad.getAsDouble(), 0);
 
         if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
@@ -65,7 +61,8 @@ public class MoveWrist extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return profile.isFinished(timer.get());
+        // return profile.isFinished(timer.get());
+        return false;
     }
 
     private double getAdjustedAngle() {

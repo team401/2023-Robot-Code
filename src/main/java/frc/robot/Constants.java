@@ -95,12 +95,13 @@ public final class Constants {
         public static final double maxFwdRotationRad = Units.degreesToRadians(-30);
         public static final double maxBackRotationRad = Units.degreesToRadians(210);
 
-        public static final double kP = 0.0;
-        public static final double kV = 0.0;
-        public static final double kA = 0.0;
-        public static final double kG = 0.0;
-        public static final double kS = 0.0;
-        public static final double extraKg = 0.0;
+        public static final double kP = 18;
+        public static final double kD = 0;
+        public static final double kV = 1.18;
+        public static final double kA = 0.03;
+        public static final double kG = 0.25;
+        public static final double kS = 0.18;
+        public static final double extraKg = 0.62;
     }
 
     public static final class TelescopeConstants {
@@ -115,7 +116,7 @@ public final class Constants {
         public static final double kV = 0.0;
         public static final double kA = 0.0;
         public static final double kG = 0.0;
-        public static final double kS = 0.0;
+        public static final double kS = 0.25;
     }
 
     public static final class WristConstants {

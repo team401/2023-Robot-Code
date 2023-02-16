@@ -16,7 +16,7 @@ public class CharacterizeTelescope {
      * when it begins moving, and the estimated kS will be printed on 
      * SmartDashboard.
      */
-    public class FindKS extends CommandBase {
+    public static class FindKS extends CommandBase {
         private TelescopeSubsystem telescope;
         private double volts;
         
@@ -29,6 +29,11 @@ public class CharacterizeTelescope {
             telescope.setVolts(volts);
             volts += 0.005;
             SmartDashboard.putNumber("Telescope kS Volts", volts);
+        }
+
+        @Override
+        public boolean isFinished() {
+            return telescope.getVel() > 0.001;
         }
 
         @Override

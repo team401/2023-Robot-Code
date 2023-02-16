@@ -1,6 +1,8 @@
 package frc.robot.commands.pivot;
 
 
+import java.util.function.DoubleSupplier;
+
 import org.opencv.core.Mat;
 
 import edu.wpi.first.math.MathUtil;
@@ -30,8 +32,7 @@ public class MovePivot extends CommandBase{
 
     private TrapezoidProfile profile;
     private State goalState; 
-    private double posRad;
-    private double velRadS;
+    private DoubleSupplier posRad;
 
     public Timer timer = new Timer();
 
@@ -44,31 +45,17 @@ public class MovePivot extends CommandBase{
      * this should be field-relative to the front.
      * @param velRadS the setpoint velocity.
      */
-    public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, double posRad, 
-    double velRadS) {
+    public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, DoubleSupplier posRad) {
         this.pivot = pivot;
-        // this.telescope = telescope;
+        this.telescope = telescope;
         this.posRad = posRad;
-        this.velRadS = velRadS;
 
         addRequirements(this.pivot);
     }
 
-    /**
-     * Constructs an instance of this command. The position should be field-
-     * relative to the front of the robot.
-     * @param pivot the pivot subsystem
-     * @param telescope the telescope subsystem
-     * @param posRad the setpoint position of the pivot in radians. Again,
-     * this should be field-relative to the front.
-     */
-    public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, double posRad) {
-        this(pivot, telescope, posRad, 0);
-    } 
-
     @Override
     public void initialize() {
-        goalState = new TrapezoidProfile.State(posRad, velRadS);
+        goalState = new TrapezoidProfile.State(posRad.getAsDouble(), 0);
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
@@ -93,20 +80,25 @@ public class MovePivot extends CommandBase{
     public void execute() {
         State setpoint = profile.calculate(timer.get());
 
-        SmartDashboard.putNumberArray("MovePivot State", new double[] {setpoint.position, setpoint.velocity});
+        SmartDashboard.putNumber("MovePivot State", setpoint.position);
 
         //TODO: change to actual feedforward
         // Calculate output from feedforward & PID
-        // double pivotOut = pivot.calculateControl(setpoint, 0);
+        double pivotOut = pivot.calculateControl(setpoint, 0);
         // double pivotOut = pivot.controller.calculate(pivot.getPositionRad(), setpoint.position);
         // SmartDashboard.putNumber("pivotOut", pivotOut);
-        // pivot.setVolts(pivotOut);
-        pivot.setSimPos(setpoint.position);
+        pivot.setVolts(pivotOut);
+        // pivot.setSimPos(setpoint.position);
     }
 
     @Override
     public boolean isFinished() {
-        return profile.isFinished(timer.get());
-        // return false;
+        // return profile.isFinished(timer.get());
+        return false;
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        pivot.stop();
     }
 }
