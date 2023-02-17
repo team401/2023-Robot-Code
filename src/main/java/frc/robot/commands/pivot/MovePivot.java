@@ -93,8 +93,8 @@ public class MovePivot extends CommandBase{
 
     @Override
     public boolean isFinished() {
-        // return profile.isFinished(timer.get());
-        return false;
+        return profile.isFinished(timer.get());
+        // return false;
     }
 
     @Override

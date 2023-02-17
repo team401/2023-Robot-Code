@@ -19,13 +19,13 @@ public class HomeTelescope extends CommandBase{
     }
 
     public void initialize() {
-        telescope.setVolts(-1);
+        telescope.setVolts(-2);
         timer.start();
         timer.reset();
     }
 
     public void execute() {
-        if (telescope.getAmps() < 25) {
+        if (telescope.getAmps() < 40) {
             timer.reset();
         }
     }

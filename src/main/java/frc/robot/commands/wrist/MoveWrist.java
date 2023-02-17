@@ -7,6 +7,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
@@ -21,7 +22,7 @@ public class MoveWrist extends CommandBase {
 
     private DoubleSupplier posRad;
 
-    private Timer timer;
+    private Timer timer = new Timer();
 
     public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, DoubleSupplier posRad) {
         this.wrist = wrist;
@@ -47,6 +48,8 @@ public class MoveWrist extends CommandBase {
         wrist.updateDesiredSetpointRad(goalState);
 
         wrist.resetPID();
+
+        SmartDashboard.putNumber("MoveWrist started", 1);
     }
 
     @Override
@@ -55,17 +58,27 @@ public class MoveWrist extends CommandBase {
 
         double output = wrist.calculateControl(setpoint, getAdjustedAngle());
 
-        // wrist.setVolts(output);
-        wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
+        SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
+        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+
+        wrist.setVolts(output);
+        // wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
     }
 
     @Override
     public boolean isFinished() {
-        // return profile.isFinished(timer.get());
-        return false;
+        return profile.isFinished(timer.get());
+        // return false;
     }
 
     private double getAdjustedAngle() {
         return wrist.getPositionRad() + pivot.getPositionRad();
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        wrist.stop();
+
+        SmartDashboard.putNumber("MoveWrist started", 0);
     }
 }

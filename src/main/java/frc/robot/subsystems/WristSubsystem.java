@@ -37,10 +37,11 @@ public class WristSubsystem extends SubsystemBase {
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
         WristConstants.kG,
-        WristConstants.kV);
+        WristConstants.kV,
+        WristConstants.kA);
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
-        Units.degreesToRadians(360),
-        Units.degreesToRadians(360));
+        Units.degreesToRadians(520),
+        Units.degreesToRadians(520));
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
@@ -54,6 +55,8 @@ public class WristSubsystem extends SubsystemBase {
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
 
         motor.setNeutralMode(NeutralMode.Brake);
+
+        motor.configNeutralDeadband(0.004);
         
 
         controller.setTolerance(0.05);
@@ -66,7 +69,7 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double getVelRadS() {
-        return motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10;
+        return motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10 / 26 * Math.PI;
     }
 
     public double getAmps() {
@@ -135,8 +138,8 @@ public class WristSubsystem extends SubsystemBase {
 
     public void setVolts(double input) {
         if (!dead) {
-            if (getPositionRad() > WristConstants.positiveLimitRad && input > 0 && homed) return;
-            if (getPositionRad() < WristConstants.negativeLimitRad && input < 0 && homed) return;
+            // if (getPositionRad() > WristConstants.positiveLimitRad && input > 0 && homed) return;
+            // if (getPositionRad() < WristConstants.negativeLimitRad && input < 0 && homed) return;
 
             motor.set(ControlMode.PercentOutput, input / 12);
             return;
@@ -145,6 +148,7 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void overrideVolts(double input) {
+        System.out.println(input / 12);
         motor.set(ControlMode.PercentOutput, input / 12);
     }
 
@@ -181,8 +185,10 @@ public class WristSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Wrist Desired Position", currentSetpointRad.position);
         SmartDashboard.putNumber("Wrist Amps", getAmps());
         SmartDashboard.putBoolean("Wrist Dead", dead);
+        //SmartDashboard.putNumber("Wrist Input Voltage", motor.getmotor)
         SmartDashboard.putNumber("Wrist Voltage", motor.getMotorOutputVoltage());
         SmartDashboard.putBoolean("Wrist Homed", homed);
+        SmartDashboard.putNumber("Wrist Velocity", getVelRadS());
 
         RobotState.getInstance().putWristDisplay(getPositionRad());
 

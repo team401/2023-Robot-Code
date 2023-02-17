@@ -71,6 +71,9 @@ public class PivotSubsystem extends SubsystemBase {
         leftMotor.follow(rightMotor);
         leftMotor.setInverted(InvertType.OpposeMaster);
 
+        leftMotor.configNeutralDeadband(0.004);
+        rightMotor.configNeutralDeadband(0.004);
+
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
 

@@ -17,7 +17,7 @@ public class CharacterizeWrist {
      * when it begins moving, and the estimated kS will be printed on 
      * SmartDashboard.
      */
-    public class FindKS extends CommandBase {
+    public static class FindKS extends CommandBase {
         private WristSubsystem wrist;
 
         private double volts;
@@ -47,7 +47,7 @@ public class CharacterizeWrist {
      * the 90-degree point, in order to ignore the effects of gravity. Prints
      * the speed to SmartDashboard when the command ends.
      */
-    public class FindKV extends CommandBase {
+    public static class FindKV extends CommandBase {
         private WristSubsystem wrist;
         private PivotSubsystem pivot;
 
@@ -79,7 +79,7 @@ public class CharacterizeWrist {
      * Very simmilar to finding the kV, but makes the speed measurement at 
      * 0 degrees: level with the ground.
      */
-    public class FindKG extends CommandBase{
+    public static class FindKG extends CommandBase{
         private WristSubsystem wrist;
         private PivotSubsystem pivot;
 

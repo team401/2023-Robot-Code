@@ -33,7 +33,8 @@ public class CharacterizeTelescope {
 
         @Override
         public boolean isFinished() {
-            return telescope.getVel() > 0.001;
+            // return telescope.getVel() > 0.001;
+            return false;
         }
 
         @Override
@@ -53,7 +54,7 @@ public class CharacterizeTelescope {
      * The command needs to be manually toggled by holding a button, and will
      * print out the velocity of the telescope when given 1 volt.
      */
-    public class FindKV extends CommandBase {
+    public static class FindKV extends CommandBase {
         private TelescopeSubsystem telescope;
 
         public FindKV(TelescopeSubsystem t) {
@@ -62,7 +63,7 @@ public class CharacterizeTelescope {
 
         @Override
         public void initialize() {
-            telescope.setVolts(7);
+            telescope.setVolts(3);
         }
 
         @Override

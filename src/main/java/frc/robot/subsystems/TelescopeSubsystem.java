@@ -37,17 +37,19 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kS,
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
-        new TrapezoidProfile.Constraints(0.5, 0.5);
+        new TrapezoidProfile.Constraints(4, 4);
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
 
     public TelescopeSubsystem() {
         motor.setInverted(InvertType.None);
-        motor.setNeutralMode(NeutralMode.Coast);
+        motor.setNeutralMode(NeutralMode.Brake);
         
         motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
         motor.setSensorPhase(false);
+
+        motor.configNeutralDeadband(0.004);
 
         motor.configStatorCurrentLimit(
             new StatorCurrentLimitConfiguration(true, 40, 50, 0.5));

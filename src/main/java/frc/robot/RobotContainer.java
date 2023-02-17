@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PowerDistribution;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -21,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
+import frc.robot.Constants.TelescopeConstants;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -36,6 +39,7 @@ import frc.robot.commands.telescope.HoldTelescope;
 import frc.robot.commands.telescope.HomeTelescope;
 import frc.robot.commands.telescope.MoveTelescope;
 import frc.robot.commands.telescope.TestMoveTelescope;
+import frc.robot.commands.wrist.CharacterizeWrist;
 import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
@@ -79,9 +83,9 @@ public class RobotContainer {
             true
         ));
 
-        // pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
-        // telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        // wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
+        pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
+        telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
+        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
@@ -94,9 +98,23 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
-        new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new InstantCommand(() -> telescope.setVolts(0.25)))
-            .onFalse(new InstantCommand(telescope::stop));
+        new POVButton(gamepad, 90)
+            .onTrue(new MovePivot(pivot, telescope, () -> 0.0))
+            .onTrue(new MoveTelescope(telescope, pivot, () -> 0.3, () -> 0.0))
+            .onTrue(new MoveWrist(wrist, pivot, () -> 0));
+
+        new POVButton(gamepad, 0)
+            .onTrue(new MovePivot(pivot, telescope, () -> 2))
+            .onTrue(new MoveTelescope(telescope, pivot, () -> 0.4, () -> 2))
+            .onTrue(new MoveWrist(wrist, pivot, () -> Math.PI));
+
+        new JoystickButton(gamepad, Button.kA.value)
+            .onTrue(new MoveWrist(wrist, pivot, () -> 0.0));
+
+        new JoystickButton(gamepad, Button.kX.value)
+            .onTrue(new MoveWrist(wrist, pivot, () -> 3));
+
+        
 
         // new JoystickButton(gamepad, Button.kB.value)
         //     .onTrue(new MovePivot(pivot, telescope, () -> 0.2))
@@ -221,10 +239,12 @@ public class RobotContainer {
 
     public void enabledInit() {
         if (!telescope.homed) {
-            //new HomeTelescope(telescope).schedule();
+            new HomeTelescope(telescope).schedule();
         }
         if (!wrist.homed) {
-            //new HomeWrist(wrist).schedule();
+            new HomeWrist(wrist).schedule();
         }
+
+        pivot.setDesiredSetpointRad(new TrapezoidProfile.State(pivot.getPositionRad(), 0));
     }
 }
