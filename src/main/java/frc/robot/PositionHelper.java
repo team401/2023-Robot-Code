@@ -9,7 +9,7 @@ import frc.robot.commands.pivot.MovePivot;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
-public final class PositionHelper {
+public final class PositionHelper {/*
     
     public static double[] getDouble(Position position, GamePieceMode mode) {
         switch(position) {
@@ -49,4 +49,4 @@ public final class PositionHelper {
         if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpShelf;
         return null;
     }
-}
+*/}

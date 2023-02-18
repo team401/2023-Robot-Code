@@ -63,13 +63,13 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double getPositionRad() {
-        return motor.getSelectedSensorPosition() / 2048 * 2 * Math.PI / 26 * Math.PI;
+        return motor.getSelectedSensorPosition() / 2048 * 2 * Math.PI * WristConstants.gearRatio;
             // * WristConstants.gearRatio;
         // return simPos;
     }
 
     public double getVelRadS() {
-        return motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10 / 26 * Math.PI;
+        return motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10 * WristConstants.gearRatio;
     }
 
     public double getAmps() {

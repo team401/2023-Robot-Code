@@ -17,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
 
-        leftMotor.setInverted(true);
+        // leftMotor.setInverted(true);
         
         leftMotor.setSmartCurrentLimit(30);
         rightMotor.setSmartCurrentLimit(30);
@@ -35,6 +35,11 @@ public class IntakeSubsystem extends SubsystemBase {
     public void runBackward() {
         leftMotor.set(-0.45);
         rightMotor.set(-0.45);
+    }
+
+    public void placeCube() {
+        leftMotor.set(-0.45);
+        rightMotor.set(0.45);
     }
 
     public void stopMotor() {

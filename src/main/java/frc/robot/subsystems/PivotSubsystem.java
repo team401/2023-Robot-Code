@@ -57,8 +57,8 @@ public class PivotSubsystem extends SubsystemBase {
         PivotConstants.kA);
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(540),
-            Units.degreesToRadians(540));
+            Units.degreesToRadians(270),
+            Units.degreesToRadians(270));
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = 
@@ -75,7 +75,7 @@ public class PivotSubsystem extends SubsystemBase {
         rightMotor.configNeutralDeadband(0.004);
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
-        rightMotor.setNeutralMode(NeutralMode.Brake);
+        rightMotor.setNeutralMode(NeutralMode.Coast);
 
         rightMotor.configStatorCurrentLimit(
             new StatorCurrentLimitConfiguration(

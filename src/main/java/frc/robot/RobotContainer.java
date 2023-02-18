@@ -98,21 +98,36 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
-        new POVButton(gamepad, 90)
-            .onTrue(new MovePivot(pivot, telescope, () -> 0.0))
-            .onTrue(new MoveTelescope(telescope, pivot, () -> 0.3, () -> 0.0))
-            .onTrue(new MoveWrist(wrist, pivot, () -> 0));
+            
+        new POVButton(gamepad, 270)
+            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.stow[0]))
+            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.stow[1], () -> ArmPositions.stow[0]))
+            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.stow[2]));
 
-        new POVButton(gamepad, 0)
-            .onTrue(new MovePivot(pivot, telescope, () -> 2))
-            .onTrue(new MoveTelescope(telescope, pivot, () -> 0.4, () -> 2))
-            .onTrue(new MoveWrist(wrist, pivot, () -> Math.PI));
+        new POVButton(gamepad, 90)
+            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.placeConeBackHigh[0]))
+            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.placeConeBackHigh[1], () -> ArmPositions.placeConeBackHigh[0]))
+            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.placeConeBackHigh[2]));
+        
+        new POVButton(gamepad, 180)
+            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.intakeConeBackGround[0]))
+            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.intakeConeBackGround[1], () -> ArmPositions.intakeConeBackGround[0]))
+            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.intakeConeBackGround[2]));
 
         new JoystickButton(gamepad, Button.kA.value)
-            .onTrue(new MoveWrist(wrist, pivot, () -> 0.0));
+            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
 
         new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(new MoveWrist(wrist, pivot, () -> 3));
+            .onTrue(new InstantCommand(intake::runForward))
+            .onFalse(new InstantCommand(intake::stopMotor));
+
+        new JoystickButton(gamepad, Button.kB.value)
+            .onTrue(new InstantCommand(intake::runBackward))
+            .onFalse(new InstantCommand(intake::stopMotor));
+
+        new JoystickButton(gamepad, Button.kY.value)
+            .onTrue(new InstantCommand(intake::placeCube))
+            .onFalse(new InstantCommand(intake::stopMotor));
 
         
 
@@ -210,6 +225,7 @@ public class RobotContainer {
     }
 
     public Command getMoveCommand(Position position) {
+        return null; /*
         return new InstantCommand(() -> {
             double[] positions = PositionHelper.getDouble(
                 position,
@@ -230,7 +246,7 @@ public class RobotContainer {
                 wrist, 
                 pivot, 
                 () -> positions[2]).schedule();
-        });
+        });*/
     }
 
     public Command getAutonomousCommand() {
