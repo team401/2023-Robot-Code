@@ -34,7 +34,7 @@ public class DriveAngle {
      * Initializes the gyro and offsets
      */
     public DriveAngle() {
-        pigeon = new Pigeon2(CANDevices.pigeonIMU);
+        pigeon = new Pigeon2(CANDevices.pigeonIMU, CANDevices.canivoreName);
         degHeadingOffset = pigeon.getYaw();
         degPitchOffset = pigeon.getPitch();
         degRollOffset = pigeon.getRoll();

@@ -117,6 +117,7 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
             modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
+            SmartDashboard.putNumber("DriveAngle"+i, modulePositions[i].angle.getRadians());
             SmartDashboard.putNumber("DriveStator"+i, driveModules[i].getDriveStatorCurrent());
             SmartDashboard.putNumber("RotationStator"+i, driveModules[i].getRotationStatorCurrent());
         }
