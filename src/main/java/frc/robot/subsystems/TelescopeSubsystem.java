@@ -60,8 +60,7 @@ public class TelescopeSubsystem extends SubsystemBase{
     public double getPositionM() {
         // 4096 units per rotation, multiply rotations by diameter
         return motor.getSelectedSensorPosition() / 4096
-            * 2 * Math.PI  * TelescopeConstants.conversionM;//* TelescopeConstants.wheelRadiusM
-            //* TelescopeConstants.gearRatio;
+            * 2 * Math.PI  * TelescopeConstants.conversionM;
 
         // return simPos;
     }

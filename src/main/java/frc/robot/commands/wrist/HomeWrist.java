@@ -37,7 +37,7 @@ public class HomeWrist extends CommandBase {
     }
 
     public void execute() {
-        if (Math.abs(wrist.getAmps()) < 40) {
+        if (Math.abs(wrist.getAmps()) < 45) {
             timer.reset();
         }
         if (timer.hasElapsed(0.25) && !otherTimerStarted) {

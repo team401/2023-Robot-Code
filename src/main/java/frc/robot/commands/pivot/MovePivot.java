@@ -59,9 +59,8 @@ public class MovePivot extends CommandBase{
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
-        if (RobotState.getInstance().atBack()) {
+        if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
-        }
 
         // Create the trapezoid motion based on max vel and accel,
         // as well as the current starting state
@@ -82,13 +81,9 @@ public class MovePivot extends CommandBase{
 
         SmartDashboard.putNumber("MovePivot State", setpoint.position);
 
-        //TODO: change to actual feedforward
-        // Calculate output from feedforward & PID
         double pivotOut = pivot.calculateControl(setpoint, 0);
-        // double pivotOut = pivot.controller.calculate(pivot.getPositionRad(), setpoint.position);
-        // SmartDashboard.putNumber("pivotOut", pivotOut);
         pivot.setVolts(pivotOut);
-        // pivot.setSimPos(setpoint.position);
+        pivot.setSimPos(setpoint.position);
     }
 
     @Override

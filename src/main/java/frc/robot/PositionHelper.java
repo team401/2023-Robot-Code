@@ -9,7 +9,7 @@ import frc.robot.commands.pivot.MovePivot;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
-public final class PositionHelper {/*
+public final class PositionHelper {
     
     public static double[] getDouble(Position position, GamePieceMode mode) {
         switch(position) {
@@ -28,25 +28,25 @@ public final class PositionHelper {/*
 
     private static double[] getGround(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeGround;
-        if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpGround;
+        if (mode == GamePieceMode.ConeBack) return ArmPositions.intakeConeBackGround;
         return null;
     }
 
     private static double[] getMid(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.placeCubeMid;
-        if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpMid;
+        if (mode == GamePieceMode.ConeBack) return ArmPositions.placeConeBackMid;
         return null;
     }
     
     private static double[] getHigh(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.placeCubeHigh;
-        if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpHigh;
+        if (mode == GamePieceMode.ConeBack) return ArmPositions.placeConeBackHigh;
         return null;
     }
 
     private static double[] getShelf(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeShelf;
-        if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpShelf;
+        if (mode == GamePieceMode.ConeBack) return ArmPositions.intakeConeBackShelf;
         return null;
     }
-*/}
+}

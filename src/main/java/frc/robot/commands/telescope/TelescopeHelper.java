@@ -11,12 +11,16 @@ public class TelescopeHelper {
 
     private boolean skipProfile2 = false;
 
+    private boolean bad = false;
+
     private double totalTime;
     private double delay;
 
     public TelescopeHelper(State start, State mid, State end, Constraints constraints, double totalTime) {
 
         this.totalTime = totalTime;
+
+        bad = start.equals(end);
 
         double inside = (-4*end.position + 4*start.position) / (2*totalTime) + (totalTime/2);
         double midpoint = (-constraints.maxAcceleration / 4) * Math.pow(inside, 2) + start.position;
@@ -54,6 +58,6 @@ public class TelescopeHelper {
     }
 
     public boolean isFinished(double t) {
-        return skipProfile2 ? profile1.isFinished(t) : profile2.isFinished(t - profile1.totalTime() - delay);
+        return bad || (skipProfile2 ? profile1.isFinished(t) : profile2.isFinished(t - profile1.totalTime() - delay));
     }
 }

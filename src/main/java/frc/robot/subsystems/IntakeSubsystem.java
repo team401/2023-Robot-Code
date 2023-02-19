@@ -4,7 +4,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
+import frc.robot.Constants.GamePieceMode;
 
 public class IntakeSubsystem extends SubsystemBase {
     private CANSparkMax leftMotor = new CANSparkMax(
@@ -16,8 +18,6 @@ public class IntakeSubsystem extends SubsystemBase {
         
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
-
-        // leftMotor.setInverted(true);
         
         leftMotor.setSmartCurrentLimit(30);
         rightMotor.setSmartCurrentLimit(30);
@@ -27,19 +27,27 @@ public class IntakeSubsystem extends SubsystemBase {
 
     }
 
-    public void runForward() {
-        leftMotor.set(0.45);
-        rightMotor.set(0.45);
+    public void intake() {
+        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+            leftMotor.set(-0.45);
+            rightMotor.set(-0.45);
+        }
+        if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
+            leftMotor.set(0.45);
+            rightMotor.set(0.45);
+        }
     }
 
-    public void runBackward() {
-        leftMotor.set(-0.45);
-        rightMotor.set(-0.45);
-    }
-
-    public void placeCube() {
-        leftMotor.set(-0.45);
-        rightMotor.set(0.45);
+    public void place() {
+        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+            boolean back = RobotState.getInstance().atBack();
+            leftMotor.set(back ? -0.45 : 0.45);
+            rightMotor.set(back ? 0.45 : -0.45);
+        }
+        if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
+            leftMotor.set(-0.45);
+            rightMotor.set(-0.45);
+        }
     }
 
     public void stopMotor() {

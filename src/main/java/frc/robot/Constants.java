@@ -75,9 +75,9 @@ public final class Constants {
                 new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0) //rear right
         );
 
-        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.184, 0.1163414634);
+        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.4, 3.265);
 
-        public static final double maxDriveSpeed = 7;
+        public static final double maxDriveSpeed = 14.4;
         public static final double maxTurnRate = 2 * Math.PI;
 
         public static final double driveJoystickDeadbandPercent = 0.075;
@@ -134,14 +134,14 @@ public final class Constants {
 
     public static final class ArmPositions {
 
-        public static final double[] intakeConeUpShelf = new double[] {};
-        public static final double[] intakeCubeShelf = new double[] {0.61, 0.51, 0.24};
-        public static final double[] intakeCubeGround = new double[] {-0.293, 0.238, 0.17};
-        public static final double[] intakeConeBackGround = new double[] {-0.08, 0.08, -0.96};
-        public static final double[] placeConeBackHigh = new double[] {0.55, 0.69, 0.07};
-        public static final double[] placeConeUpMid = new double[] {};
-        public static final double[] placeCubeHigh = new double[] {2.44, 0.7, 2.1};
-        public static final double[] placeCubeMid = new double[] {};
+        public static final double[] intakeConeBackShelf = new double[] {0.73, 0.61, -1.02};
+        public static final double[] intakeCubeShelf = new double[] {0.59, 0.55, 0.15};
+        public static final double[] intakeCubeGround = new double[] {-0.282, 0.086, 0.356};
+        public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -0.964};
+        public static final double[] placeConeBackHigh = new double[] {0.558, 0.7, 1.02};
+        public static final double[] placeConeBackMid = new double[] {0.551, 0.095, 1.02};
+        public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 0.518};
+        public static final double[] placeCubeMid = new double[] {0.515, 0.276, 0.410};
         public static final double[] stow = new double[] {Math.PI / 2, 0.05, Math.PI / 2};
 
         public static final double wristConePlace = -0.88;
@@ -152,7 +152,7 @@ public final class Constants {
         Cube,
         ConeUp,
         ConeForward,
-        ConeBackward
+        ConeBack
     }
 
     public static enum Position {

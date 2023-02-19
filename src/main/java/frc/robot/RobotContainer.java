@@ -44,6 +44,8 @@ import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.commands.wrist.TestMoveWrist;
+import frc.robot.oi.ButtonMasher;
+import frc.robot.oi.XboxMasher;
 
 public class RobotContainer {
     
@@ -55,6 +57,8 @@ public class RobotContainer {
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
+    private final ButtonMasher masher = new XboxMasher(new XboxController(2));
+
     private final XboxController gamepad = new XboxController(2);
 
     private boolean rumbling;
@@ -67,8 +71,8 @@ public class RobotContainer {
     public RobotContainer() {
 
         configureSubsystems();
-        // configureCompBindings();
-        configureTestBindings();
+        configureCompBindings();
+        // configureTestBindings();
         configureAutos();
 
     }
@@ -110,26 +114,24 @@ public class RobotContainer {
             .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.placeConeBackHigh[2]));
         
         new POVButton(gamepad, 180)
-            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.intakeConeBackGround[0]))
-            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.intakeConeBackGround[1], () -> ArmPositions.intakeConeBackGround[0]))
-            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.intakeConeBackGround[2]));
+            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.intakeConeBackShelf[0]))
+            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.intakeConeBackShelf[1], () -> ArmPositions.intakeConeBackShelf[0]))
+            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.intakeConeBackShelf[2]));
 
         new JoystickButton(gamepad, Button.kA.value)
             .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
 
-        new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(new InstantCommand(intake::runForward))
-            .onFalse(new InstantCommand(intake::stopMotor));
+        // new JoystickButton(gamepad, Button.kX.value)
+        //     .onTrue(new InstantCommand(intake::runForward))
+        //     .onFalse(new InstantCommand(intake::stopMotor));
 
-        new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new InstantCommand(intake::runBackward))
-            .onFalse(new InstantCommand(intake::stopMotor));
+        // new JoystickButton(gamepad, Button.kB.value)
+        //     .onTrue(new InstantCommand(intake::runBackward))
+        //     .onFalse(new InstantCommand(intake::stopMotor));
 
-        new JoystickButton(gamepad, Button.kY.value)
-            .onTrue(new InstantCommand(intake::placeCube))
-            .onFalse(new InstantCommand(intake::stopMotor));
-
-        
+        // new JoystickButton(gamepad, Button.kY.value)
+        //     .onTrue(new InstantCommand(intake::placeCube))
+        //     .onFalse(new InstantCommand(intake::stopMotor));        
 
         // new JoystickButton(gamepad, Button.kB.value)
         //     .onTrue(new MovePivot(pivot, telescope, () -> 0.2))
@@ -145,87 +147,71 @@ public class RobotContainer {
     private void configureCompBindings() {
         
         // Drive
-        new Trigger(() -> rightStick.getRawButtonPressed(2))
+        new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
 
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+
+        new JoystickButton(leftStick, 2)
+            .onTrue(new InstantCommand(wrist::zeroOffset));
         
         // Set game piece mode
-        new JoystickButton(gamepad, Button.kLeftBumper.value)
-            .onTrue(new InstantCommand(() -> 
-                RobotState.getInstance().setMode(GamePieceMode.ConeUp)));
-            
-        new JoystickButton(gamepad, Button.kRightBumper.value)
-            .onTrue(new InstantCommand(()-> 
-                RobotState.getInstance().setMode(GamePieceMode.Cube)));
+        masher.cubeMode().onTrue(new InstantCommand(() ->
+            RobotState.getInstance().setMode(GamePieceMode.Cube)));           
+        masher.coneMode().onTrue(new InstantCommand(() ->
+            RobotState.getInstance().setMode(GamePieceMode.ConeBack)));
         
         // Move arm
-        new POVButton(gamepad, 0)
-            .onTrue(getMoveCommand(Position.High))
-            .onTrue(endRumbleCommand); // move to high
-        new POVButton(gamepad, 90)
-            .onTrue(getMoveCommand(Position.Mid))
-            .onTrue(endRumbleCommand); // move to mid
-        new POVButton(gamepad, 180)
-            .onTrue(getMoveCommand(Position.Ground))
-            .onTrue(endRumbleCommand); // move to ground
-        new POVButton(gamepad, 270)
-            .onTrue(getMoveCommand(Position.Stow))
-            .onTrue(endRumbleCommand); // move to stow
-            
-        new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(getMoveCommand(Position.Shelf)); // move to shelf
-            
-        new JoystickButton(gamepad, Button.kY.value)
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack())) // flip
-            .onTrue(new InstantCommand(() -> {
-                if (rumbling) {
-					gamepad.setRumble(RumbleType.kBothRumble, 0);
-				} else {
-					gamepad.setRumble(RumbleType.kBothRumble, 1);
-				}
-				rumbling = !rumbling;
-            }));
+        masher.high().onTrue(getMoveCommand(Position.High)); // move to high
+        masher.mid().onTrue(getMoveCommand(Position.Mid)); // move to mid
+        masher.ground().onTrue(getMoveCommand(Position.Ground)); // move to ground
+        masher.stow().onTrue(getMoveCommand(Position.Stow)); // move to stow    
+        masher.shelf().onTrue(getMoveCommand(Position.Shelf)); // move to shelf
 
-        new JoystickButton(gamepad, Button.kB.value)
+        masher.special().onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
+            
+        masher.flipSide().onTrue(
+            new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
+
+        masher.killAll()
             .onTrue(pivot.killCommand())
-            .onTrue(telescope.killCommand())
-            .onTrue(wrist.killCommand()); // kill
+            .onTrue(wrist.killCommand())
+            .onTrue(telescope.killCommand()); // kill
 
         // Manually jog arm
-        new Trigger(() -> gamepad.getLeftX() > 0.3)
+        masher.jogPivotUp()
             .onTrue(new InstantCommand(pivot::jogSetpointForward, pivot)); // jog pivot right
-        new Trigger(() -> gamepad.getLeftX() < -0.3)
+        masher.jogPivotDown()
             .onTrue(new InstantCommand(pivot::jogSetpointBack, pivot)); // jog pivot left
 
-        new Trigger(() -> gamepad.getRightX() > 0.3)
+        masher.jogTelescopeUp()
             .onTrue(new InstantCommand(telescope::jogSetpointForward, telescope)); // jog telescope up
-        new Trigger(() -> gamepad.getRightX() < -0.3)
+        masher.jogTelescopeDown()
             .onTrue(new InstantCommand(telescope::jogSetpointBackward, telescope)); // jog telescope down
 
-        new Trigger(() -> gamepad.getRightY() > 0.3)
+        masher.jogWristUp()
             .onTrue(new InstantCommand(wrist::jogSetpointForward, wrist)); // jog wrist right
-        new Trigger(() -> gamepad.getRightY() < -0.3)
+        masher.jogWristDown()
             .onTrue(new InstantCommand(wrist::jogSetpointBack, wrist)); // jog wrist left
 
         // Intake
-        new Trigger(() -> gamepad.getRightTriggerAxis() > 0.5)
-            .onTrue(new InstantCommand(intake::runForward)) // start intake
+        masher.intake()
+            .onTrue(new InstantCommand(intake::intake)) // start intake
             .onFalse(new InstantCommand(intake::stopMotor)); // stop intake
 
-        new Trigger(() -> gamepad.getLeftTriggerAxis() > 0.5)
-            .onTrue(new InstantCommand(intake::runBackward)) // start place
+        masher.place()
+            .onTrue(new InstantCommand(intake::place)) // start place
             .onFalse(new InstantCommand(intake::stopMotor)); // stop place
-    }
+        }
 
     private void configureAutos() {
 
     }
 
     public Command getMoveCommand(Position position) {
-        return null; /*
+        
         return new InstantCommand(() -> {
             double[] positions = PositionHelper.getDouble(
                 position,
@@ -246,7 +232,7 @@ public class RobotContainer {
                 wrist, 
                 pivot, 
                 () -> positions[2]).schedule();
-        });*/
+        });
     }
 
     public Command getAutonomousCommand() {

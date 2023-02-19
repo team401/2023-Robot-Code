@@ -66,9 +66,8 @@ public class MoveTelescope extends CommandBase {
 
         State holdState = new State(0.05, 0);
 
-        if (RobotState.getInstance().atBack()) {
+        if (RobotState.getInstance().atBack())
             pivotGoal.position = Math.PI - pivotGoal.position;
-        }
        
         TrapezoidProfile pivotProfile = new TrapezoidProfile(
             pivot.getConstraintsRad(),
@@ -103,7 +102,7 @@ public class MoveTelescope extends CommandBase {
 
         telescope.setVolts(output);
 
-        // telescope.setSimPos(setpoint.position);
+        telescope.setSimPos(setpoint.position);
     }
 
     @Override

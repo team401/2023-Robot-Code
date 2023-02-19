@@ -61,7 +61,7 @@ public class RobotState {
             3,
             new Color8Bit(Color.kCoral)));
 
-    private GamePieceMode gamePieceMode = GamePieceMode.Cube;
+    private GamePieceMode gamePieceMode = GamePieceMode.ConeBack;
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
@@ -94,14 +94,14 @@ public class RobotState {
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
 
-        switch(getMode()) {
+        /*switch(getMode()) {
             case Cube:
                 pivotLigament.setColor(new Color8Bit(Color.kPurple));
                 break;
             default:
                 pivotLigament.setColor(new Color8Bit(Color.kYellow));
             break;
-        }
+        }*/
 
         // SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }

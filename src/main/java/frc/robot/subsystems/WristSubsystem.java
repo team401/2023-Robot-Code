@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -25,6 +26,8 @@ public class WristSubsystem extends SubsystemBase {
     private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
 
     public boolean homed = false;
+
+    private double offset = 0.0;
 
     // For safety; detect when encoder stops sending new data
     private double lastEncoderPos;
@@ -58,13 +61,14 @@ public class WristSubsystem extends SubsystemBase {
 
         motor.configNeutralDeadband(0.004);
         
+        motor.configStatorCurrentLimit(
+            new StatorCurrentLimitConfiguration(true, 50, 60, 0.5));
 
         controller.setTolerance(0.05);
     }
 
     public double getPositionRad() {
         return motor.getSelectedSensorPosition() / 2048 * 2 * Math.PI * WristConstants.gearRatio;
-            // * WristConstants.gearRatio;
         // return simPos;
     }
 
@@ -132,8 +136,15 @@ public class WristSubsystem extends SubsystemBase {
      * For homing. Resets the encoder offset to the position of 141 degrees,
      * the position the wrist should be at when it goes all the way to the arm.
      */
+
+     //3.36
+     //0.1
     public void resetOffset() {
-        motor.setSelectedSensorPosition(2.97 / (2 * Math.PI) * 2048 * 26 / Math.PI);
+        motor.setSelectedSensorPosition(2.79 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
+    }
+
+    public void zeroOffset() {
+        motor.setSelectedSensorPosition(0);
     }
 
     public void setVolts(double input) {
