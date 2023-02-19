@@ -7,12 +7,10 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.SendableBuilder.BackendKind;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.Constants.DriveConstants;
@@ -32,6 +30,8 @@ public class RobotState {
 
     /**Whether the arm is supposed to be in the front or the back*/
     private boolean atBack = false;
+
+    private boolean atStow = true;
 
     private Mechanism2d displayMechanism = 
         new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
@@ -116,6 +116,13 @@ public class RobotState {
         // SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
+    public void setStow(boolean stowed) {
+        atStow = stowed;
+    }
+
+    public boolean atStow() {
+        return atStow;
+    }
 
     public boolean atBack() {
         return atBack;
@@ -127,6 +134,10 @@ public class RobotState {
 
     public void setMode(Constants.GamePieceMode mode) {
         gamePieceMode = mode;
+    }
+
+    public boolean hasIntaked() {
+        return false;
     }
 
 

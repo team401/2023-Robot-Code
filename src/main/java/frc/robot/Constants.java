@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
     public static final class CANDevices {
@@ -161,6 +162,36 @@ public final class Constants {
         High,
         Shelf,
         Stow
+    }
+
+    public static final class LEDConstants {
+
+        // Ports
+        public static final int armLedPort = 0;
+        public static final int leftBaseLedPort = 1;
+        public static final int rightBaseLedPort = 2;
+
+        // LED Data
+        public static final int armLedCount = 122;
+        public static final int baseLedCount = 0;
+        public static final int baseSideLedCount = 0;
+
+        // Rainbow
+        public static final boolean dynamicRainbow = true;
+        public static final int dynamicRainbowSpeed = 2;
+
+        // Pre-Match Climb Pattern
+        public static final int climbSpeed = 2;
+        public static final int climbMaxDelay = 40;
+        public static final int climbMinDelay = 20;
+        public static final int climbMaxLength = 10;
+        public static final int climbMinLength = 5;
+
+        // Other
+        public static final Color activeSideFlashColor = new Color(0, 0, 0);
+        public static final Color intakeFlashColor = new Color(255, 255, 255);
+        public static final Color whistleFlashColor = new Color(255, 168, 0);
+
     }
 
 

@@ -26,6 +26,7 @@ import frc.robot.Constants.Position;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.WristSubsystem;
@@ -54,6 +55,7 @@ public class RobotContainer {
     private final TelescopeSubsystem telescope = new TelescopeSubsystem();
     private final WristSubsystem wrist = new WristSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final LEDManager ledManager = new LEDManager();
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
@@ -210,7 +212,13 @@ public class RobotContainer {
 
     }
 
+    public Command getAutonomousCommand() {
+        return null;
+    }
+
     public Command getMoveCommand(Position position) {
+
+        RobotState.getInstance().setStow(position.equals(Position.Stow));
         
         return new InstantCommand(() -> {
             double[] positions = PositionHelper.getDouble(
@@ -234,10 +242,6 @@ public class RobotContainer {
                 () -> positions[2]).schedule();
         });
     }
-
-    public Command getAutonomousCommand() {
-        return null;
-    }   
 
     public void enabledInit() {
         if (!telescope.homed) {
