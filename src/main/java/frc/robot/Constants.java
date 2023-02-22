@@ -108,14 +108,14 @@ public final class Constants {
     }
 
     public static final class PivotConstants {
-        //TODO: Set all
-
         public static final double encoderOffsetRad = -Units.rotationsToRadians(0.1775);
 
         public static final double armToMotorGearRatio = 1 / 90;
 
         public static final double maxFwdRotationRad = Units.degreesToRadians(-30);
         public static final double maxBackRotationRad = Units.degreesToRadians(210);
+
+        public static final double lengthWOTeleM = Units.inchesToMeters(27.75);
 
         public static final double kP = 18;
         public static final double kD = 0;
@@ -143,6 +143,8 @@ public final class Constants {
         //TODO: set limits
         public static final double positiveLimitRad = 0.0;
         public static final double negativeLimitRad = 0.0;
+
+        public static final double intakeLengthM = Units.inchesToMeters(10);
 
         public static final double gearRatio = 8.0 / 78;
 
