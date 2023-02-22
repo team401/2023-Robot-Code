@@ -1,14 +1,12 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
@@ -26,8 +24,6 @@ public class Vision extends SubsystemBase {
     // private final PhotonCamera frontCamera = new PhotonCamera("????");
     private final PhotonCamera backCamera = new PhotonCamera("Arducam_OV9281_USB_Camera");
 
-    private final Field2d visionField = new Field2d();
-
     private final MedianFilter filterX = new MedianFilter(5);
     private final MedianFilter filterY = new MedianFilter(5);
     private final MedianFilter filterTheta = new MedianFilter(5);
@@ -35,7 +31,6 @@ public class Vision extends SubsystemBase {
     private int nulled = 0;
 
     public Vision() {
-        SmartDashboard.putData(visionField);
     }
 
     @Override
@@ -68,10 +63,10 @@ public class Vision extends SubsystemBase {
         for (PhotonTrackedTarget target : targets) {
 
             Pose3d fieldToTag = VisionConstants.tagMap.get(target.getFiducialId());
-            if (fieldToTag == null) continue;
-    
+
             Transform3d cameraToTag = target.getBestCameraToTarget();
-            if (cameraToTag == null) continue;
+
+            if (target.getPoseAmbiguity() > 0.2 || fieldToTag == null || cameraToTag == null) continue;
     
             Pose3d fieldToCamera = fieldToTag.transformBy(cameraToTag.inverse());
             Pose3d fieldToVehicle = fieldToCamera.transformBy(vehicleToCamera.inverse());
