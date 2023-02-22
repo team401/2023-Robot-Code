@@ -4,49 +4,56 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
+
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
-import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmPositions;
+import frc.robot.Constants.AutoNotConstants;
+import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.Constants.TelescopeConstants;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.commands.pivot.CharacterizePivot;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
-import frc.robot.commands.pivot.TestMovePivot;
-import frc.robot.commands.telescope.CharacterizeTelescope;
 import frc.robot.commands.telescope.HoldTelescope;
 import frc.robot.commands.telescope.HomeTelescope;
 import frc.robot.commands.telescope.MoveTelescope;
-import frc.robot.commands.telescope.TestMoveTelescope;
-import frc.robot.commands.wrist.CharacterizeWrist;
 import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
-import frc.robot.commands.wrist.TestMoveWrist;
 import frc.robot.oi.ButtonMasher;
 import frc.robot.oi.XboxMasher;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 
 public class RobotContainer {
     
@@ -55,6 +62,7 @@ public class RobotContainer {
     private final TelescopeSubsystem telescope = new TelescopeSubsystem();
     private final WristSubsystem wrist = new WristSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final Vision vision = new Vision();
     private final LEDManager ledManager = new LEDManager();
 
     private final Joystick leftStick = new Joystick(0);
@@ -62,6 +70,9 @@ public class RobotContainer {
     private final ButtonMasher masher = new XboxMasher(new XboxController(2));
 
     private final XboxController gamepad = new XboxController(2);
+
+    private Command[] autoPathCommands = new Command[9];
+    SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
     private boolean rumbling;
     private final Command endRumbleCommand = new InstantCommand(() -> {
@@ -73,8 +84,8 @@ public class RobotContainer {
     public RobotContainer() {
 
         configureSubsystems();
-        configureCompBindings();
-        // configureTestBindings();
+        // configureCompBindings();
+        configureTestBindings();
         configureAutos();
 
     }
@@ -166,11 +177,11 @@ public class RobotContainer {
             RobotState.getInstance().setMode(GamePieceMode.ConeBack)));
         
         // Move arm
-        masher.high().onTrue(getMoveCommand(Position.High)); // move to high
-        masher.mid().onTrue(getMoveCommand(Position.Mid)); // move to mid
-        masher.ground().onTrue(getMoveCommand(Position.Ground)); // move to ground
-        masher.stow().onTrue(getMoveCommand(Position.Stow)); // move to stow    
-        masher.shelf().onTrue(getMoveCommand(Position.Shelf)); // move to shelf
+        masher.high().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.High)); // move to high
+        masher.mid().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Mid)); // move to mid
+        masher.ground().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Ground)); // move to ground
+        masher.stow().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Stow)); // move to stow    
+        masher.shelf().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Shelf)); // move to shelf
 
         masher.special().onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
             
@@ -210,37 +221,51 @@ public class RobotContainer {
 
     private void configureAutos() {
 
+        AutoNotConstants.drive = drive;
+        AutoNotConstants.pivot = pivot;
+        AutoNotConstants.telescope = telescope;
+        AutoNotConstants.wrist = wrist;
+        AutoNotConstants.intake = intake;
+
+        // Load path groups
+        ArrayList<List<PathPlannerTrajectory>> pathGroups = new ArrayList<List<PathPlannerTrajectory>>(9);
+        for (int start = 1; start <= 3; start++) {
+            for (int path = 1; path <= 3; path++) {
+                pathGroups.add(PathPlanner.loadPathGroup(start+"-"+path, new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared)));
+            }
+        }
+
+        Supplier<Pose2d> poseSupplier = () -> RobotState.getInstance().getFieldToVehicle();
+		Consumer<Pose2d> poseConsumer = fieldToVehicle -> drive.setFieldToVehicle(fieldToVehicle);
+        SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
+			poseSupplier, // Pose2d supplier
+			poseConsumer, // Pose2d consumer, used to reset odometry at the beginning of auto
+			DriveConstants.kinematics, // SwerveDriveKinematics
+			new PIDConstants(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // PID constants to correct for translation error (used to create the X and Y PID controllers)
+			new PIDConstants(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), // PID constants to correct for rotation error (used to create the rotation controller)
+			drive::setGoalModuleStates, // Module states consumer used to output to the drive subsystem
+			AutoConstants.eventMap, // The events mapped to commands
+			drive // The drive subsystem. Used to properly set the requirements of path following commands
+		);
+
+        for (int i = 0; i < 9; i++){
+            autoPathCommands[i] = autoBuilder.fullAuto(pathGroups.get(i)).andThen(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)));
+        }
+
+        // Select path
+        int i = 0;
+        for (int start = 1; start <= 3; start++) {
+            for (int path = 1; path <= 3; path++) {
+                autoChooser.addOption(start+"-"+path, autoPathCommands[i++]);
+            }
+        }
+        autoChooser.setDefaultOption("1-1", autoPathCommands[0]);
+        SmartDashboard.putData("Auto Mode", autoChooser);
+
     }
 
     public Command getAutonomousCommand() {
-        return null;
-    }
-
-    public Command getMoveCommand(Position position) {
-
-        RobotState.getInstance().setStow(position.equals(Position.Stow));
-        
-        return new InstantCommand(() -> {
-            double[] positions = PositionHelper.getDouble(
-                position,
-                RobotState.getInstance().getMode());
-            
-            new MovePivot(
-                pivot,
-                telescope,
-                () -> positions[0]).schedule();
-
-            new MoveTelescope(
-                telescope, 
-                pivot, 
-                () -> positions[1],
-                () -> positions[0]).schedule();
-                
-            new MoveWrist(
-                wrist, 
-                pivot, 
-                () -> positions[2]).schedule();
-        });
+        return autoChooser.getSelected();
     }
 
     public void enabledInit() {

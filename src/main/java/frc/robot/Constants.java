@@ -4,11 +4,32 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Quaternion;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import frc.robot.commands.auto.Balance;
+import frc.robot.commands.wrist.MoveWrist;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.drive.Drive;
 
 public final class Constants {
     public static final class CANDevices {
@@ -168,7 +189,7 @@ public final class Constants {
 
         // Ports
         public static final int armLedPort = 0;
-        public static final int leftBaseLedPort = 1;
+        public static final int leftBaseLedPort = 1;    
         public static final int rightBaseLedPort = 2;
 
         // LED Data
@@ -194,5 +215,90 @@ public final class Constants {
 
     }
 
+    public static final class VisionConstants {
+
+        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(-0.23, -0.15, 0), new Rotation3d(0, 0, Math.PI));
+
+        public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
+            put(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(2, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+            put(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+            put(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+            put(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+        }};
+
+    }
+
+    public static final class AutoConstants {
+
+        /*
+        all autos score a cube
+        1-1: one cone + balance
+        1-2: two cones
+        1-3: two cones + balance
+        2-1: one cone + balance
+        2-2: two cones
+        2-3: two cones + balance
+        3-1: one cone + balance
+        3-2: two cones
+        3-3: two cones + balance
+        */
+
+        public static final double kMaxVelocityMetersPerSecond = 2;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+
+        public static final double autoTranslationKp = 0.5;
+        public static final double autoTranslationKi = 0;
+        public static final double autoTranslationKd = 0;
+
+        public static final double autoRotationKp = 5;
+        public static final double autoRotationKi = 0;
+        public static final double autoRotationKd = 0;
+
+        public static final HashMap<String, Command> eventMap = new HashMap<>() {{
+            
+            put("WaitUntilHomed", new WaitUntilCommand(() -> (AutoNotConstants.wrist.homed && AutoNotConstants.telescope.homed)));
+            put("PlaceCube", new SequentialCommandGroup(
+                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
+                RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.High),
+                new InstantCommand(AutoNotConstants.intake::place),
+                new WaitCommand(0.25),
+                new InstantCommand(AutoNotConstants.intake::stopMotor)
+            ));
+            put("PlaceCone", new SequentialCommandGroup(
+                new MoveWrist(AutoNotConstants.wrist, AutoNotConstants.pivot, () -> ArmPositions.wristConePlace),
+                new InstantCommand(AutoNotConstants.intake::stopMotor)
+            ));
+            put("PreparePlaceCone", new InstantCommand(
+                () -> RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.High).schedule()
+            ));
+            put("PickupCone", new SequentialCommandGroup(
+                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeBack)),
+                new InstantCommand(() -> RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.Ground).schedule()),
+                new InstantCommand(AutoNotConstants.intake::intake)
+            ));
+            put("Stow", new InstantCommand(
+                () -> RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.Stow).schedule()
+            ));
+            put("Invert", new InstantCommand(
+                () -> RobotState.getInstance().invertBack()
+            ));
+            put("Balance", new Balance(AutoNotConstants.drive));
+        }};
+        
+    }
+
+    public static class AutoNotConstants {
+
+        public static Drive drive;
+        public static PivotSubsystem pivot;
+        public static TelescopeSubsystem telescope;
+        public static WristSubsystem wrist;
+        public static IntakeSubsystem intake;
+
+    }
 
 }

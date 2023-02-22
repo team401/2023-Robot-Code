@@ -31,7 +31,7 @@ public class WristSubsystem extends SubsystemBase {
 
     // For safety; detect when encoder stops sending new data
     private double lastEncoderPos;
-    private boolean dead = false;
+    private boolean dead = true;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations

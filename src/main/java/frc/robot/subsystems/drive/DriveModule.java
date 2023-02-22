@@ -26,9 +26,9 @@ public class DriveModule {
 
     private static void setFramePeriods(TalonFX talon, boolean needMotorSensor) {
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 1000);
-        //if (!needMotorSensor) {
-        //    talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 1000);
-        //}
+        if (!needMotorSensor) {
+           talon.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 255, 1000);
+        }
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 255, 1000);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 255, 1000);
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 255, 1000);

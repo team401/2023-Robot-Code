@@ -63,6 +63,6 @@ public class HomeWrist extends CommandBase {
         //         wrist.getPositionRad() + pivotPosRad.getAsDouble() - 0.3, 0));
 
         wrist.setVolts(0);
-        wrist.updateDesiredSetpointRad(new TrapezoidProfile.State(wrist.getPositionRad() - 0.3, 0));
+        wrist.updateDesiredSetpointRad(new TrapezoidProfile.State(Math.PI / 2, 0));
     }
 }

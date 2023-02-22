@@ -8,13 +8,24 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
+import frc.robot.Constants.Position;
+import frc.robot.commands.pivot.MovePivot;
+import frc.robot.commands.telescope.MoveTelescope;
+import frc.robot.commands.wrist.MoveWrist;
+import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.WristSubsystem;
 
 public class RobotState {
 
@@ -61,14 +72,17 @@ public class RobotState {
             3,
             new Color8Bit(Color.kCoral)));
 
-    private GamePieceMode gamePieceMode = GamePieceMode.ConeBack;
+    private GamePieceMode gamePieceMode = GamePieceMode.Cube;
+
+    private final Field2d field = new Field2d();
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
-            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.01), // State measurement standard deviations. X, Y, theta.
-            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 1) // Vision measurement standard deviations. X, Y, theta.
+            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.08, 0.08, 0.08), // State measurement standard deviations. X, Y, theta.
+            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.02) // Vision measurement standard deviations. X, Y, theta.
             // Increase to trust less
         );
+        SmartDashboard.putData(field);
     }
 
     public void recordDriveObservations(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
@@ -84,6 +98,8 @@ public class RobotState {
     }
 
     public Pose2d getFieldToVehicle() {
+        SmartDashboard.putNumber("GetFieldToVehicleTime", System.currentTimeMillis());
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
         return poseEstimator.getEstimatedPosition();
     }
 
@@ -140,6 +156,18 @@ public class RobotState {
         return false;
     }
 
+    public Command getMoveCommand(PivotSubsystem pivot, TelescopeSubsystem telescope, WristSubsystem wrist, Position position) {
 
+        setStow(position.equals(Position.Stow));
+        
+        double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+
+        return new ParallelCommandGroup(
+            new MovePivot(pivot,telescope,() -> positions[0]),
+            new MoveTelescope(telescope, pivot, () -> positions[1],() -> positions[0]),
+            new MoveWrist(wrist, pivot, () -> positions[2])
+        );
+
+    }
     
 }

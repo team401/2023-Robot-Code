@@ -45,17 +45,17 @@ public class LEDManager extends SubsystemBase {
         armLed.setData(armLedBuffer);
         armLed.start();
 
-        leftBaseLed = new AddressableLED(LEDConstants.leftBaseLedPort);
+        leftBaseLed = null;//new AddressableLED(LEDConstants.leftBaseLedPort);
         leftBaseLedBuffer = new AddressableLEDBuffer(LEDConstants.baseLedCount);
-        leftBaseLed.setLength(leftBaseLedBuffer.getLength());
-        leftBaseLed.setData(leftBaseLedBuffer);
-        leftBaseLed.start();
+        // leftBaseLed.setLength(leftBaseLedBuffer.getLength());
+        // leftBaseLed.setData(leftBaseLedBuffer);
+        // leftBaseLed.start();
 
-        rightBaseLed = new AddressableLED(LEDConstants.rightBaseLedPort);
+        rightBaseLed = null;//new AddressableLED(LEDConstants.rightBaseLedPort);
         rightBaseLedBuffer = new AddressableLEDBuffer(LEDConstants.baseLedCount);
-        rightBaseLed.setLength(rightBaseLedBuffer.getLength());
-        rightBaseLed.setData(rightBaseLedBuffer);
-        rightBaseLed.start();
+        // rightBaseLed.setLength(rightBaseLedBuffer.getLength());
+        // rightBaseLed.setData(rightBaseLedBuffer);
+        // rightBaseLed.start();
 
         armClimbLedStates = new boolean[LEDConstants.armLedCount];
         baseClimbLedStates = new boolean[LEDConstants.baseLedCount/2];
@@ -71,7 +71,7 @@ public class LEDManager extends SubsystemBase {
         allianceColor = DriverStation.getAlliance() == DriverStation.Alliance.Red ? new Color(255, 0, 0) : new Color(0, 0, 255);
         
         if (!DriverStation.isDSAttached()) {
-            preMatchClimbPattern();
+            // preMatchClimbPattern();
         }
         else if (DriverStation.isDisabled()){
             rainbow();
@@ -84,9 +84,9 @@ public class LEDManager extends SubsystemBase {
             flashOnIntake();
         }
 
-        armLed.setData(armLedBuffer);
-        leftBaseLed.setData(leftBaseLedBuffer);
-        rightBaseLed.setData(rightBaseLedBuffer);
+        // armLed.setData(armLedBuffer);
+        // leftBaseLed.setData(leftBaseLedBuffer);
+        // rightBaseLed.setData(rightBaseLedBuffer);
 
     }
 

@@ -8,6 +8,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -49,6 +50,8 @@ public class Drive extends SubsystemBase {
      */
     private boolean babyMode = false;
 
+    private final Timer timer = new Timer();
+
     /**
      * Initialize all the modules, data arrays, and RobotState
      */
@@ -81,6 +84,8 @@ public class Drive extends SubsystemBase {
             modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
         }
 
+        setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+
         RobotState.getInstance().initializePoseEstimator(getRotation(), modulePositions);
 
     }
@@ -90,6 +95,10 @@ public class Drive extends SubsystemBase {
      */
     @Override
     public void periodic() {
+
+        SmartDashboard.putNumber("Time", timer.get());
+        timer.reset();
+        timer.start();
 
         SmartDashboard.putNumber("Angle", driveAngle.getHeading());
 
@@ -123,6 +132,8 @@ public class Drive extends SubsystemBase {
         }
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
+        RobotState.getInstance().getFieldToVehicle();
+
         SmartDashboard.putNumber("Roll", driveAngle.getRoll());
         SmartDashboard.putNumber("Pitch", driveAngle.getPitch());
 
@@ -143,7 +154,7 @@ public class Drive extends SubsystemBase {
      * @param speeds the desired speed of the robot
      */
     public void setGoalChassisSpeeds(ChassisSpeeds speeds) {
-        speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.33 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.33 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.33 : 1));
+        speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.2 : 1));
         SwerveModuleState[] goalModuleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(goalModuleStates, DriveConstants.maxDriveSpeed);
         if (speeds.vxMetersPerSecond == 0 && speeds.vyMetersPerSecond == 0 && speeds.omegaRadiansPerSecond == 0) {
