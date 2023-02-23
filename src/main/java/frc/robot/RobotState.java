@@ -16,10 +16,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
+import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
 import frc.robot.commands.telescope.MoveTelescope;
 import frc.robot.commands.wrist.MoveWrist;
@@ -163,11 +165,11 @@ public class RobotState {
         
         double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
 
-        return new ParallelCommandGroup(
-            new MovePivot(pivot,telescope,() -> positions[0]),
-            new MoveTelescope(telescope, pivot, () -> positions[1],() -> positions[0]),
-            new MoveWrist(wrist, pivot, () -> positions[2])
-        );
+        return new InstantCommand(() -> {
+            new MovePivot(pivot,telescope,() -> positions[0]).schedule();
+            new MoveTelescope(telescope, pivot, () -> positions[1],() -> positions[0]).schedule();
+            new MoveWrist(wrist, pivot, () -> positions[2]).schedule();
+        });
 
     }
     

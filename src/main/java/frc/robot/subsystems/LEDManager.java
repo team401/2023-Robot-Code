@@ -68,7 +68,7 @@ public class LEDManager extends SubsystemBase {
     @Override
     public void periodic() {
 
-        allianceColor = DriverStation.getAlliance() == DriverStation.Alliance.Red ? new Color(255, 0, 0) : new Color(0, 0, 255);
+        allianceColor = DriverStation.getAlliance() == DriverStation.Alliance.Red ? new Color(50, 0, 0) : new Color(0, 0, 50);
         
         if (!DriverStation.isDSAttached()) {
             // preMatchClimbPattern();
@@ -84,7 +84,7 @@ public class LEDManager extends SubsystemBase {
             flashOnIntake();
         }
 
-        // armLed.setData(armLedBuffer);
+        armLed.setData(armLedBuffer);
         // leftBaseLed.setData(leftBaseLedBuffer);
         // rightBaseLed.setData(rightBaseLedBuffer);
 
@@ -93,13 +93,13 @@ public class LEDManager extends SubsystemBase {
     private void rainbow() {
         for (int i = 0; i < LEDConstants.armLedCount; i++) {
             int hue = (rainbowFirstPixelHue + 90 + (i * 180 / LEDConstants.armLedCount)) % 180;
-            armLedBuffer.setHSV(i, hue, 255, 128);
+            armLedBuffer.setHSV(i, hue, 255, 10);
         }
 
         for (int i = 0; i < LEDConstants.baseLedCount; i++) {
             int hue = (rainbowFirstPixelHue + 90 + (i * 180 / LEDConstants.baseLedCount)) % 180;
-            leftBaseLedBuffer.setHSV(i, hue, 255, 128);
-            rightBaseLedBuffer.setHSV(i, hue, 255, 128);
+            leftBaseLedBuffer.setHSV(i, hue, 255, 10);
+            rightBaseLedBuffer.setHSV(i, hue, 255, 10);
         }
         
         if (LEDConstants.dynamicRainbow) {
@@ -154,12 +154,12 @@ public class LEDManager extends SubsystemBase {
     private void setSideIndicator() {
 
         for (int i = LEDConstants.baseLedCount/4; i < LEDConstants.baseLedCount/2; i++) {
-            rightBaseLedBuffer.setRGB(i, 0, 255, 0);
-            leftBaseLedBuffer.setRGB(i, 0, 255, 0);
+            rightBaseLedBuffer.setRGB(i, 0, 50, 0);
+            leftBaseLedBuffer.setRGB(i, 0, 50, 0);
         }
         for (int i = LEDConstants.baseLedCount/2; i < 3*LEDConstants.baseLedCount/4; i++) {
-            rightBaseLedBuffer.setRGB(i, 255, 0, 0);
-            leftBaseLedBuffer.setRGB(i, 255, 0, 0);
+            rightBaseLedBuffer.setRGB(i, 50, 0, 0);
+            leftBaseLedBuffer.setRGB(i, 50, 0, 0);
         }
 
     }
@@ -185,7 +185,7 @@ public class LEDManager extends SubsystemBase {
 
     private void setIntakeModeIndicator() {
 
-        Color color = RobotState.getInstance().getMode() == GamePieceMode.ConeBack ? new Color(255, 255, 0) : new Color(255, 0, 255);
+        Color color = RobotState.getInstance().getMode() == GamePieceMode.ConeBack ? new Color(10, 10, 0) : new Color(10, 0, 10);
         for (int i = 0; i < LEDConstants.armLedCount; i++) {
             armLedBuffer.setLED(i, color);
         }

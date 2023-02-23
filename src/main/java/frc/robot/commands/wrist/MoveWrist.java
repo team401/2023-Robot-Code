@@ -50,6 +50,8 @@ public class MoveWrist extends CommandBase {
         wrist.resetPID();
 
         SmartDashboard.putNumber("MoveWrist started", 1);
+
+        wrist.atGoal = false;
     }
 
     @Override
@@ -78,6 +80,8 @@ public class MoveWrist extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         wrist.stop();
+
+        wrist.atGoal = true;
 
         SmartDashboard.putNumber("MoveWrist started", 0);
     }

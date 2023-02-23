@@ -21,11 +21,15 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.simulation.JoystickSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -86,7 +90,9 @@ public class RobotContainer {
         configureSubsystems();
         // configureCompBindings();
         configureTestBindings();
-        configureAutos();
+        // configureAutos();
+
+        
 
     }
 
@@ -107,54 +113,45 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        // Drive
-        new Trigger(() -> rightStick.getRawButtonPressed(2))
-            .onTrue(new InstantCommand(() -> drive.resetHeading()));
-
-        new JoystickButton(leftStick, 1)
-            .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
-            .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
-
-            
-        new POVButton(gamepad, 270)
-            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.stow[0]))
-            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.stow[1], () -> ArmPositions.stow[0]))
-            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.stow[2]));
-
-        new POVButton(gamepad, 90)
-            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.placeConeBackHigh[0]))
-            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.placeConeBackHigh[1], () -> ArmPositions.placeConeBackHigh[0]))
-            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.placeConeBackHigh[2]));
-        
-        new POVButton(gamepad, 180)
-            .onTrue(new MovePivot(pivot, telescope, () -> ArmPositions.intakeConeBackShelf[0]))
-            .onTrue(new MoveTelescope(telescope, pivot, () -> ArmPositions.intakeConeBackShelf[1], () -> ArmPositions.intakeConeBackShelf[0]))
-            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.intakeConeBackShelf[2]));
-
+        //place cube
         new JoystickButton(gamepad, Button.kA.value)
-            .onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
+            .onTrue(new SequentialCommandGroup(
+                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
+                RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.High),
+                new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal)),
+                new InstantCommand(intake::place),
+                new WaitCommand(0.25),
+                new InstantCommand(intake::stopMotor)
+            ));
 
-        // new JoystickButton(gamepad, Button.kX.value)
-        //     .onTrue(new InstantCommand(intake::runForward))
-        //     .onFalse(new InstantCommand(intake::stopMotor));
+        new JoystickButton(gamepad, Button.kB.value)
+            .onTrue(new SequentialCommandGroup(
+                new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace),
+                new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal)),
+                new InstantCommand(intake::stopMotor)
+            ));
 
-        // new JoystickButton(gamepad, Button.kB.value)
-        //     .onTrue(new InstantCommand(intake::runBackward))
-        //     .onFalse(new InstantCommand(intake::stopMotor));
+        new JoystickButton(gamepad, Button.kX.value)
+            .onTrue(new InstantCommand(
+                () -> RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.High).schedule()
+            ));
 
-        // new JoystickButton(gamepad, Button.kY.value)
-        //     .onTrue(new InstantCommand(intake::placeCube))
-        //     .onFalse(new InstantCommand(intake::stopMotor));        
+            // stow
+        new JoystickButton(gamepad, Button.kY.value)
+            .onTrue(new InstantCommand(
+                () -> RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Stow).schedule()));
 
-        // new JoystickButton(gamepad, Button.kB.value)
-        //     .onTrue(new MovePivot(pivot, telescope, () -> 0.2))
-        //     .onTrue(new MoveTelescope(telescope, pivot, () -> 0.06, () -> 0.2))
-        //     .onFalse(new InstantCommand(() -> pivot.stop(), pivot));
+        new JoystickButton(gamepad, Button.kRightBumper.value)
+            .onTrue(new SequentialCommandGroup(
+                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeBack)),
+                new InstantCommand(() -> RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Ground).schedule()),
+                new InstantCommand(intake::intake)
+            ));
 
-        // new JoystickButton(gamepad, Button.kX.value)
-        //     .onTrue(new MovePivot(pivot, telescope, () -> 3))
-        //     .onTrue(new MoveTelescope(telescope, pivot, () -> 0.5, () -> 3))
-        //     .onFalse(new InstantCommand(() -> pivot.stop(), pivot));
+        new JoystickButton(gamepad, Button.kStart.value)
+            .onTrue(new InstantCommand(
+                () -> RobotState.getInstance().invertBack()
+            ));
     }
 
     private void configureCompBindings() {
@@ -220,12 +217,12 @@ public class RobotContainer {
         }
 
     private void configureAutos() {
-
-        AutoNotConstants.drive = drive;
-        AutoNotConstants.pivot = pivot;
-        AutoNotConstants.telescope = telescope;
-        AutoNotConstants.wrist = wrist;
-        AutoNotConstants.intake = intake;
+/* 
+        drive = drive;
+        pivot = pivot;
+        telescope = telescope;
+        wrist = wrist;
+        intake = intake;
 
         // Load path groups
         ArrayList<List<PathPlannerTrajectory>> pathGroups = new ArrayList<List<PathPlannerTrajectory>>(9);
@@ -261,7 +258,7 @@ public class RobotContainer {
         }
         autoChooser.setDefaultOption("1-1", autoPathCommands[0]);
         SmartDashboard.putData("Auto Mode", autoChooser);
-
+*/
     }
 
     public Command getAutonomousCommand() {

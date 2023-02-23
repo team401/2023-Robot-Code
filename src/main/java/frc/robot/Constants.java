@@ -212,8 +212,8 @@ public final class Constants {
 
         // Other
         public static final Color activeSideFlashColor = new Color(0, 0, 0);
-        public static final Color intakeFlashColor = new Color(255, 255, 255);
-        public static final Color whistleFlashColor = new Color(255, 168, 0);
+        public static final Color intakeFlashColor = new Color(20, 20, 20);
+        public static final Color whistleFlashColor = new Color(20, 13, 0);
 
     }
 
@@ -260,7 +260,7 @@ public final class Constants {
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
-        public static final HashMap<String, Command> eventMap = new HashMap<>() {{
+        /*public static final HashMap<String, Command> eventMap = new HashMap<>() {{
             
             put("WaitUntilHomed", new WaitUntilCommand(() -> (AutoNotConstants.wrist.homed && AutoNotConstants.telescope.homed)));
             put("PlaceCube", new SequentialCommandGroup(
@@ -289,7 +289,7 @@ public final class Constants {
                 () -> RobotState.getInstance().invertBack()
             ));
             put("Balance", new Balance(AutoNotConstants.drive));
-        }};
+        }};*/
         
     }
 

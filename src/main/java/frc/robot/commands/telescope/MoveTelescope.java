@@ -89,6 +89,8 @@ public class MoveTelescope extends CommandBase {
 
         telescope.setDesiredSetpoint(goalState);
         telescope.resetPID();
+
+        telescope.atGoal = false;
     }
 
     @Override
@@ -108,5 +110,11 @@ public class MoveTelescope extends CommandBase {
     @Override
     public boolean isFinished() {
         return helper.isFinished(timer.get());
+    }
+
+    @Override
+    public void end(boolean interrupted) {
+        telescope.stop();
+        telescope.atGoal = true;
     }
 }

@@ -73,6 +73,8 @@ public class MovePivot extends CommandBase{
         pivot.setDesiredSetpointRad(goalState);
 
         pivot.resetPID();
+
+        pivot.atGoal = false;
     }
 
     @Override
@@ -95,5 +97,6 @@ public class MovePivot extends CommandBase{
     @Override
     public void end(boolean interrupted) {
         pivot.stop();
+        pivot.atGoal = true;
     }
 }
