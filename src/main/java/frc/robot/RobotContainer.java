@@ -47,6 +47,8 @@ import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.AutoManager;
+import frc.robot.util.PositionHelper;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
 import frc.robot.commands.telescope.HoldTelescope;
@@ -68,6 +70,7 @@ public class RobotContainer {
     private final IntakeSubsystem intake = new IntakeSubsystem();
     private final Vision vision = new Vision();
     private final LEDManager ledManager = new LEDManager();
+    private final AutoManager autoManager = new AutoManager(pivot, telescope, wrist, drive, intake, (position) -> getMoveCommand(position));
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
@@ -88,11 +91,9 @@ public class RobotContainer {
     public RobotContainer() {
 
         configureSubsystems();
-        // configureCompBindings();
-        configureTestBindings();
-        // configureAutos();
-
-        
+        configureCompBindings();
+        //configureTestBindings();
+        configureAutos();
 
     }
 
@@ -113,45 +114,39 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        //place cube
-        new JoystickButton(gamepad, Button.kA.value)
-            .onTrue(new SequentialCommandGroup(
-                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
-                RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.High),
-                new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal)),
-                new InstantCommand(intake::place),
-                new WaitCommand(0.25),
-                new InstantCommand(intake::stopMotor)
-            ));
 
+            //place cube
+        new JoystickButton(gamepad, Button.kA.value)
+            .onTrue(
+                autoManager.getEventMap().get("PlaceCube")
+            );
+        
+            //place cone
         new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new SequentialCommandGroup(
-                new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace),
-                new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal)),
-                new InstantCommand(intake::stopMotor)
-            ));
+            .onTrue(
+                autoManager.getEventMap().get("PlaceCone")
+            );
 
         new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(new InstantCommand(
-                () -> RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.High).schedule()
-            ));
+            .onTrue(
+                autoManager.getEventMap().get("PreparePlaceCone")
+            );
 
             // stow
         new JoystickButton(gamepad, Button.kY.value)
-            .onTrue(new InstantCommand(
-                () -> RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Stow).schedule()));
+            .onTrue(
+                autoManager.getEventMap().get("Stow")
+            );
 
         new JoystickButton(gamepad, Button.kRightBumper.value)
-            .onTrue(new SequentialCommandGroup(
-                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeBack)),
-                new InstantCommand(() -> RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Ground).schedule()),
-                new InstantCommand(intake::intake)
-            ));
+            .onTrue(
+                autoManager.getEventMap().get("PickupCone")
+            );
 
         new JoystickButton(gamepad, Button.kStart.value)
-            .onTrue(new InstantCommand(
-                () -> RobotState.getInstance().invertBack()
-            ));
+            .onTrue(
+                autoManager.getEventMap().get("Invert")
+            );
     }
 
     private void configureCompBindings() {
@@ -174,11 +169,11 @@ public class RobotContainer {
             RobotState.getInstance().setMode(GamePieceMode.ConeBack)));
         
         // Move arm
-        masher.high().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.High)); // move to high
-        masher.mid().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Mid)); // move to mid
-        masher.ground().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Ground)); // move to ground
-        masher.stow().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Stow)); // move to stow    
-        masher.shelf().onTrue(RobotState.getInstance().getMoveCommand(pivot, telescope, wrist, Position.Shelf)); // move to shelf
+        masher.high().onTrue(getMoveCommand(Position.High)); // move to high
+        masher.mid().onTrue(getMoveCommand(Position.Mid)); // move to mid
+        masher.ground().onTrue(getMoveCommand(Position.Ground)); // move to ground
+        masher.stow().onTrue(getMoveCommand(Position.Stow)); // move to stow    
+        masher.shelf().onTrue(getMoveCommand(Position.Shelf)); // move to shelf
 
         masher.special().onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
             
@@ -217,13 +212,6 @@ public class RobotContainer {
         }
 
     private void configureAutos() {
-/* 
-        drive = drive;
-        pivot = pivot;
-        telescope = telescope;
-        wrist = wrist;
-        intake = intake;
-
         // Load path groups
         ArrayList<List<PathPlannerTrajectory>> pathGroups = new ArrayList<List<PathPlannerTrajectory>>(9);
         for (int start = 1; start <= 3; start++) {
@@ -241,7 +229,7 @@ public class RobotContainer {
 			new PIDConstants(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // PID constants to correct for translation error (used to create the X and Y PID controllers)
 			new PIDConstants(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), // PID constants to correct for rotation error (used to create the rotation controller)
 			drive::setGoalModuleStates, // Module states consumer used to output to the drive subsystem
-			AutoConstants.eventMap, // The events mapped to commands
+			autoManager.getEventMap(), // The events mapped to commands
 			drive // The drive subsystem. Used to properly set the requirements of path following commands
 		);
 
@@ -258,7 +246,6 @@ public class RobotContainer {
         }
         autoChooser.setDefaultOption("1-1", autoPathCommands[0]);
         SmartDashboard.putData("Auto Mode", autoChooser);
-*/
     }
 
     public Command getAutonomousCommand() {
@@ -274,5 +261,19 @@ public class RobotContainer {
         }
 
         pivot.setDesiredSetpointRad(new TrapezoidProfile.State(pivot.getPositionRad(), 0));
+    }
+
+    public Command getMoveCommand(Position position) {
+
+        RobotState.getInstance().setStow(position.equals(Position.Stow));
+        
+        double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+
+        return new InstantCommand(() -> {
+            new MovePivot(pivot,telescope,() -> positions[0]).schedule();
+            new MoveTelescope(telescope, pivot, () -> positions[1],() -> positions[0]).schedule();
+            new MoveWrist(wrist, pivot, () -> positions[2]).schedule();
+        });
+
     }
 }
