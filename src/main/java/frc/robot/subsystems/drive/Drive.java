@@ -115,6 +115,7 @@ public class Drive extends SubsystemBase {
             // Set module speed
             double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
             double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
+            SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
             driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
 
             // Set module rotation
@@ -144,7 +145,9 @@ public class Drive extends SubsystemBase {
      * @param states an array of SwerveModuleStates representing the desired state for each swerve module [frontLeft, frontRight, backLeft, backRight]
      */
     public void setGoalModuleStates(SwerveModuleState[] states) {
+        SmartDashboard.putNumber("lol", System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
+            SmartDashboard.putNumber("lel"+i, states[i].speedMetersPerSecond);
             goalModuleStates[i] = states[i];
         }
     }

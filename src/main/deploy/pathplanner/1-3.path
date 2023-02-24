@@ -17,7 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "WaitUntilHomed",
+          "Home",
           "PlaceCube",
           "Stow",
           "Invert"

@@ -3,6 +3,7 @@ package frc.robot.util;
 import java.util.HashMap;
 import java.util.function.Function;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -13,6 +14,10 @@ import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.auto.Balance;
+import frc.robot.commands.pivot.MovePivot;
+import frc.robot.commands.telescope.HomeTelescope;
+import frc.robot.commands.telescope.MoveTelescope;
+import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -34,10 +39,14 @@ public class AutoManager {
         this.pivot = pivot; this.telescope = telescope; this.wrist = wrist; this.drive = drive; this.intake = intake; getMoveCommand = function;
 
         eventMap = new HashMap<String, Command>() {{
-            put("WaitUntilHomed", new WaitUntilCommand(() -> (wrist.homed && telescope.homed)));
+            put("Home", new HomeTelescope(telescope));
             put("PlaceCube", new SequentialCommandGroup(
+                new InstantCommand(() -> SmartDashboard.putNumber("LMAOXD", 3)),
                 new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
-                getMoveCommand.apply(Position.High),
+                new MovePivot(pivot, telescope, () -> ArmPositions.placeCubeHigh[0])
+                    .alongWith(new MoveTelescope(telescope, pivot, () -> ArmPositions.placeCubeHigh[1],() -> ArmPositions.placeCubeHigh[0]))
+                    .alongWith(new MoveWrist(wrist, pivot, () -> ArmPositions.placeCubeHigh[2])),
+                new InstantCommand(() -> SmartDashboard.putNumber("LMAOXD", 2)),
                 new InstantCommand(intake::place),
                 new WaitCommand(0.25),
                 new InstantCommand(intake::stopMotor)
@@ -68,6 +77,4 @@ public class AutoManager {
         return eventMap;
     }
 
-
-    
 }

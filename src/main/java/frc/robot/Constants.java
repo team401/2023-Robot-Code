@@ -158,7 +158,7 @@ public final class Constants {
 
     public static final class ArmPositions {
 
-        public static final double[] intakeConeBackShelf = new double[] {0.73, 0.61, -1.02};
+        public static final double[] intakeConeBackShelf = new double[] {0.674, 0.64, -0.87};
         public static final double[] intakeCubeShelf = new double[] {0.59, 0.55, 0.15};
         public static final double[] intakeCubeGround = new double[] {-0.282, 0.086, 0.356};
         public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -0.964};
@@ -195,9 +195,9 @@ public final class Constants {
         public static final int rightBaseLedPort = 2;
 
         // LED Data
-        public static final int armLedCount = 122;
-        public static final int baseLedCount = 0;
-        public static final int baseSideLedCount = 0;
+        public static final int armLedCount = 123;
+        public static final int baseLedCount = 64;
+        public static final int baseSideLedCount = 64;
 
         // Rainbow
         public static final boolean dynamicRainbow = true;
@@ -212,8 +212,8 @@ public final class Constants {
 
         // Other
         public static final Color activeSideFlashColor = new Color(0, 0, 0);
-        public static final Color intakeFlashColor = new Color(20, 20, 20);
-        public static final Color whistleFlashColor = new Color(20, 13, 0);
+        public static final Color intakeFlashColor = new Color(255, 255, 255);
+        public static final Color whistleFlashColor = new Color(255, 170, 0);
 
     }
 
@@ -249,8 +249,8 @@ public final class Constants {
         3-3: two cones + balance
         */
 
-        public static final double kMaxVelocityMetersPerSecond = 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+        public static final double kMaxVelocityMetersPerSecond = 5;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 10;
 
         public static final double autoTranslationKp = 0.5;
         public static final double autoTranslationKi = 0;
@@ -293,7 +293,7 @@ public final class Constants {
         
     }
 
-    public static class AutoNotConstants {
+    /*public static class AutoNotConstants {
 
         public static Drive drive;
         public static PivotSubsystem pivot;
@@ -301,6 +301,6 @@ public final class Constants {
         public static WristSubsystem wrist;
         public static IntakeSubsystem intake;
 
-    }
+    }*/
 
 }

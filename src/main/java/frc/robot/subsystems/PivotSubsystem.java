@@ -59,8 +59,8 @@ public class PivotSubsystem extends SubsystemBase {
         PivotConstants.kA);
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(270),
-            Units.degreesToRadians(270));
+            Units.degreesToRadians(180),
+            Units.degreesToRadians(180));
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = 

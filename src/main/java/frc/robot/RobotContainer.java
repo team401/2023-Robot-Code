@@ -17,6 +17,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -34,7 +35,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmPositions;
-import frc.robot.Constants.AutoNotConstants;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
@@ -92,7 +92,7 @@ public class RobotContainer {
 
         configureSubsystems();
         configureCompBindings();
-        //configureTestBindings();
+        // configureTestBindings();
         configureAutos();
 
     }
@@ -161,7 +161,15 @@ public class RobotContainer {
 
         new JoystickButton(leftStick, 2)
             .onTrue(new InstantCommand(wrist::zeroOffset));
-        
+
+        new JoystickButton(leftStick, 8) 
+            .onTrue(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0.500)))
+            .onFalse(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0)));
+
+        new JoystickButton(leftStick, 10)
+            .onTrue(new HomeWrist(wrist));
+
+             
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
@@ -225,11 +233,12 @@ public class RobotContainer {
         SwerveAutoBuilder autoBuilder = new SwerveAutoBuilder(
 			poseSupplier, // Pose2d supplier
 			poseConsumer, // Pose2d consumer, used to reset odometry at the beginning of auto
-			DriveConstants.kinematics, // SwerveDriveKinematics
 			new PIDConstants(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // PID constants to correct for translation error (used to create the X and Y PID controllers)
 			new PIDConstants(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), // PID constants to correct for rotation error (used to create the rotation controller)
-			drive::setGoalModuleStates, // Module states consumer used to output to the drive subsystem
+			//moduleStates -> drive.setGoalModuleStates(moduleStates), // Module states consumer used to output to the drive subsystem
+            drive::setGoalChassisSpeeds,
 			autoManager.getEventMap(), // The events mapped to commands
+            true,
 			drive // The drive subsystem. Used to properly set the requirements of path following commands
 		);
 
@@ -249,27 +258,31 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        SmartDashboard.putNumber("JAKLJDFKLAD", System.currentTimeMillis());
+        return autoChooser.getSelected();//new WaitCommand(3).andThen(autoManager.getEventMap().get("PlaceCube"));//
     }
 
     public void enabledInit() {
-        if (!telescope.homed) {
+        if (!telescope.homed && DriverStation.isTeleop()) {
             new HomeTelescope(telescope).schedule();
         }
-        if (!wrist.homed) {
+
+        if (!wrist.homed && DriverStation.isTeleop()) {
             new HomeWrist(wrist).schedule();
         }
+        else if (!wrist.homed) {
+            wrist.zeroOffset();
+            wrist.homed = true;
+        }
 
-        pivot.setDesiredSetpointRad(new TrapezoidProfile.State(pivot.getPositionRad(), 0));
+        // pivot.setDesiredSetpointRad(new TrapezoidProfile.State(pivot.getPositionRad(), 0));
     }
 
     public Command getMoveCommand(Position position) {
 
-        RobotState.getInstance().setStow(position.equals(Position.Stow));
-        
-        double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
-
         return new InstantCommand(() -> {
+            RobotState.getInstance().setStow(position.equals(Position.Stow));
+            double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
             new MovePivot(pivot,telescope,() -> positions[0]).schedule();
             new MoveTelescope(telescope, pivot, () -> positions[1],() -> positions[0]).schedule();
             new MoveWrist(wrist, pivot, () -> positions[2]).schedule();

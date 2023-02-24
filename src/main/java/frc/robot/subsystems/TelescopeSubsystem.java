@@ -39,7 +39,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kS,
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
-        new TrapezoidProfile.Constraints(4, 4);
+        new TrapezoidProfile.Constraints(2, 2);
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
