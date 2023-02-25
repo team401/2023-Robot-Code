@@ -28,7 +28,7 @@ public class HoldWrist extends CommandBase {
         double output = wrist.calculateControl(goalState, getAdjustedAngle());
 
         wrist.setVolts(output);
-        wrist.setSimPosRad(goalState.position - pivot.getPositionRad());
+        // wrist.setSimPosRad(goalState.position - pivot.getPositionRad());
     }
 
     private double getAdjustedAngle() {

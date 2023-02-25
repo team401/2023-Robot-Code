@@ -88,6 +88,7 @@ public final class Constants {
         public static final double rotationKp = 4.7;
         public static final double rotationKd = 0.1;
 
+        public static final double driveSnapKp = 1;
 
         public static final SwerveDriveKinematics kinematics = 
             new SwerveDriveKinematics(
@@ -212,14 +213,14 @@ public final class Constants {
 
         // Other
         public static final Color activeSideFlashColor = new Color(0, 0, 0);
-        public static final Color intakeFlashColor = new Color(255, 255, 255);
-        public static final Color whistleFlashColor = new Color(255, 170, 0);
+        public static final Color intakeFlashColor = new Color(50, 50, 50);
+        public static final Color whistleFlashColor = new Color(50, 37, 0);
 
     }
 
     public static final class VisionConstants {
 
-        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(-0.23, -0.15, 0), new Rotation3d(0, 0, Math.PI));
+        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(0.23, 0.146, 0), new Rotation3d(0, 0, Math.PI));
 
         public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
             put(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
@@ -227,10 +228,23 @@ public final class Constants {
             put(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
             put(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1))));
             put(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+            put(6, new Pose3d(new Translation3d(1.03, 4.33, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//170.5
+            put(7, new Pose3d(new Translation3d(1.03, 2.68, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//105.5
+            put(8, new Pose3d(new Translation3d(1.03, 1.054, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//41.5
         }};
+        
+        /*
+        public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
+            put(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(2, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1))));
+            put(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+            put(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//170.5
+            put(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//105.5
+            put(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//41.5
+        }};
+         */
 
     }
 
@@ -249,14 +263,15 @@ public final class Constants {
         3-3: two cones + balance
         */
 
-        public static final double kMaxVelocityMetersPerSecond = 5;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 10;
+        // hopefully we can increase these to 5 and 5
+        public static final double kMaxVelocityMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
 
-        public static final double autoTranslationKp = 0.5;
+        public static final double autoTranslationKp = 2.5;
         public static final double autoTranslationKi = 0;
         public static final double autoTranslationKd = 0;
 
-        public static final double autoRotationKp = 5;
+        public static final double autoRotationKp = 3.5;
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 

@@ -66,45 +66,49 @@ public class Vision extends SubsystemBase {
 
             Transform3d cameraToTag = target.getBestCameraToTarget();
 
-            if (target.getPoseAmbiguity() > 0.2 || fieldToTag == null || cameraToTag == null) continue;
+            if (target.getPoseAmbiguity() > 0.2 || fieldToTag == null || cameraToTag == null || cameraToTag.getX() > 3) continue;
     
             Pose3d fieldToCamera = fieldToTag.transformBy(cameraToTag.inverse());
             Pose3d fieldToVehicle = fieldToCamera.transformBy(vehicleToCamera.inverse());
 
-            posesList.add(new Pair<Pose2d, Double>(fieldToVehicle.toPose2d(), target.getPoseAmbiguity()));
+            return fieldToVehicle.toPose2d();
+
+            // posesList.add(new Pair<Pose2d, Double>(fieldToVehicle.toPose2d(), target.getPoseAmbiguity()));
 
         }
 
-        double totalAmbiguity = 0;
-        Translation2d translation = new Translation2d();
-        Rotation2d rotation = new Rotation2d();
+        return null;
 
-        int i = 0;
-        for (Pair<Pose2d, Double> pair : posesList) {
+        // double totalAmbiguity = 0;
+        // Translation2d translation = new Translation2d();
+        // Rotation2d rotation = new Rotation2d();
 
-            if (pair.getSecond() == 0) {
-                return pair.getFirst();
-            }
+        // int i = 0;
+        // for (Pair<Pose2d, Double> pair : posesList) {
 
-            totalAmbiguity += 1 - pair.getSecond();
+        //     if (pair.getSecond() == 0) {
+        //         return pair.getFirst();
+        //     }
 
-            Translation2d t = pair.getFirst().getTranslation().times(1 - pair.getSecond());
-            translation = new Translation2d(translation.getX()+t.getX(), translation.getY()+t.getY());
-            Rotation2d r = pair.getFirst().getRotation().times(1 - pair.getSecond());
-            rotation = new Rotation2d(rotation.getRadians() + r.getRadians());
+        //     totalAmbiguity += 1 - pair.getSecond();
 
-            SmartDashboard.putString("Pose"+ i, pair.getFirst().toString());
-            SmartDashboard.putString("Translation"+ i, pair.getFirst().getTranslation().times(1 - pair.getSecond()).toString());
-            SmartDashboard.putString("Ambiguity"+ i++, pair.getSecond().toString());
+        //     Translation2d t = pair.getFirst().getTranslation().times(1 - pair.getSecond());
+        //     translation = new Translation2d(translation.getX()+t.getX(), translation.getY()+t.getY());
+        //     Rotation2d r = pair.getFirst().getRotation().times(1 - pair.getSecond());
+        //     rotation = new Rotation2d(rotation.getRadians() + r.getRadians());
 
-        }
+        //     SmartDashboard.putString("Pose"+ i, pair.getFirst().toString());
+        //     SmartDashboard.putString("Translation"+ i, pair.getFirst().getTranslation().times(1 - pair.getSecond()).toString());
+        //     SmartDashboard.putString("Ambiguity"+ i++, pair.getSecond().toString());
 
-        SmartDashboard.putNumber("TotalAmbiguity", totalAmbiguity);
-        SmartDashboard.putString("Translation", translation.toString());
-        SmartDashboard.putNumber("Rotation", rotation.div(totalAmbiguity).getRadians());
+        // }
 
-        if (totalAmbiguity == 0) return null;
-        return new Pose2d(translation.div(totalAmbiguity), rotation.div(totalAmbiguity));
+        // SmartDashboard.putNumber("TotalAmbiguity", totalAmbiguity);
+        // SmartDashboard.putString("Translation", translation.toString());
+        // SmartDashboard.putNumber("Rotation", rotation.div(totalAmbiguity).getRadians());
+
+        // if (totalAmbiguity == 0) return null;
+        // return new Pose2d(translation.div(totalAmbiguity), rotation.div(totalAmbiguity));
 
     }
     

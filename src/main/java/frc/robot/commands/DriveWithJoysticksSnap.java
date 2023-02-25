@@ -6,31 +6,33 @@ package frc.robot.commands;
 
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
 
-public class DriveWithJoysticks extends CommandBase {
+public class DriveWithJoysticksSnap extends CommandBase {
   private final Drive drive;
   private final DoubleSupplier xPercent;
   private final DoubleSupplier yPercent;
-  private final DoubleSupplier omegaPercent;
   private final boolean fieldRelative;
 
   private final AxisProcessor xProcessor = new AxisProcessor(false);
   private final AxisProcessor yProcessor = new AxisProcessor(false);
-  private final AxisProcessor omegaProcessor = new AxisProcessor(true);
+
+  private final PIDController omegaController = new PIDController(DriveConstants.driveSnapKp, 0, 0);
+  private double omegaGoal = 0;
 
   /** Creates a new DriveWithJoysticks. */
-  public DriveWithJoysticks(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, DoubleSupplier omegaPercent, boolean fieldRelative) {
+  public DriveWithJoysticksSnap(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, boolean fieldRelative) {
     this.drive = drive;
     this.xPercent = xPercent;
     this.yPercent = yPercent;
-    this.omegaPercent = omegaPercent;
     this.fieldRelative = fieldRelative;
+
+    omegaController.enableContinuousInput(-Math.PI, Math.PI);
 
     addRequirements(drive);
   }
@@ -40,7 +42,9 @@ public class DriveWithJoysticks extends CommandBase {
   public void initialize() {
     xProcessor.reset(xPercent.getAsDouble());
     yProcessor.reset(yPercent.getAsDouble());
-    omegaProcessor.reset(omegaPercent.getAsDouble());
+    if (Math.abs(drive.getRotation().getRadians()) > Math.PI / 2) {
+        omegaGoal = Math.PI - 0.01;
+    }
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -48,7 +52,7 @@ public class DriveWithJoysticks extends CommandBase {
   public void execute() {
     double xMPerS = xProcessor.processJoystickInputs(xPercent.getAsDouble() * 0.75) * DriveConstants.maxDriveSpeed;
     double yMPerS = yProcessor.processJoystickInputs(yPercent.getAsDouble() * 0.75) * DriveConstants.maxDriveSpeed;
-    double omegaRadPerS = omegaProcessor.processJoystickInputs(omegaPercent.getAsDouble()) * DriveConstants.maxTurnRate;
+    double omegaRadPerS = Math.min(omegaController.calculate(drive.getRotation().getRadians(), omegaGoal), DriveConstants.maxTurnRate);
 
     //Convert to field relative speeds
     ChassisSpeeds targetSpeeds = fieldRelative

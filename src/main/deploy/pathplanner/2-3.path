@@ -17,10 +17,7 @@
       "isStopPoint": false,
       "stopEvent": {
         "names": [
-          "Home",
-          "PlaceCube",
-          "Stow",
-          "Invert"
+          "Home"
         ],
         "executionBehavior": "sequential",
         "waitBehavior": "none",

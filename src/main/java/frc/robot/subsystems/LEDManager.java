@@ -93,13 +93,13 @@ public class LEDManager extends SubsystemBase {
     private void rainbow() {
         for (int i = 0; i < LEDConstants.armLedCount; i++) {
             int hue = (rainbowFirstPixelHue + 90 + (i * 180 / LEDConstants.armLedCount)) % 180;
-            armLedBuffer.setHSV(i, hue, 255, 255);
+            armLedBuffer.setHSV(i, hue, 255, 10);
         }
 
         for (int i = 0; i < LEDConstants.baseLedCount; i++) {
             int hue = (rainbowFirstPixelHue + 90 + (i * 180 / LEDConstants.baseLedCount)) % 180;
-            leftBaseLedBuffer.setHSV(i, hue, 255, 255);
-            rightBaseLedBuffer.setHSV(i, hue, 255, 255);
+            leftBaseLedBuffer.setHSV(i, hue, 255, 10);
+            rightBaseLedBuffer.setHSV(i, hue, 255, 10);
         }
         
         if (LEDConstants.dynamicRainbow) {

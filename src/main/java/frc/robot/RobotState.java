@@ -93,7 +93,10 @@ public class RobotState {
     }
 
     public void recordVisionObservations(Pose2d pose, double latencyS) {
-        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()-latencyS);
+        double rot = poseEstimator.getEstimatedPosition().getRotation().getRadians();
+        if (Math.abs(rot) < 0.05 || Math.abs(Math.abs(rot)-Math.PI) < 0.05) {
+            poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()-latencyS);
+        }
     }
 
     public void setFieldToVehicle(Rotation2d rotation, SwerveModulePosition[] modulePositions, Pose2d fieldToVehicle) {
