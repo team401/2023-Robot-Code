@@ -2,6 +2,7 @@ package frc.robot.commands.pivot;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
@@ -17,6 +18,9 @@ public class HoldPivot extends CommandBase {
     private TelescopeSubsystem telescope;
 
     private State goalState;
+    private TrapezoidProfile profile;
+
+    private final Timer timer = new Timer();
 
     public HoldPivot(PivotSubsystem pivot, TelescopeSubsystem telescope) {
         this.pivot = pivot;
@@ -28,12 +32,20 @@ public class HoldPivot extends CommandBase {
     @Override
     public void initialize() {
         goalState = new State(pivot.getDesiredSetpointRad().position, 0);
+
+        profile = new TrapezoidProfile(pivot.getConstraintsRad(), goalState,
+            new State(pivot.getPositionRad(), pivot.getVelRadS()));
+
+        timer.reset();
+        timer.start();
     }
 
     @Override
     public void execute() {
+        State setpoint = profile.calculate(timer.get());
+
         // Calculate output from feedforward & PID
-        double pivotOut = pivot.calculateControl(goalState, telescope.getPositionM());
+        double pivotOut = pivot.calculateControl(setpoint, telescope.getPositionM());
 
         pivot.setVolts(pivotOut);
         // pivot.setSimPos(goalState.position);

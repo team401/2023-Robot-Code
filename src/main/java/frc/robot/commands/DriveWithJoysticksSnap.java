@@ -22,7 +22,7 @@ public class DriveWithJoysticksSnap extends CommandBase {
   private final AxisProcessor xProcessor = new AxisProcessor(false);
   private final AxisProcessor yProcessor = new AxisProcessor(false);
 
-  private final PIDController omegaController = new PIDController(DriveConstants.driveSnapKp, 0, 0);
+  private final PIDController omegaController = new PIDController(DriveConstants.driveSnapKp, DriveConstants.driveSnapKi, DriveConstants.driveSnapKd);
   private double omegaGoal = 0;
 
   /** Creates a new DriveWithJoysticks. */
@@ -43,7 +43,7 @@ public class DriveWithJoysticksSnap extends CommandBase {
     xProcessor.reset(xPercent.getAsDouble());
     yProcessor.reset(yPercent.getAsDouble());
     if (Math.abs(drive.getRotation().getRadians()) > Math.PI / 2) {
-        omegaGoal = Math.PI - 0.01;
+        omegaGoal = Math.PI;
     }
   }
 

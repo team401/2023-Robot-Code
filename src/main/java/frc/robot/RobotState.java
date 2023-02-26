@@ -5,6 +5,7 @@ import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
@@ -79,34 +80,43 @@ public class RobotState {
 
     private final Field2d field = new Field2d();
 
+    private SwerveDriveOdometry driveOdometry;
+
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
-            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.08, 0.08, 0.08), // State measurement standard deviations. X, Y, theta.
+            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.02), // State measurement standard deviations. X, Y, theta.
             new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.02) // Vision measurement standard deviations. X, Y, theta.
             // Increase to trust less
         );
-        SmartDashboard.putData(field);
+        // SmartDashboard.putData(field);
+        driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
     }
 
     public void recordDriveObservations(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator.updateWithTime(Timer.getFPGATimestamp(), rotation, modulePositions);
+        driveOdometry.update(rotation, modulePositions);
     }
 
     public void recordVisionObservations(Pose2d pose, double latencyS) {
         double rot = poseEstimator.getEstimatedPosition().getRotation().getRadians();
-        if (Math.abs(rot) < 0.05 || Math.abs(Math.abs(rot)-Math.PI) < 0.05) {
+        // if (Math.abs(rot) < 0.05 || Math.abs(Math.abs(rot)-Math.PI) < 0.05) {
             poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()-latencyS);
-        }
+        // }
     }
 
     public void setFieldToVehicle(Rotation2d rotation, SwerveModulePosition[] modulePositions, Pose2d fieldToVehicle) {
         poseEstimator.resetPosition(rotation, modulePositions, fieldToVehicle);
+        driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
     public Pose2d getFieldToVehicle() {
-        SmartDashboard.putNumber("GetFieldToVehicleTime", System.currentTimeMillis());
+        SmartDashboard.putNumber("PosX", poseEstimator.getEstimatedPosition().getX());
         field.setRobotPose(poseEstimator.getEstimatedPosition());
         return poseEstimator.getEstimatedPosition();
+    }
+
+    public Pose2d getOdometryFieldToVehicle() {
+        return driveOdometry.getPoseMeters();
     }
 
     public void invertBack() {

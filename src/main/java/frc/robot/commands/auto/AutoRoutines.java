@@ -69,8 +69,9 @@ public class AutoRoutines extends SequentialCommandGroup {
 
         if (pathName.equals("1-1") || pathName.equals("3-1")) {
             addCommands(
-                new InstantCommand(() -> drive.setFieldToVehicle(new Pose2d(pathGroup.get(0).getInitialPose().getTranslation(), new Rotation2d(Math.PI)))),
+                new InstantCommand(() -> drive.setFieldToVehicle(new Pose2d(pathGroup.get(0).getInitialPose().getTranslation(), new Rotation2d(0)))),
                 home(),
+                invert(),
                 placeCube(),
                 new ParallelRaceGroup(
                     drive( pathGroup.get(0)),
@@ -79,8 +80,8 @@ public class AutoRoutines extends SequentialCommandGroup {
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(1)),
-                    ((stow().andThen(hold())).raceWith(new WaitCommand(pathGroup.get(1).getTotalTimeSeconds()/3)))
-                        .andThen(preparePlaceCone()).andThen(hold())
+                    ((stow().andThen(hold())).raceWith(new WaitCommand(pathGroup.get(1).getTotalTimeSeconds()*0.7)))
+                        .andThen(invert()).andThen(preparePlaceCone()).andThen(hold())
                 ),
                 placeCone(),
                 new ParallelCommandGroup(
@@ -170,9 +171,11 @@ public class AutoRoutines extends SequentialCommandGroup {
             new MovePivot(pivot, telescope, () -> ArmPositions.placeCubeHigh[0])
                 .alongWith(new MoveTelescope(telescope, pivot, () -> ArmPositions.placeCubeHigh[1],() -> ArmPositions.placeCubeHigh[0]))
                 .alongWith(new MoveWrist(wrist, pivot, () -> ArmPositions.placeCubeHigh[2])),
-            new InstantCommand(intake::place),
-            new WaitCommand(0.25),
-            new InstantCommand(intake::stopMotor)
+            stow().raceWith(new SequentialCommandGroup(
+                new InstantCommand(intake::place),
+                new WaitCommand(0.25),
+                new InstantCommand(intake::stopMotor)
+            ))
         );
     }
 

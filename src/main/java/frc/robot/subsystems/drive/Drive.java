@@ -135,7 +135,6 @@ public class Drive extends SubsystemBase {
 
         RobotState.getInstance().getFieldToVehicle();
 
-        SmartDashboard.putNumber("Roll", driveAngle.getRoll());
         SmartDashboard.putNumber("Pitch", driveAngle.getPitch());
 
     }
@@ -189,8 +188,8 @@ public class Drive extends SubsystemBase {
     /**
      * @return the roll of the gyro in radians
      */
-    public double getRoll() {
-        return driveAngle.getRoll();
+    public double getPitch() {
+        return driveAngle.getPitch();
     }
 
     /**

@@ -5,12 +5,12 @@
 package frc.robot;
 
 import java.util.HashMap;
+import java.util.List;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,18 +18,6 @@ import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.commands.auto.Balance;
-import frc.robot.commands.wrist.MoveWrist;
-import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
-import frc.robot.subsystems.WristSubsystem;
-import frc.robot.subsystems.drive.Drive;
 
 public final class Constants {
     public static final class CANDevices {
@@ -89,6 +77,8 @@ public final class Constants {
         public static final double rotationKd = 0.1;
 
         public static final double driveSnapKp = 1;
+        public static final double driveSnapKi = 1;
+        public static final double driveSnapKd = 1;
 
         public static final SwerveDriveKinematics kinematics = 
             new SwerveDriveKinematics(
@@ -220,7 +210,8 @@ public final class Constants {
 
     public static final class VisionConstants {
 
-        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(0.23, 0.146, 0), new Rotation3d(0, 0, Math.PI));
+        public static Transform3d vehicleToFrontCamera = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
+        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, Math.PI));//0.23, 0.146
 
         public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
             put(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
@@ -232,6 +223,18 @@ public final class Constants {
             put(7, new Pose3d(new Translation3d(1.03, 2.68, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//105.5
             put(8, new Pose3d(new Translation3d(1.03, 1.054, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//41.5
         }};
+
+        public static final List<AprilTag> aprilTags = List.of(
+            new AprilTag(0, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
+            new AprilTag(1, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
+            new AprilTag(2, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
+            new AprilTag(3, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
+            new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
+            new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))),
+            new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.33, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))),
+            new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.68, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))),
+            new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.054, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))))
+        );
         
         /*
         public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
@@ -274,6 +277,12 @@ public final class Constants {
         public static final double autoRotationKp = 3.5;
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
+
+        public static final double autoBalanceKp = 0.0;
+        public static final double autoBalanceKi = 0.0;
+        public static final double autoBalanceKd = 0.0;
+
+        public static final double initialBalanceSpeed = 2;
 
         /*public static final HashMap<String, Command> eventMap = new HashMap<>() {{
             
