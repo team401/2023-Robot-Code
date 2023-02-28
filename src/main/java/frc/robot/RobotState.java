@@ -84,11 +84,11 @@ public class RobotState {
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
-            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.02), // State measurement standard deviations. X, Y, theta.
-            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 0.02) // Vision measurement standard deviations. X, Y, theta.
+            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.04, 0.04, 0.02), // State measurement standard deviations. X, Y, theta.
+            new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 9999) // Vision measurement standard deviations. X, Y, theta.
             // Increase to trust less
         );
-        // SmartDashboard.putData(field);
+        SmartDashboard.putData(field);
         driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
     }
 
@@ -98,10 +98,7 @@ public class RobotState {
     }
 
     public void recordVisionObservations(Pose2d pose, double latencyS) {
-        double rot = poseEstimator.getEstimatedPosition().getRotation().getRadians();
-        // if (Math.abs(rot) < 0.05 || Math.abs(Math.abs(rot)-Math.PI) < 0.05) {
-            poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()-latencyS);
-        // }
+        poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()-latencyS);
     }
 
     public void setFieldToVehicle(Rotation2d rotation, SwerveModulePosition[] modulePositions, Pose2d fieldToVehicle) {
@@ -110,9 +107,9 @@ public class RobotState {
     }
 
     public Pose2d getFieldToVehicle() {
-        SmartDashboard.putNumber("PosX", poseEstimator.getEstimatedPosition().getX());
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
-        return poseEstimator.getEstimatedPosition();
+        // field.setRobotPose(poseEstimator.getEstimatedPosition());
+        field.setRobotPose(driveOdometry.getPoseMeters());
+        return driveOdometry.getPoseMeters();//poseEstimator.getEstimatedPosition();
     }
 
     public Pose2d getOdometryFieldToVehicle() {

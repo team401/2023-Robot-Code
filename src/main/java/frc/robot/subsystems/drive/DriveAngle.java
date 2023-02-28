@@ -54,7 +54,11 @@ public class DriveAngle {
         degHeadingOffset = pigeon.getYaw();
     } 
 
-    /**
+    public void setHeading(double headingRad) {
+        degHeadingOffset = Units.degreesToRadians(pigeon.getYaw()) - headingRad;
+    }
+
+    /**a
      * @return the pitch reported by the gyro minus the offset (radians)
      */
     public double getPitch() {

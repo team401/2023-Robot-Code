@@ -22,6 +22,8 @@ import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.DriveWithJoysticksSnap;
 import frc.robot.commands.auto.AutoRoutines;
+import frc.robot.commands.auto.Balance;
+import frc.robot.commands.auto.CenterTag;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -113,15 +115,11 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
 
         new JoystickButton(rightStick, 3)
-            .onTrue(new InstantCommand(() -> drive.setFieldToVehicle(new Pose2d(1.9, 4.43, new Rotation2d(0)))));
+            .whileTrue(new CenterTag(drive, vision));
 
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
-
-
-        new JoystickButton(leftStick, 2)
-            .onTrue(new InstantCommand(wrist::zeroOffset));
 
         new JoystickButton(leftStick, 8) 
             .onTrue(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0.500)))
@@ -172,23 +170,21 @@ public class RobotContainer {
 
         // Intake
         masher.intake()
-            .onTrue(new InstantCommand(intake::intake)) // start intake
-            .onFalse(new InstantCommand(intake::stopMotor)); // stop intake
+            .onTrue(new InstantCommand(intake::toggleIntake)); // toggle intake
 
         masher.place()
             .onTrue(new InstantCommand(intake::place)) // start place
-            .onFalse(new InstantCommand(intake::stopMotor)); // stop place
+            .onFalse(new InstantCommand(intake::stop)); // stop place
         }
 
     private void configureAutos() {
         // Select path
-        int i = 0;
         for (int start = 1; start <= 3; start++) {
-            for (int path = 1; path <= 3; path++) {
-                autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake));
+            for (int path = 1; path <= 2; path++) {
+                autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
             }
         }
-        autoChooser.setDefaultOption("1-1", new AutoRoutines("1-1", drive, pivot, telescope, wrist, intake));
+        autoChooser.setDefaultOption("1-1", new AutoRoutines("1-1", drive, pivot, telescope, wrist, intake, vision));
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 

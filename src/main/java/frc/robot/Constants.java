@@ -90,11 +90,11 @@ public final class Constants {
 
         public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.4, 3.265);
 
-        public static final double maxDriveSpeed = 14.4;
+        public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;
 
         public static final double driveJoystickDeadbandPercent = 0.075;
-        public static final double driveMaxJerk = 100.0;
+        public static final double driveMaxJerk = 200.0;
 
     }
 
@@ -151,15 +151,16 @@ public final class Constants {
 
         public static final double[] intakeConeBackShelf = new double[] {0.674, 0.64, -0.87};
         public static final double[] intakeCubeShelf = new double[] {0.59, 0.55, 0.15};
-        public static final double[] intakeCubeGround = new double[] {-0.282, 0.086, 0.356};
+        public static final double[] intakeCubeGround = new double[] {-0.33, 0.086, 0.3};
         public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -0.964};
-        public static final double[] placeConeBackHigh = new double[] {0.558, 0.7, 1.02};
+        public static final double[] placeConeBackHigh = new double[] {0.558, 0.67, 1.02};
         public static final double[] placeConeBackMid = new double[] {0.551, 0.095, 1.02};
-        public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 0.518};
+        public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.515, 0.276, 0.410};
         public static final double[] stow = new double[] {Math.PI / 2, 0.05, Math.PI / 2};
 
         public static final double wristConePlace = -0.88;
+        public static final double[] wristConePlaceHigh = new double[] {0.558, 0.67, -0.9};
 
     }
 
@@ -181,14 +182,11 @@ public final class Constants {
     public static final class LEDConstants {
 
         // Ports
-        public static final int armLedPort = 0;
-        public static final int leftBaseLedPort = 1;    
-        public static final int rightBaseLedPort = 2;
+        public static final int ledPort = 0;
 
         // LED Data
         public static final int armLedCount = 123;
-        public static final int baseLedCount = 64;
-        public static final int baseSideLedCount = 64;
+        public static final int baseLedCount = 128;
 
         // Rainbow
         public static final boolean dynamicRainbow = true;
@@ -203,15 +201,15 @@ public final class Constants {
 
         // Other
         public static final Color activeSideFlashColor = new Color(0, 0, 0);
-        public static final Color intakeFlashColor = new Color(50, 50, 50);
-        public static final Color whistleFlashColor = new Color(50, 37, 0);
+        public static final Color intakeFlashColor = new Color(255, 255, 255);
+        public static final Color whistleFlashColor = new Color(255, 179, 0);
 
     }
 
     public static final class VisionConstants {
 
         public static Transform3d vehicleToFrontCamera = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
-        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, Math.PI));//0.23, 0.146
+        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(0.2794, -0.1778, 0), new Rotation3d(0, 0, Math.PI));//0.23, 0.146
 
         public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
             put(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
@@ -219,112 +217,44 @@ public final class Constants {
             put(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
             put(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1))));
             put(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(6, new Pose3d(new Translation3d(1.03, 4.33, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//170.5
-            put(7, new Pose3d(new Translation3d(1.03, 2.68, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//105.5
-            put(8, new Pose3d(new Translation3d(1.03, 1.054, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//41.5
+            put(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+            put(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+            put(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
         }};
-
-        public static final List<AprilTag> aprilTags = List.of(
-            new AprilTag(0, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
-            new AprilTag(1, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
-            new AprilTag(2, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
-            new AprilTag(3, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
-            new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))),
-            new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))),
-            new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.33, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))),
-            new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.68, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))),
-            new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.054, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))))
-        );
-        
-        /*
-        public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
-            put(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(2, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//170.5
-            put(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//105.5
-            put(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));//41.5
-        }};
-         */
 
     }
 
     public static final class AutoConstants {
 
         /*
-        all autos score a cube
-        1-1: one cone + balance
-        1-2: two cones
-        1-3: two cones + balance
-        2-1: one cone + balance
-        2-2: two cones
-        2-3: two cones + balance
-        3-1: one cone + balance
-        3-2: two cones
-        3-3: two cones + balance
+        1-1: cone
+        1-2: cone + balance
+        2-1: nothing
+        2-2: balance
+        3-1: cone
+        3-2: cone + balance
         */
 
-        // hopefully we can increase these to 5 and 5
-        public static final double kMaxVelocityMetersPerSecond = 3;
+        // hopefully we can increase these to 3 and 5
+        public static final double kMaxVelocityMetersPerSecond = 1;
         public static final double kMaxAccelerationMetersPerSecondSquared = 1;
 
         public static final double autoTranslationKp = 2.5;
         public static final double autoTranslationKi = 0;
         public static final double autoTranslationKd = 0;
 
-        public static final double autoRotationKp = 3.5;
+        public static final double autoRotationKp = 0;
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.0;
+        public static final double autoBalanceKp = 0.2;
         public static final double autoBalanceKi = 0.0;
         public static final double autoBalanceKd = 0.0;
 
-        public static final double initialBalanceSpeed = 2;
+        public static final double initialBalanceSpeed = 1;
 
-        /*public static final HashMap<String, Command> eventMap = new HashMap<>() {{
-            
-            put("WaitUntilHomed", new WaitUntilCommand(() -> (AutoNotConstants.wrist.homed && AutoNotConstants.telescope.homed)));
-            put("PlaceCube", new SequentialCommandGroup(
-                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
-                RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.High),
-                new InstantCommand(AutoNotConstants.intake::place),
-                new WaitCommand(0.25),
-                new InstantCommand(AutoNotConstants.intake::stopMotor)
-            ));
-            put("PlaceCone", new SequentialCommandGroup(
-                new MoveWrist(AutoNotConstants.wrist, AutoNotConstants.pivot, () -> ArmPositions.wristConePlace),
-                new InstantCommand(AutoNotConstants.intake::stopMotor)
-            ));
-            put("PreparePlaceCone", new InstantCommand(
-                () -> RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.High).schedule()
-            ));
-            put("PickupCone", new SequentialCommandGroup(
-                new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeBack)),
-                new InstantCommand(() -> RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.Ground).schedule()),
-                new InstantCommand(AutoNotConstants.intake::intake)
-            ));
-            put("Stow", new InstantCommand(
-                () -> RobotState.getInstance().getMoveCommand(AutoNotConstants.pivot, AutoNotConstants.telescope, AutoNotConstants.wrist, Position.Stow).schedule()
-            ));
-            put("Invert", new InstantCommand(
-                () -> RobotState.getInstance().invertBack()
-            ));
-            put("Balance", new Balance(AutoNotConstants.drive));
-        }};*/
-        
+        //2.64, 0.784, 1.76
+
     }
-
-    /*public static class AutoNotConstants {
-
-        public static Drive drive;
-        public static PivotSubsystem pivot;
-        public static TelescopeSubsystem telescope;
-        public static WristSubsystem wrist;
-        public static IntakeSubsystem intake;
-
-    }*/
 
 }

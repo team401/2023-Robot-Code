@@ -8,11 +8,13 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
+import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CANDevices;
 
 /**
@@ -135,7 +137,7 @@ public class Drive extends SubsystemBase {
 
         RobotState.getInstance().getFieldToVehicle();
 
-        SmartDashboard.putNumber("Pitch", driveAngle.getPitch());
+        SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 
     }
 
@@ -156,6 +158,13 @@ public class Drive extends SubsystemBase {
      * @param speeds the desired speed of the robot
      */
     public void setGoalChassisSpeeds(ChassisSpeeds speeds) {
+        if (DriverStation.isAutonomousEnabled()) {
+            speeds = new ChassisSpeeds(
+                Math.max(Math.min(speeds.vxMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), -AutoConstants.kMaxVelocityMetersPerSecond), 
+                Math.max(Math.min(speeds.vyMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), -AutoConstants.kMaxVelocityMetersPerSecond),
+                0
+            );
+        }
         speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.2 : 1));
         SwerveModuleState[] goalModuleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(goalModuleStates, DriveConstants.maxDriveSpeed);
@@ -185,11 +194,15 @@ public class Drive extends SubsystemBase {
         driveAngle.resetHeading();
     }
 
+    public void setHeading(double heading) {
+        driveAngle.setHeading(heading);
+    }
+
     /**
      * @return the roll of the gyro in radians
      */
-    public double getPitch() {
-        return driveAngle.getPitch();
+    public double getRoll() {
+        return driveAngle.getRoll();
     }
 
     /**

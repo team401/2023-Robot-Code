@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
@@ -14,7 +15,7 @@ public class Balance extends CommandBase {
 
     private final Drive drive;
 
-    private final PIDController pitchController = new PIDController(AutoConstants.autoBalanceKp, AutoConstants.autoBalanceKi, AutoConstants.autoBalanceKd);
+    private final PIDController rollController = new PIDController(AutoConstants.autoBalanceKp, AutoConstants.autoBalanceKi, AutoConstants.autoBalanceKd);
 
     private double translationDirection = 1;
 
@@ -22,6 +23,7 @@ public class Balance extends CommandBase {
     private double yawGoal = 0;
 
     private final Timer onStationTimer = new Timer();
+    private final Timer errorChecker = new Timer();
     private boolean onStationTimerStarted = false;
 
     public Balance(Drive drive) {
@@ -36,7 +38,7 @@ public class Balance extends CommandBase {
     public void initialize() {
 
         if (Math.abs(drive.getRotation().getRadians()) > Math.PI / 2) {
-            yawGoal = Math.PI;
+            yawGoal = Math.PI - 0.01;
         }
 
         double posX = RobotState.getInstance().getFieldToVehicle().getX();
@@ -51,31 +53,52 @@ public class Balance extends CommandBase {
         onStationTimer.stop();
         onStationTimerStarted = false;
 
+        errorChecker.reset();
+        errorChecker.start();
+
+        rollController.reset();
+        yawController.reset();
+
     }
 
     @Override
     public void execute() {
 
+        double omegaRadPerS = Math.min(yawController.calculate(drive.getRotation().getRadians(), yawGoal), DriveConstants.maxTurnRate);
+
         double xMPerS = 0;
 
-        if (!onStationTimer.hasElapsed(1.25)) {
+        if (!onStationTimer.hasElapsed(0.75)) {
             xMPerS = AutoConstants.initialBalanceSpeed * translationDirection;
-            if (Math.abs(drive.getPitch()) > 0.25 && !onStationTimerStarted) {
+            if (Math.abs(drive.getRoll()) > 0.2 && !onStationTimerStarted) {
                 onStationTimer.reset();
                 onStationTimer.start();
                 onStationTimerStarted = true;
+                errorChecker.reset();
+                errorChecker.start();
             }
         }
         else {
-            double output = pitchController.calculate(drive.getPitch(), 0);
+            double output = rollController.calculate(Math.abs(drive.getRoll()), 0);
             xMPerS = output * translationDirection;
+            omegaRadPerS = 0;
         }
 
-        double omegaRadPerS = Math.min(yawController.calculate(drive.getRotation().getRadians(), yawGoal), DriveConstants.maxTurnRate);
-
-        ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, 0, omegaRadPerS, drive.getRotation());
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, xMPerS, omegaRadPerS, drive.getRotation());
         drive.setGoalChassisSpeeds(targetSpeeds);
+
+        SmartDashboard.putNumber("ErorCheckerTime", errorChecker.get());
         
+    }
+
+    @Override
+    public boolean isFinished() {
+        return errorChecker.hasElapsed(2.5);
+    }
+
+    @Override
+    public void end(boolean isFinished) {
+        drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
     }
     
 }
