@@ -72,12 +72,12 @@ public class AutoRoutines extends SequentialCommandGroup {
         if (pathName.equals("1-1") || pathName.equals("3-1")) {
             addCommands(
                 resetOdometry(bluePathGroup, redPathGroup),
-                // home(),
-                // invert(),
-                // placeCone(),
+                home(),
+                invert(),
+                placeCone(),
                 new ParallelRaceGroup(
-                    drive(bluePathGroup.get(0), redPathGroup.get(0))
-                    // invert().andThen(pickupCube()).andThen(hold())
+                    drive(bluePathGroup.get(0), redPathGroup.get(0)),
+                    invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
                     drive(bluePathGroup.get(1), redPathGroup.get(1)).andThen(center()),
@@ -106,7 +106,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 ),
                 placeCube(),
                 new ParallelCommandGroup(
-                    drive(bluePathGroup.get(2), redPathGroup.get(2)).andThen(balance()),
+                    drive(bluePathGroup.get(2), redPathGroup.get(2)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
                     invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
                 )
             );
@@ -115,6 +115,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             addCommands(
                 resetOdometry(bluePathGroup, redPathGroup),
                 home(),
+                new InstantCommand(drive::resetHeading),
                 moveArm(ArmPositions.stow),
                 hold()
 
@@ -124,6 +125,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             addCommands(
                 resetOdometry(bluePathGroup, redPathGroup),
                 home(),
+                new InstantCommand(drive::resetHeading),
                 new ParallelCommandGroup(
                     balance(),
                     moveArm(ArmPositions.stow).andThen(hold())
@@ -158,8 +160,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             new InstantCommand(intake::toggleIntake),
             moveArm(ArmPositions.placeConeBackHigh),
             new InstantCommand(intake::stop),
-            moveArm(ArmPositions.wristConePlaceHigh),
-            moveArm(new double[] {ArmPositions.placeConeBackHigh[0]+0.2, ArmPositions.placeConeBackHigh[1], ArmPositions.placeConeBackHigh[2]})
+            moveArm(ArmPositions.wristConePlaceHigh)
         );
     }
 
@@ -217,16 +218,17 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command followPath(Drive drive, PathPlannerTrajectory trajectory) {
 
-        return new PPSwerveControllerCommand(
-            trajectory, 
-            () -> RobotState.getInstance().getFieldToVehicle(), // Pose supplier
-            new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-            new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // Y controller (usually the same values as X controller)
-            new PIDController(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-            drive::setGoalChassisSpeeds, // Module states consumer
-            false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-            drive // Requires this drive subsystem
-        );
+        return new FollowTrajectory(drive, trajectory);
+        // return new PPSwerveControllerCommand(
+        //     trajectory, 
+        //     () -> RobotState.getInstance().getFieldToVehicle(), // Pose supplier
+        //     new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+        //     new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // Y controller (usually the same values as X controller)
+        //     new PIDController(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+        //     drive::setGoalChassisSpeeds, // Module states consumer
+        //     false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
+        //     drive // Requires this drive subsystem
+        // ).raceWith(new tmp(trajectory));
 
     }
 

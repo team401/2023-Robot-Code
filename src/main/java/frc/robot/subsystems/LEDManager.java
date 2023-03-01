@@ -60,11 +60,11 @@ public class LEDManager extends SubsystemBase {
         }
         else {
             clear();
-            // setSideIndicator();
-            // flashActiveSide();
+            setSideIndicator();
             setIntakeModeIndicator();
-            // flashOnWhistle();
-            // flashOnIntake();
+            flashOnWhistle();
+            flashActiveSide();
+            flashOnIntake();
         }
 
         led.setData(ledBuffer);
@@ -108,7 +108,7 @@ public class LEDManager extends SubsystemBase {
     private void rainbow() {
         for (int i = 0; i < LEDConstants.armLedCount; i++) {
             int hue = (rainbowFirstPixelHue + 90 + (i * 180 / LEDConstants.armLedCount)) % 180;
-            setArmHSV(i, hue, 255, 255);
+            setArmHSV(i, hue, 255, 127);
         }
 
         for (int i = 0; i < LEDConstants.baseLedCount; i++) {
@@ -165,17 +165,17 @@ public class LEDManager extends SubsystemBase {
 
     private void setSideIndicator() {
 
-        for (int i = LEDConstants.baseLedCount/2; i < 3*LEDConstants.baseLedCount/4; i++) {
+        for (int i = LEDConstants.baseLedCount/2+1; i < 3*LEDConstants.baseLedCount/4; i++) {
             setBaseRGB(i, 0, 127, 0);
         }
-        for (int i = LEDConstants.baseLedCount/4; i < LEDConstants.baseLedCount/2; i++) {
+        for (int i = LEDConstants.baseLedCount/4; i <= LEDConstants.baseLedCount/2; i++) {
             setBaseRGB(i, 127, 0, 0);
         }
 
     }
 
     private void flashActiveSide() {
-        if (RobotState.getInstance().atStow() || (flashTimer.get()*10%10)%5 < 3) {
+        if (!RobotState.getInstance().atStow() || (flashTimer.get()*10%10)%5 < 3) {
             return;
         }
 
@@ -209,7 +209,7 @@ public class LEDManager extends SubsystemBase {
     private void flashOnWhistle() {
 
         if (DriverStation.isTeleopEnabled() && Math.abs(DriverStation.getMatchTime()-30) < 2.5) {
-            Color color = (flashTimer.get()*10%10)%4 < 2 ? Color.kBlack : LEDConstants.whistleFlashColor;
+            Color color = (flashTimer.get()*10%10)%5 < 2.5 ? Color.kBlack : LEDConstants.whistleFlashColor;
             for (int i = 0; i < LEDConstants.baseLedCount; i++) {
                 setBaseLED(i, color);
             }

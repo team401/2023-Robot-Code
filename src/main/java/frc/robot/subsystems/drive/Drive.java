@@ -119,6 +119,7 @@ public class Drive extends SubsystemBase {
             double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
             SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
             driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
+            // SmartDashboard.putNumber("DRiveOutputVolts"+i, driveModules[i].getDriveVoltageApplied());
 
             // Set module rotation
             double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
@@ -162,7 +163,7 @@ public class Drive extends SubsystemBase {
             speeds = new ChassisSpeeds(
                 Math.max(Math.min(speeds.vxMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), -AutoConstants.kMaxVelocityMetersPerSecond), 
                 Math.max(Math.min(speeds.vyMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), -AutoConstants.kMaxVelocityMetersPerSecond),
-                0
+                speeds.omegaRadiansPerSecond
             );
         }
         speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.2 : 1));
@@ -218,6 +219,17 @@ public class Drive extends SubsystemBase {
      */
     public void setFieldToVehicle(Pose2d fieldToVehicle) {
         RobotState.getInstance().setFieldToVehicle(getRotation(), modulePositions, fieldToVehicle);
+    }
+
+    public void setVolts(double v) {
+        driveModules[0].setDriveVoltage(-v);
+        driveModules[1].setDriveVoltage(v);
+        driveModules[2].setDriveVoltage(v);
+        driveModules[3].setDriveVoltage(v);
+    }
+
+    public double getVelocity() {
+        return (driveModules[0].getDriveVelocityMPerS() + driveModules[1].getDriveVelocityMPerS() + driveModules[2].getDriveVelocityMPerS() + driveModules[3].getDriveVelocityMPerS()) / 4;
     }
 
 }

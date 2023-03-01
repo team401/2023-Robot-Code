@@ -24,6 +24,7 @@ import frc.robot.commands.DriveWithJoysticksSnap;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
 import frc.robot.commands.auto.CenterTag;
+import frc.robot.commands.auto.MeasureWheelRadius;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -101,15 +102,18 @@ public class RobotContainer {
     private void configureCompBindings() {
         
         // Drive
+        // new JoystickButton(rightStick, 1)
+        //     .whileTrue(
+        //         new DriveWithJoysticksSnap(
+        //             drive,
+        //             () -> -leftStick.getRawAxis(1),
+        //             () -> -leftStick.getRawAxis(0),
+        //             true
+        //         )
+        //     );
+
         new JoystickButton(rightStick, 1)
-            .whileTrue(
-                new DriveWithJoysticksSnap(
-                    drive,
-                    () -> -leftStick.getRawAxis(1),
-                    () -> -leftStick.getRawAxis(0),
-                    true
-                )
-            );
+            .whileTrue(new Balance(drive));
 
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
@@ -125,9 +129,10 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0.500)))
             .onFalse(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0)));
 
+        // Overrides
+
         new JoystickButton(leftStick, 10)
             .onTrue(new HomeWrist(wrist));
-
              
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
@@ -184,12 +189,12 @@ public class RobotContainer {
                 autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
             }
         }
-        autoChooser.setDefaultOption("1-1", new AutoRoutines("1-1", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.setDefaultOption("2-1", new AutoRoutines("2-1", drive, pivot, telescope, wrist, intake, vision));
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
     public Command getAutonomousCommand() {
-        return autoChooser.getSelected();
+        return new AutoRoutines("1-1", drive, pivot, telescope, wrist, intake, vision);//autoChooser.getSelected();
     }
 
     public void enabledInit() {

@@ -80,7 +80,7 @@ public class CenterTag extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (timer.hasElapsed(0.5)) || noTagTimer.hasElapsed(0.5);
+        return (timer.hasElapsed(0.3)) || noTagTimer.hasElapsed(0.2);
     }
 
     @Override

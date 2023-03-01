@@ -61,15 +61,15 @@ public final class Constants {
 
         public static final double trackWidth = Units.inchesToMeters(17.75); // distance between the left and right wheels
         public static final double wheelBase = Units.inchesToMeters(23.75); // distance between the front and rear wheels
-        public static final double wheelRadiusM = 0.050686;
+        public static final double wheelRadiusM = Units.inchesToMeters(2.02125);
 
         public static final double driveWheelGearReduction = 6.86;
         public static final double rotationWheelGearReduction = 12.8;
 
-        public static final double frontLeftAngleOffset = 6.05;
-        public static final double frontRightAngleOffset = 4.435;
-        public static final double backLeftAngleOffset = 4.798;
-        public static final double backRightAngleOffset = 1.055;
+        public static final double frontLeftAngleOffset = 2.93-3.14;
+        public static final double frontRightAngleOffset = 1.28+3.14;
+        public static final double backLeftAngleOffset = 1.68-3.14;
+        public static final double backRightAngleOffset = 1.06;
 
         public static final double driveKp = 0.2;
         public static final double driveKd = 2.0;
@@ -77,8 +77,8 @@ public final class Constants {
         public static final double rotationKd = 0.1;
 
         public static final double driveSnapKp = 1;
-        public static final double driveSnapKi = 1;
-        public static final double driveSnapKd = 1;
+        public static final double driveSnapKi = 0;
+        public static final double driveSnapKd = 0;
 
         public static final SwerveDriveKinematics kinematics = 
             new SwerveDriveKinematics(
@@ -88,7 +88,7 @@ public final class Constants {
                 new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0) //rear right
         );
 
-        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.4, 3.265);
+        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.24, 3.265);
 
         public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;
@@ -153,7 +153,7 @@ public final class Constants {
         public static final double[] intakeCubeShelf = new double[] {0.59, 0.55, 0.15};
         public static final double[] intakeCubeGround = new double[] {-0.33, 0.086, 0.3};
         public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -0.964};
-        public static final double[] placeConeBackHigh = new double[] {0.558, 0.67, 1.02};
+        public static final double[] placeConeBackHigh = new double[] {0.558, 0.67, 1.5};
         public static final double[] placeConeBackMid = new double[] {0.551, 0.095, 1.02};
         public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.515, 0.276, 0.410};
@@ -236,14 +236,14 @@ public final class Constants {
         */
 
         // hopefully we can increase these to 3 and 5
-        public static final double kMaxVelocityMetersPerSecond = 1;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
+        public static final double kMaxVelocityMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
-        public static final double autoTranslationKp = 2.5;
+        public static final double autoTranslationKp = 3;
         public static final double autoTranslationKi = 0;
         public static final double autoTranslationKd = 0;
 
-        public static final double autoRotationKp = 0;
+        public static final double autoRotationKp = 1;
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
@@ -252,8 +252,6 @@ public final class Constants {
         public static final double autoBalanceKd = 0.0;
 
         public static final double initialBalanceSpeed = 1;
-
-        //2.64, 0.784, 1.76
 
     }
 

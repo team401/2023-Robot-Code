@@ -91,7 +91,7 @@ public class DriveModule {
     }
 
     public double getDriveVelocityMPerS() {
-        return driveMotor.getSelectedSensorVelocity() / 2048.0 * 10.0 * 2.0 * Math.PI / DriveConstants.driveWheelGearReduction;
+        return driveMotor.getSelectedSensorVelocity() / 2048.0 * 10.0 * 2 * Math.PI * DriveConstants.wheelRadiusM / DriveConstants.driveWheelGearReduction;
     }
 
     public void zeroEncoders() {

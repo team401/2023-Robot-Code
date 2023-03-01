@@ -65,6 +65,7 @@ public class Balance extends CommandBase {
     public void execute() {
 
         double omegaRadPerS = Math.min(yawController.calculate(drive.getRotation().getRadians(), yawGoal), DriveConstants.maxTurnRate);
+        omegaRadPerS = 0;
 
         double xMPerS = 0;
 
@@ -79,12 +80,12 @@ public class Balance extends CommandBase {
             }
         }
         else {
-            double output = rollController.calculate(Math.abs(drive.getRoll()), 0);
+            double output = rollController.calculate(drive.getRoll(), 0);
             xMPerS = output * translationDirection;
             omegaRadPerS = 0;
         }
 
-        ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(0, xMPerS, omegaRadPerS, drive.getRotation());
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, 0, omegaRadPerS, drive.getRotation());
         drive.setGoalChassisSpeeds(targetSpeeds);
 
         SmartDashboard.putNumber("ErorCheckerTime", errorChecker.get());
@@ -93,7 +94,7 @@ public class Balance extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return errorChecker.hasElapsed(2.5);
+        return errorChecker.hasElapsed(5);
     }
 
     @Override

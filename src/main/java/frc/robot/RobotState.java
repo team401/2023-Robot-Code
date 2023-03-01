@@ -48,6 +48,8 @@ public class RobotState {
 
     private boolean atStow = true;
 
+    private boolean hasIntaked = false;
+
     private Mechanism2d displayMechanism = 
         new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
     private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 2.5);
@@ -166,7 +168,11 @@ public class RobotState {
     }
 
     public boolean hasIntaked() {
-        return false;
+        return hasIntaked;
+    }
+
+    public void setIntaked(boolean i) {
+        hasIntaked = i;
     }
 
     public Command getMoveCommand(PivotSubsystem pivot, TelescopeSubsystem telescope, WristSubsystem wrist, Position position) {

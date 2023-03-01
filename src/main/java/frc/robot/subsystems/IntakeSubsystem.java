@@ -26,8 +26,8 @@ public class IntakeSubsystem extends SubsystemBase {
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
         
-        leftMotor.setSmartCurrentLimit(30);
-        rightMotor.setSmartCurrentLimit(30);
+        leftMotor.setSmartCurrentLimit(40);
+        rightMotor.setSmartCurrentLimit(40);
         
         leftMotor.burnFlash();
         rightMotor.burnFlash();
@@ -37,14 +37,17 @@ public class IntakeSubsystem extends SubsystemBase {
     public void toggleIntake() {
         intakeMode = intakeMode == IntakeMode.Intake ? IntakeMode.None : IntakeMode.Intake;
         exceededCurrentDraw = false;
+        RobotState.getInstance().setIntaked(false);
     }
 
     public void place() {
         intakeMode = IntakeMode.Place;
+        RobotState.getInstance().setIntaked(false);
     }
 
     public void stop() {
         intakeMode = IntakeMode.None;
+        RobotState.getInstance().setIntaked(false);
     }
 
     @Override
@@ -62,9 +65,10 @@ public class IntakeSubsystem extends SubsystemBase {
                     leftMotor.set(0.75);
                     rightMotor.set(0.75);
                 }
-                if ((RobotState.getInstance().getMode() == GamePieceMode.Cube && currentDraw > 30) || 
-                    (RobotState.getInstance().getMode() == GamePieceMode.Cube && currentDraw > 30)) {
+                if ((RobotState.getInstance().getMode() == GamePieceMode.Cube && currentDraw > 50) || 
+                    (RobotState.getInstance().getMode() == GamePieceMode.Cube && currentDraw > 50)) {
                     exceededCurrentDraw = true;
+                    RobotState.getInstance().setIntaked(true);
                 }
                 
             }
