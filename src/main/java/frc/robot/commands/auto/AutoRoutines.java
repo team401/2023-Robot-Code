@@ -40,7 +40,6 @@ import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 public class AutoRoutines extends SequentialCommandGroup {
 
@@ -61,26 +60,27 @@ public class AutoRoutines extends SequentialCommandGroup {
         vision = visionSubsystem;
 
         // Load path group"B-"+pathName
-        List<PathPlannerTrajectory> bluePathGroup = PathPlanner.loadPathGroup("B-"+pathName, new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-        List<PathPlannerTrajectory> redPathGroup = PathPlanner.loadPathGroup("R-"+pathName, new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-        if (bluePathGroup.size() == 0 || redPathGroup.size() == 0) {
+        List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+        // List<PathPlannerTrajectory> bluePathGroup = PathPlanner.loadPathGroup("B-1-1", new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+        // List<PathPlannerTrajectory> redPathGroup = PathPlanner.loadPathGroup("B-1-1", new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+        if (pathGroup.size() == 0) {
             SmartDashboard.putBoolean("FAILED TO LOAD PATH " + pathName, true);
             System.out.println("FAILED TO LOAD PATH " + pathName);
             return;
         }
 
-        if (pathName.equals("1-1") || pathName.equals("3-1")) {
+        if (pathName.endsWith("1-1")) {
             addCommands(
-                resetOdometry(bluePathGroup, redPathGroup),
+                resetOdometry(pathGroup),
                 home(),
                 invert(),
                 placeCone(),
                 new ParallelRaceGroup(
-                    drive(bluePathGroup.get(0), redPathGroup.get(0)),
+                    drive(pathGroup.get(0)),
                     invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(bluePathGroup.get(1), redPathGroup.get(1)).andThen(center()),
+                    drive(pathGroup.get(1)),
                     invert().andThen(preparePlaceCube()).andThen(hold())
                 ),
                 placeCube(),
@@ -89,31 +89,30 @@ public class AutoRoutines extends SequentialCommandGroup {
                 hold()
             );
         }
-        else if (pathName.equals("1-2") || pathName.equals("3-2")) {
+        else if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
             addCommands(
-                resetOdometry(bluePathGroup, redPathGroup),
+                resetOdometry(pathGroup),
                 home(),
                 invert(),
                 placeCone(),
-                moveArm(ArmPositions.stow),
                 new ParallelRaceGroup(
-                    drive(bluePathGroup.get(0), redPathGroup.get(0)),
+                    drive(pathGroup.get(0)),
                     invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(bluePathGroup.get(1), redPathGroup.get(1)).andThen(center()),
+                    drive(pathGroup.get(1)),
                     invert().andThen(preparePlaceCube()).andThen(hold())
                 ),
                 placeCube(),
                 new ParallelCommandGroup(
-                    drive(bluePathGroup.get(2), redPathGroup.get(2)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
+                    drive(pathGroup.get(2)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
                     invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
                 )
             );
         }
-        else if (pathName.equals("2-1")) {
+        else if (pathName.endsWith("2-1")) {
             addCommands(
-                resetOdometry(bluePathGroup, redPathGroup),
+                resetOdometry(pathGroup),
                 home(),
                 new InstantCommand(drive::resetHeading),
                 moveArm(ArmPositions.stow),
@@ -121,9 +120,9 @@ public class AutoRoutines extends SequentialCommandGroup {
 
             );
         }
-        else if (pathName.equals("2-2")) {
+        else if (pathName.endsWith("2-2")) {
             addCommands(
-                resetOdometry(bluePathGroup, redPathGroup),
+                resetOdometry(pathGroup),
                 home(),
                 new InstantCommand(drive::resetHeading),
                 new ParallelCommandGroup(
@@ -134,18 +133,17 @@ public class AutoRoutines extends SequentialCommandGroup {
         }
     }
 
-    private Command resetOdometry(List<PathPlannerTrajectory> bluePathGroup, List<PathPlannerTrajectory> redPathGroup) {
+    private Command resetOdometry(List<PathPlannerTrajectory> pathGroup) {
         return new InstantCommand( () -> {
-            List<PathPlannerTrajectory> pathGroup = DriverStation.getAlliance().equals(Alliance.Blue) ? bluePathGroup : redPathGroup;
             PathPlannerState initialState = pathGroup.get(0).getInitialState();
             drive.setHeading(initialState.holonomicRotation.getRadians());
             drive.setFieldToVehicle(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation));
         });
     }
 
-    private Command drive(PathPlannerTrajectory blueTrajectory, PathPlannerTrajectory redTrajectory) {
+    private Command drive(PathPlannerTrajectory trajectory) {
         return new SequentialCommandGroup(
-            followPath(drive, DriverStation.getAlliance().equals(Alliance.Blue) ? blueTrajectory : redTrajectory),
+            followPath(drive, trajectory),
             new InstantCommand(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)))
         );
     }

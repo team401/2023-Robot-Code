@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
@@ -20,6 +21,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private IntakeMode intakeMode = IntakeMode.None;
     private boolean exceededCurrentDraw = false;
+
+    private final Timer intakeTimer = new Timer();
     
     public IntakeSubsystem() {
         
@@ -32,12 +35,17 @@ public class IntakeSubsystem extends SubsystemBase {
         leftMotor.burnFlash();
         rightMotor.burnFlash();
 
+        intakeTimer.reset();
+        intakeTimer.start();
+
     }
 
     public void toggleIntake() {
         intakeMode = intakeMode == IntakeMode.Intake ? IntakeMode.None : IntakeMode.Intake;
         exceededCurrentDraw = false;
         RobotState.getInstance().setIntaked(false);
+        intakeTimer.reset();
+        intakeTimer.start();
     }
 
     public void place() {
@@ -53,20 +61,19 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
+        double currentDraw = (leftMotor.getOutputCurrent() + rightMotor.getOutputCurrent()) / 2;
+        SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
         if (intakeMode == IntakeMode.Intake) {
-            double currentDraw = (leftMotor.getOutputCurrent() + rightMotor.getOutputCurrent()) / 2;
-            SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
             if (!exceededCurrentDraw) {
                 if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-                    leftMotor.set(-0.75);
-                    rightMotor.set(-0.75);
+                    leftMotor.set(-1);
+                    rightMotor.set(-1);
                 }
                 else if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
-                    leftMotor.set(0.75);
-                    rightMotor.set(0.75);
+                    leftMotor.set(1);
+                    rightMotor.set(1);
                 }
-                if ((RobotState.getInstance().getMode() == GamePieceMode.Cube && currentDraw > 50) || 
-                    (RobotState.getInstance().getMode() == GamePieceMode.Cube && currentDraw > 50)) {
+                if (currentDraw > 35 && intakeTimer.hasElapsed(0.5)) {
                     exceededCurrentDraw = true;
                     RobotState.getInstance().setIntaked(true);
                 }

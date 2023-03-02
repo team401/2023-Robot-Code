@@ -67,7 +67,7 @@ public final class Constants {
         public static final double rotationWheelGearReduction = 12.8;
 
         public static final double frontLeftAngleOffset = 2.93-3.14;
-        public static final double frontRightAngleOffset = 1.28+3.14;
+        public static final double frontRightAngleOffset = -2.02;
         public static final double backLeftAngleOffset = 1.68-3.14;
         public static final double backRightAngleOffset = 1.06;
 
@@ -153,10 +153,10 @@ public final class Constants {
         public static final double[] intakeCubeShelf = new double[] {0.59, 0.55, 0.15};
         public static final double[] intakeCubeGround = new double[] {-0.33, 0.086, 0.3};
         public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -0.964};
-        public static final double[] placeConeBackHigh = new double[] {0.558, 0.67, 1.5};
-        public static final double[] placeConeBackMid = new double[] {0.551, 0.095, 1.02};
+        public static final double[] placeConeBackHigh = new double[] {0.558, 0.71, 1.5};
+        public static final double[] placeConeBackMid = new double[] {0.551, 0.15, 1.02};
         public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 1.5};
-        public static final double[] placeCubeMid = new double[] {0.515, 0.276, 0.410};
+        public static final double[] placeCubeMid = new double[] {0.515, 0.276, 1.5};
         public static final double[] stow = new double[] {Math.PI / 2, 0.05, Math.PI / 2};
 
         public static final double wristConePlace = -0.88;
@@ -236,18 +236,18 @@ public final class Constants {
         */
 
         // hopefully we can increase these to 3 and 5
-        public static final double kMaxVelocityMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+        public static final double kMaxVelocityMetersPerSecond = 2;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
 
-        public static final double autoTranslationKp = 3;
+        public static final double autoTranslationKp = 2;
         public static final double autoTranslationKi = 0;
         public static final double autoTranslationKd = 0;
 
-        public static final double autoRotationKp = 1;
+        public static final double autoRotationKp = 2;
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.2;
+        public static final double autoBalanceKp = 0.5;
         public static final double autoBalanceKi = 0.0;
         public static final double autoBalanceKd = 0.0;
 

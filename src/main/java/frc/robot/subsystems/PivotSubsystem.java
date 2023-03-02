@@ -107,6 +107,10 @@ public class PivotSubsystem extends SubsystemBase {
         return velocityRadS;
     }
 
+    public void toggleKill() {
+        dead = !dead;
+    }
+
     /**
      * @return Most recent setpoint set by a move command. This setpoint only exists for utility
      * purposes and is not used by the subsystem

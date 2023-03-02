@@ -64,7 +64,7 @@ public class LEDManager extends SubsystemBase {
             setIntakeModeIndicator();
             flashOnWhistle();
             flashActiveSide();
-            flashOnIntake();
+            // flashOnIntake();
         }
 
         led.setData(ledBuffer);

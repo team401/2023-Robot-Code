@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
@@ -118,9 +119,6 @@ public class RobotContainer {
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
 
-        new JoystickButton(rightStick, 3)
-            .whileTrue(new CenterTag(drive, vision));
-
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
@@ -130,9 +128,38 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0)));
 
         // Overrides
+        new JoystickButton(rightStick, 12)
+            .onTrue(new HomeWrist(wrist));
+        
+        new JoystickButton(rightStick, 13)
+            .onTrue(new HomeTelescope(telescope));
+        
+        new JoystickButton(rightStick, 15)
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(1.5), pivot));
+
+        new JoystickButton(rightStick, 14)
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-1.5), pivot));
+
+        new JoystickButton(leftStick, 7)
+            .onTrue(new InstantCommand(pivot::toggleKill));
+
+        new JoystickButton(leftStick, 6)
+            .onTrue(new InstantCommand(telescope::toggleKill));
+
+        new JoystickButton(leftStick, 5)
+            .onTrue(new InstantCommand(wrist::toggleKill));
 
         new JoystickButton(leftStick, 10)
-            .onTrue(new HomeWrist(wrist));
+            .onTrue(new InstantCommand(pivot::toggleKill))
+            .onTrue(new InstantCommand(telescope::toggleKill))
+            .onTrue(new InstantCommand(wrist::toggleKill));
+
+
+        /*
+         *             .onTrue(pivot.killCommand())
+            .onTrue(wrist.killCommand())
+            .onTrue(telescope.killCommand()); // kill
+         */
              
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
@@ -151,11 +178,6 @@ public class RobotContainer {
             
         masher.flipSide().onTrue(
             new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
-
-        masher.killAll()
-            .onTrue(pivot.killCommand())
-            .onTrue(wrist.killCommand())
-            .onTrue(telescope.killCommand()); // kill
 
         // Manually jog arm
         masher.jogPivotUp()
@@ -186,15 +208,24 @@ public class RobotContainer {
         // Select path
         for (int start = 1; start <= 3; start++) {
             for (int path = 1; path <= 2; path++) {
-                autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
+                // autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
             }
         }
-        autoChooser.setDefaultOption("2-1", new AutoRoutines("2-1", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.setDefaultOption("2-1", new AutoRoutines("2-1", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("B-1-1", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("R-1-1", new AutoRoutines("R-1-1", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("R-1-2", new AutoRoutines("R-1-2", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("B-2-1", new AutoRoutines("B-2-1", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("R-2-1", new AutoRoutines("R-2-1", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("B-2-2", new AutoRoutines("B-2-2", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("R-2-2", new AutoRoutines("R-2-2", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.setDefaultOption("B-2-1", new AutoRoutines("R-2-1", drive, pivot, telescope, wrist, intake, vision));
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
     public Command getAutonomousCommand() {
-        return new AutoRoutines("1-1", drive, pivot, telescope, wrist, intake, vision);//autoChooser.getSelected();
+        return autoChooser.getSelected();
     }
 
     public void enabledInit() {

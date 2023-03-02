@@ -101,6 +101,10 @@ public class WristSubsystem extends SubsystemBase {
         return constraintsRad;
     }
 
+    public void toggleKill() {
+        dead = !dead;
+    }
+
     /**
      * Does control calculations from its ArmFeedforward and PID controllers.
      * Does not command any motors.

@@ -88,6 +88,10 @@ public class TelescopeSubsystem extends SubsystemBase{
         return constraints;
     }
 
+    public void toggleKill() {
+        dead = !dead;
+    }
+
     /**
      * Does control calculations from its ArmFeedforward and PID controllers.
      * Does not command any motors.

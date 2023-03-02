@@ -17,10 +17,7 @@ public class Balance extends CommandBase {
 
     private final PIDController rollController = new PIDController(AutoConstants.autoBalanceKp, AutoConstants.autoBalanceKi, AutoConstants.autoBalanceKd);
 
-    private double translationDirection = 1;
-
     private final PIDController yawController = new PIDController(DriveConstants.driveSnapKp, DriveConstants.driveSnapKi, DriveConstants.driveSnapKd);
-    private double yawGoal = 0;
 
     private final Timer onStationTimer = new Timer();
     private final Timer errorChecker = new Timer();
@@ -37,18 +34,6 @@ public class Balance extends CommandBase {
     @Override
     public void initialize() {
 
-        if (Math.abs(drive.getRotation().getRadians()) > Math.PI / 2) {
-            yawGoal = Math.PI - 0.01;
-        }
-
-        double posX = RobotState.getInstance().getFieldToVehicle().getX();
-        if (DriverStation.getAlliance() == DriverStation.Alliance.Blue) {
-            translationDirection = posX < 4 ? 1 : -1;
-        }
-        else {
-            translationDirection = posX < 12.5 ? 1 : -1;
-        }
-
         onStationTimer.reset();
         onStationTimer.stop();
         onStationTimerStarted = false;
@@ -64,13 +49,13 @@ public class Balance extends CommandBase {
     @Override
     public void execute() {
 
-        double omegaRadPerS = Math.min(yawController.calculate(drive.getRotation().getRadians(), yawGoal), DriveConstants.maxTurnRate);
+        double omegaRadPerS = Math.min(yawController.calculate(drive.getRotation().getRadians(), 0), DriveConstants.maxTurnRate);
         omegaRadPerS = 0;
 
         double xMPerS = 0;
 
         if (!onStationTimer.hasElapsed(0.75)) {
-            xMPerS = AutoConstants.initialBalanceSpeed * translationDirection;
+            xMPerS = AutoConstants.initialBalanceSpeed;
             if (Math.abs(drive.getRoll()) > 0.2 && !onStationTimerStarted) {
                 onStationTimer.reset();
                 onStationTimer.start();
@@ -80,8 +65,8 @@ public class Balance extends CommandBase {
             }
         }
         else {
-            double output = rollController.calculate(drive.getRoll(), 0);
-            xMPerS = output * translationDirection;
+            double output = -rollController.calculate(drive.getRoll(), 0);
+            xMPerS = output;
             omegaRadPerS = 0;
         }
 
@@ -94,7 +79,7 @@ public class Balance extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return errorChecker.hasElapsed(5);
+        return errorChecker.hasElapsed(3);
     }
 
     @Override

@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -83,6 +84,8 @@ public class FollowTrajectory extends CommandBase {
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
         //}
 
+        SmartDashboard.putString("ActualAutoPos", latestFieldToVehicle.toString());
+        SmartDashboard.putString("DesiredAutoPos", desiredState.toString());
         drive.setGoalChassisSpeeds(adjustedSpeeds);
     }
 
