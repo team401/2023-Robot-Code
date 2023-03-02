@@ -113,9 +113,6 @@ public class RobotContainer {
                 )
             );
 
-        // new JoystickButton(rightStick, 1)
-        //     .whileTrue(new Balance(drive));
-
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
 
@@ -140,6 +137,7 @@ public class RobotContainer {
         new JoystickButton(rightStick, 14)
             .whileTrue(new RunCommand(() -> pivot.overrideVolts(-1.5), pivot));
 
+        // Kill
         new JoystickButton(leftStick, 7)
             .onTrue(new InstantCommand(pivot::toggleKill));
 
@@ -153,13 +151,6 @@ public class RobotContainer {
             .onTrue(new InstantCommand(pivot::toggleKill))
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
-
-
-        /*
-         *             .onTrue(pivot.killCommand())
-            .onTrue(wrist.killCommand())
-            .onTrue(telescope.killCommand()); // kill
-         */
              
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->

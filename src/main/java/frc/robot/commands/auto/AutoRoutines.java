@@ -59,10 +59,9 @@ public class AutoRoutines extends SequentialCommandGroup {
         intake = intakeSubsystem;
         vision = visionSubsystem;
 
-        // Load path group"B-"+pathName
+        // To transfrom blue path to red path on the x-axis do 16.53-x
+        // Load path group
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-        // List<PathPlannerTrajectory> bluePathGroup = PathPlanner.loadPathGroup("B-1-1", new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
-        // List<PathPlannerTrajectory> redPathGroup = PathPlanner.loadPathGroup("B-1-1", new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
         if (pathGroup.size() == 0) {
             SmartDashboard.putBoolean("FAILED TO LOAD PATH " + pathName, true);
             System.out.println("FAILED TO LOAD PATH " + pathName);
