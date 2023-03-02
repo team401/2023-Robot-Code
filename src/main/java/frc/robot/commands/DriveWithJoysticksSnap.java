@@ -51,7 +51,7 @@ public class DriveWithJoysticksSnap extends CommandBase {
     public void execute() {
         double xMPerS = xProcessor.processJoystickInputs(xPercent.getAsDouble() * 0.75) * DriveConstants.maxDriveSpeed;
         double yMPerS = yProcessor.processJoystickInputs(yPercent.getAsDouble() * 0.75) * DriveConstants.maxDriveSpeed;
-        double omegaRadPerS = Math.min(omegaController.calculate(drive.getRotation().getRadians(), omegaGoal), DriveConstants.maxTurnRate);
+        double omegaRadPerS = Math.max(Math.min(omegaController.calculate(drive.getRotation().getRadians(), omegaGoal), DriveConstants.maxTurnRate), -DriveConstants.maxTurnRate);
 
         //Convert to field relative speeds
         ChassisSpeeds targetSpeeds = fieldRelative

@@ -76,7 +76,7 @@ public final class Constants {
         public static final double rotationKp = 4.7;
         public static final double rotationKd = 0.1;
 
-        public static final double driveSnapKp = 1;
+        public static final double driveSnapKp = 1.5;
         public static final double driveSnapKi = 0;
         public static final double driveSnapKd = 0;
 

@@ -103,18 +103,18 @@ public class RobotContainer {
     private void configureCompBindings() {
         
         // Drive
-        // new JoystickButton(rightStick, 1)
-        //     .whileTrue(
-        //         new DriveWithJoysticksSnap(
-        //             drive,
-        //             () -> -leftStick.getRawAxis(1),
-        //             () -> -leftStick.getRawAxis(0),
-        //             true
-        //         )
-        //     );
-
         new JoystickButton(rightStick, 1)
-            .whileTrue(new Balance(drive));
+            .whileTrue(
+                new DriveWithJoysticksSnap(
+                    drive,
+                    () -> -leftStick.getRawAxis(1),
+                    () -> -leftStick.getRawAxis(0),
+                    true
+                )
+            );
+
+        // new JoystickButton(rightStick, 1)
+        //     .whileTrue(new Balance(drive));
 
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
