@@ -197,12 +197,11 @@ public class RobotContainer {
 
     private void configureAutos() {
         // Select path
-        for (int start = 1; start <= 3; start++) {
-            for (int path = 1; path <= 2; path++) {
-                // autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
-            }
-        }
-        // autoChooser.setDefaultOption("2-1", new AutoRoutines("2-1", drive, pivot, telescope, wrist, intake, vision));
+        // for (int start = 1; start <= 3; start++) {
+        //     for (int path = 1; path <= 2; path++) {
+        //         autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
+        //     }
+        // }
         autoChooser.addOption("B-1-1", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
         autoChooser.addOption("R-1-1", new AutoRoutines("R-1-1", drive, pivot, telescope, wrist, intake, vision));
         autoChooser.addOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
@@ -220,11 +219,8 @@ public class RobotContainer {
     }
 
     public void enabledInit() {
-        if (!telescope.homed && DriverStation.isTeleop()) {
+        if (DriverStation.isTeleop()) {
             new HomeTelescope(telescope).schedule();
-        }
-
-        if (!wrist.homed && DriverStation.isTeleop()) {
             new HomeWrist(wrist).schedule();
         }
 
