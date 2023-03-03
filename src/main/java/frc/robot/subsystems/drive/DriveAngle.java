@@ -55,7 +55,7 @@ public class DriveAngle {
     } 
 
     public void setHeading(double headingRad) {
-        degHeadingOffset = Units.degreesToRadians(pigeon.getYaw()) - headingRad;
+        degHeadingOffset = pigeon.getYaw() - Units.radiansToDegrees(headingRad);
     }
 
     /**a
