@@ -175,7 +175,7 @@ public class LEDManager extends SubsystemBase {
     }
 
     private void flashActiveSide() {
-        if (!RobotState.getInstance().atStow() || (flashTimer.get()*10%10)%5 < 3) {
+        if ((flashTimer.get()*10%10)%5 < 3) {
             return;
         }
 

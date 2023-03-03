@@ -8,11 +8,13 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
@@ -34,13 +36,13 @@ public class TelescopeSubsystem extends SubsystemBase{
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the pivot subsytem.
-    private final PIDController controller = new PIDController(TelescopeConstants.kP, 0, 0);
     private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
         TelescopeConstants.kS,
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
         new TrapezoidProfile.Constraints(2, 2);
-
+        private final ProfiledPIDController controller = new ProfiledPIDController(TelescopeConstants.kP, 0, 0, constraints);
+        
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
 
@@ -112,7 +114,7 @@ public class TelescopeSubsystem extends SubsystemBase{
      * Resets the PID controller stored in this subsystem.
      */
     public void resetPID() {
-        controller.reset();
+        controller.reset(new TrapezoidProfile.State(getPositionM(), getVel()));
     }
 
     /**

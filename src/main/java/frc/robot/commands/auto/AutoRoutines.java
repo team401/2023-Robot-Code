@@ -33,6 +33,7 @@ import frc.robot.commands.telescope.HoldTelescope;
 import frc.robot.commands.telescope.HomeTelescope;
 import frc.robot.commands.telescope.MoveTelescope;
 import frc.robot.commands.wrist.HoldWrist;
+import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
@@ -71,6 +72,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         if (pathName.endsWith("1-1")) {
             addCommands(
                 resetOdometry(pathGroup),
+                new InstantCommand(intake::toggleIntake),
                 home(),
                 invert(),
                 placeCone(),
@@ -91,6 +93,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         else if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
             addCommands(
                 resetOdometry(pathGroup),
+                new InstantCommand(intake::toggleIntake),
                 home(),
                 invert(),
                 placeCone(),
@@ -154,10 +157,10 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command placeCone() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeBack)),
-            new InstantCommand(intake::toggleIntake),
+            new MoveWrist(wrist, pivot, () -> ArmPositions.stow[2]).withTimeout(1),
             moveArm(ArmPositions.placeConeBackHigh),
-            new InstantCommand(intake::stop),
-            moveArm(ArmPositions.wristConePlaceHigh)
+            moveArm(ArmPositions.wristConePlaceHigh),
+            new InstantCommand(intake::stop)
         );
     }
 
@@ -200,7 +203,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command home() {
         return new ParallelCommandGroup(
             new HomeTelescope(telescope),
-            new InstantCommand(() -> { wrist.zeroOffset(); wrist.homed = true; })
+            new InstantCommand(() -> {wrist.resetOffset();wrist.homed = true;})
         );
     }
 

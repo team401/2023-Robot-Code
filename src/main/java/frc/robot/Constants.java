@@ -67,7 +67,7 @@ public final class Constants {
         public static final double rotationWheelGearReduction = 12.8;
 
         public static final double frontLeftAngleOffset = 2.93-3.14;
-        public static final double frontRightAngleOffset = -2.02;
+        public static final double frontRightAngleOffset = 1.33-3.14;
         public static final double backLeftAngleOffset = 1.68-3.14;
         public static final double backRightAngleOffset = 1.06;
 
@@ -139,7 +139,7 @@ public final class Constants {
 
         public static final double gearRatio = 8.0 / 78;
 
-        public static final double kP = 6;
+        public static final double kP = 10;
         public static final double kI = 3;
         public static final double kV = 0.185;
         public static final double kA = 0.01; // estimate
@@ -154,7 +154,7 @@ public final class Constants {
         public static final double[] intakeCubeGround = new double[] {-0.33, 0.086, 0.3};
         public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -0.964};
         public static final double[] placeConeBackHigh = new double[] {0.558, 0.71, 1.5};
-        public static final double[] placeConeBackMid = new double[] {0.551, 0.15, 1.02};
+        public static final double[] placeConeBackMid = new double[] {0.551, 0.24, 1.02};
         public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.515, 0.276, 1.5};
         public static final double[] stow = new double[] {Math.PI / 2, 0.05, Math.PI / 2};
@@ -236,8 +236,8 @@ public final class Constants {
         */
 
         // hopefully we can increase these to 3 and 5
-        public static final double kMaxVelocityMetersPerSecond = 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1.5;
+        public static final double kMaxVelocityMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
 
         public static final double autoTranslationKp = 2;
         public static final double autoTranslationKi = 0;
