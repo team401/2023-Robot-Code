@@ -115,21 +115,27 @@ public class AutoRoutines extends SequentialCommandGroup {
         else if (pathName.endsWith("2-1")) {
             addCommands(
                 resetOdometry(pathGroup),
+                new InstantCommand(intake::toggleIntake),
                 home(),
+                invert(),
+                placeCone(),
                 new InstantCommand(drive::resetHeading),
                 moveArm(ArmPositions.stow),
                 hold()
-
             );
         }
         else if (pathName.endsWith("2-2")) {
             addCommands(
                 resetOdometry(pathGroup),
+                new InstantCommand(intake::toggleIntake),
                 home(),
+                invert(),
+                placeCone(),
                 new InstantCommand(drive::resetHeading),
+                moveArm(ArmPositions.stow),
                 new ParallelCommandGroup(
                     balance(),
-                    moveArm(ArmPositions.stow).andThen(hold())
+                    hold()
                 )
             );
         }
