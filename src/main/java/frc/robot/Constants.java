@@ -93,7 +93,7 @@ public final class Constants {
         public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;
 
-        public static final double driveJoystickDeadbandPercent = 0.075;
+        public static final double driveJoystickDeadbandPercent = 0.09;
         public static final double driveMaxJerk = 200.0;
 
     }
@@ -247,7 +247,7 @@ public final class Constants {
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.5;
+        public static final double autoBalanceKp = 0.3;
         public static final double autoBalanceKi = 0.0;
         public static final double autoBalanceKd = 0.0;
 

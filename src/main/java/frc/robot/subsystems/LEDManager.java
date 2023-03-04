@@ -55,7 +55,7 @@ public class LEDManager extends SubsystemBase {
         if (!DriverStation.isDSAttached()) {
             // preMatchClimbPattern();
         }
-        else if (DriverStation.isDisabled()){
+        if (DriverStation.isDisabled()){
             rainbow();
         }
         else {
@@ -108,7 +108,7 @@ public class LEDManager extends SubsystemBase {
     private void rainbow() {
         for (int i = 0; i < LEDConstants.armLedCount; i++) {
             int hue = (rainbowFirstPixelHue + 90 + (i * 180 / LEDConstants.armLedCount)) % 180;
-            setArmHSV(i, hue, 255, 127);
+            setArmHSV(i, hue, 255, 127); 
         }
 
         for (int i = 0; i < LEDConstants.baseLedCount; i++) {

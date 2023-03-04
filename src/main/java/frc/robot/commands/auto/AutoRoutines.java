@@ -79,9 +79,10 @@ public class AutoRoutines extends SequentialCommandGroup {
                     invert().andThen(preparePlaceCube()).andThen(hold())
                 ),
                 placeCube(),
-                invert(),
-                moveArm(ArmPositions.stow),
-                hold()
+                new ParallelCommandGroup(
+                    drive(pathGroup.get(2)),
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
+                )
             );
         }
         else if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
