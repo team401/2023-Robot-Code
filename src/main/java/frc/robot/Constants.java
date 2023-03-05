@@ -153,16 +153,14 @@ public final class Constants {
         public static final double[] intakeCubeShelf = new double[] {0.59, 0.55, 0.15};
         public static final double[] intakeCubeGround = new double[] {-0.33, 0.086, 0.45};
         public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -0.964};
-        // public static final double[] placeConeBackHigh = new double[] {0.558, 0.71, 1.5};
-        public static final double[] placeConeBackHigh = new double[] {0.54, 0.54, 0.44 + 0.41};
-        // public static final double[] placeConeBackMid = new double[] {0.551, 0.24, 1.02};
-        public static final double[] placeConeBackMid = new double[] {0.44, 0.01, 0.78};
+        public static final double[] placeConeBackHigh = new double[] {0.558, 0.71, 1.5};
+        public static final double[] placeConeBackMid = new double[] {0.551, 0.24, 1.02};
         public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.515, 0.276, 1.5};
         public static final double[] stow = new double[] {Math.PI / 2, 0.05, Math.PI / 2};
 
         public static final double wristConePlace = -0.88;
-        // public static final double[] wristConePlaceHigh = new double[] {0.558, 0.67, -0.9};
+        public static final double[] wristConePlaceHigh = new double[] {0.558, 0.67, -0.9};
 
     }
 

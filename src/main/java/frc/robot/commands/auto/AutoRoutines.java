@@ -71,7 +71,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 invert(),
                 placeCone(),
                 new ParallelRaceGroup(
-                    new WaitCommand(0.25).andThen(drive(pathGroup.get(0))),
+                    drive(pathGroup.get(0)),
                     invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
@@ -93,7 +93,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 invert(),
                 placeCone(),
                 new ParallelRaceGroup(
-                    new WaitCommand(0.25).andThen(drive(pathGroup.get(0))),
+                    drive(pathGroup.get(0)),
                     invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
@@ -160,8 +160,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeBack)),
             new MoveWrist(wrist, pivot, () -> ArmPositions.stow[2]).withTimeout(1),
             moveArm(ArmPositions.placeConeBackHigh),
-            new InstantCommand(intake::place),
-            new WaitCommand(0.25),
+            moveArm(ArmPositions.wristConePlaceHigh),
             new InstantCommand(intake::stop)
         );
     }
