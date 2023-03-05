@@ -44,6 +44,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMode = intakeMode == IntakeMode.Intake ? IntakeMode.None : IntakeMode.Intake;
         exceededCurrentDraw = false;
         RobotState.getInstance().setIntaked(false);
+        RobotState.getInstance().setIntaking(intakeMode == IntakeMode.Intake);
         intakeTimer.reset();
         intakeTimer.start();
     }
@@ -51,11 +52,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void place() {
         intakeMode = IntakeMode.Place;
         RobotState.getInstance().setIntaked(false);
+        RobotState.getInstance().setIntaking(false);
     }
 
     public void stop() {
         intakeMode = IntakeMode.None;
         RobotState.getInstance().setIntaked(false);
+        RobotState.getInstance().setIntaking(false);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class IntakeSubsystem extends SubsystemBase {
                     leftMotor.set(1);
                     rightMotor.set(1);
                 }
-                if (currentDraw > 35 && intakeTimer.hasElapsed(0.5)) {
+                if (currentDraw > 35 && intakeTimer.hasElapsed(1)) {
                     exceededCurrentDraw = true;
                     RobotState.getInstance().setIntaked(true);
                 }
@@ -97,8 +100,8 @@ public class IntakeSubsystem extends SubsystemBase {
                 rightMotor.set(back ? 0.75 : -0.75);
             }
             if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
-                leftMotor.set(-0.75);
-                rightMotor.set(-0.75);
+                leftMotor.set(-0.2);
+                rightMotor.set(-0.2);
             }
         }
         else {

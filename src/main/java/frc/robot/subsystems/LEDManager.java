@@ -64,7 +64,7 @@ public class LEDManager extends SubsystemBase {
             setIntakeModeIndicator();
             flashOnWhistle();
             flashActiveSide();
-            // flashOnIntake();
+            flashOnIntake();
         }
 
         led.setData(ledBuffer);
@@ -218,14 +218,15 @@ public class LEDManager extends SubsystemBase {
     }
 
     private void flashOnIntake() {
-
-        if (RobotState.getInstance().hasIntaked()) {
-            Color color = (flashTimer.get()*10%10)%5 < 2.5 ? Color.kBlack : LEDConstants.intakeFlashColor;
-            for (int i = 0; i < LEDConstants.baseLedCount; i++) {
+        if (RobotState.getInstance().isIntaking()) {
+            Color color = (RobotState.getInstance().hasIntaked() && (flashTimer.get()*10%10)%5 < 2.5) ? Color.kBlack : LEDConstants.intakeFlashColor;
+            for (int i = 0; i < LEDConstants.baseLedCount/4; i++) {
+                setBaseLED(i, color);
+            }
+            for (int i = 3*LEDConstants.baseLedCount/4; i < LEDConstants.baseLedCount; i++) {
                 setBaseLED(i, color);
             }
         }
-
     }
     
 }

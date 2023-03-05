@@ -165,7 +165,7 @@ public class RobotContainer {
         masher.stow().onTrue(getMoveCommand(Position.Stow)); // move to stow    
         masher.shelf().onTrue(getMoveCommand(Position.Shelf)); // move to shelf
 
-        masher.special().onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
+        // masher.special().onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
             
         masher.flipSide().onTrue(
             new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side

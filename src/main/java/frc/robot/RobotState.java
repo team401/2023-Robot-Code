@@ -84,6 +84,8 @@ public class RobotState {
 
     private SwerveDriveOdometry driveOdometry;
 
+    private boolean isIntaking = false;
+
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d(), 
             new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.04, 0.04, 0.02), // State measurement standard deviations. X, Y, theta.
@@ -173,6 +175,14 @@ public class RobotState {
 
     public void setIntaked(boolean i) {
         hasIntaked = i;
+    }
+
+    public boolean isIntaking() {
+        return isIntaking;
+    }
+
+    public void setIntaking(boolean i) {
+        isIntaking = i;
     }
 
     public Command getMoveCommand(PivotSubsystem pivot, TelescopeSubsystem telescope, WristSubsystem wrist, Position position) {
