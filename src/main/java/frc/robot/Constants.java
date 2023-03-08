@@ -236,8 +236,8 @@ public final class Constants {
         */
 
         // hopefully we can increase these to 3 and 5
-        public static final double kMaxVelocityMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
+        public static final double kMaxVelocityMetersPerSecond = 2;//3
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
         public static final double autoTranslationKp = 2;
         public static final double autoTranslationKi = 0;

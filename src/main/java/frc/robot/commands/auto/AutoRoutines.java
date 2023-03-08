@@ -76,7 +76,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(1)),
-                    invert().andThen(preparePlaceCube()).andThen(hold())
+                    invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCube()).andThen(hold())
                 ),
                 placeCube(),
                 new ParallelCommandGroup(
@@ -98,7 +98,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(1)),
-                    invert().andThen(preparePlaceCube()).andThen(hold())
+                    invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCube()).andThen(hold())
                 ),
                 placeCube(),
                 new ParallelCommandGroup(
