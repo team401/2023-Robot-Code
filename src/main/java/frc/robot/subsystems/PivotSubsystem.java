@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +24,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.PivotConstants;
@@ -48,19 +50,21 @@ public class PivotSubsystem extends SubsystemBase {
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the telescope subsytem.
-    public final PIDController controller = new PIDController(
+    private final TrapezoidProfile.Constraints constraintsRad = 
+        new TrapezoidProfile.Constraints(
+            Units.degreesToRadians(180),
+            Units.degreesToRadians(180));
+    public final ProfiledPIDController controller = new ProfiledPIDController(
         PivotConstants.kP, 
         0, 
-        PivotConstants.kD);
+        PivotConstants.kD,
+        constraintsRad);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         PivotConstants.kS,
         PivotConstants.kG,
         PivotConstants.kV,
         PivotConstants.kA);
-    private final TrapezoidProfile.Constraints constraintsRad = 
-        new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(180),
-            Units.degreesToRadians(180));
+    
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = 
@@ -98,9 +102,11 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public double getPositionRad() {
-        return encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad;
+        if (Robot.isReal()) {
+            return encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad;
+        }
         // return encoder.getAbsolutePosition();
-        // return simPos;
+        return simPos;
     }
 
     public double getVelRadS() {
@@ -149,7 +155,8 @@ public class PivotSubsystem extends SubsystemBase {
      * Resets the PID controller stored in this subsystem.
      */
     public void resetPID() {
-        controller.reset();
+        controller.reset(
+            new TrapezoidProfile.State(getPositionRad(), getVelRadS()));
     }
 
     /**

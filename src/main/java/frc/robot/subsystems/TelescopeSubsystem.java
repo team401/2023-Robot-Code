@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.TelescopeConstants;
@@ -41,7 +42,8 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
         new TrapezoidProfile.Constraints(2, 2);
-        private final ProfiledPIDController controller = new ProfiledPIDController(TelescopeConstants.kP, 0, 0, constraints);
+        private final ProfiledPIDController controller = 
+            new ProfiledPIDController(TelescopeConstants.kP, 0, 0, constraints);
         
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
@@ -63,10 +65,12 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     public double getPositionM() {
         // 4096 units per rotation, multiply rotations by diameter
-        return motor.getSelectedSensorPosition() / 4096
-            * 2 * Math.PI  * TelescopeConstants.conversionM;
+        if (Robot.isReal()) {
+            return motor.getSelectedSensorPosition() / 4096
+                * 2 * Math.PI  * TelescopeConstants.conversionM;
+        }
 
-        // return simPos;
+        return simPos;
     }
 
     public double getVel() {
