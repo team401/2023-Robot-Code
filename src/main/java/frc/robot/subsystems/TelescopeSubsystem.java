@@ -41,7 +41,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kS,
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
-        new TrapezoidProfile.Constraints(2, 2);
+        new TrapezoidProfile.Constraints(200, 200);
         private final ProfiledPIDController controller = 
             new ProfiledPIDController(TelescopeConstants.kP, 0, 0, constraints);
         

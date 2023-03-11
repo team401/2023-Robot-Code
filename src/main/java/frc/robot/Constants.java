@@ -141,10 +141,14 @@ public final class Constants {
 
         public static final double kP = 10;
         public static final double kI = 3;
-        public static final double kV = 0.185;
+        public static final double kV = 0.273;
         public static final double kA = 0.01; // estimate
-        public static final double kG = 0.26;
-        public static final double kS = 0.27;
+        public static final double kG = 0.34;
+        public static final double kS = 0.36;
+        public static final double kVCone = 0.662;
+        public static final double kACone = 0.01;
+        public static final double kGCone = 0.55;
+        public static final double kSCone = 0.45;
     }
 
     public static final class ArmPositions {

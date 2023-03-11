@@ -1,13 +1,9 @@
-package frc.robot.commands;
-
-import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commands.pivot.MovePivot;
+package frc.robot.util;
 
 public class ArmPositionCalc {
     private static final double lengthArm = 0.747; // The length of the stowed arm minus the wrist
     private static final double lengthWrist = 0.235; // The length of the wrist
     private static final double maxReach = 0.970; // The maximum reach of the telescope
-    private static final double maxRotation = Math.PI/2; // The maximum rotation for the wrist
     
     public ArmPositionCalc() {}
 
@@ -36,8 +32,7 @@ public class ArmPositionCalc {
 
         // Spits back the wrist position
         result[2] = theta;
-        System.out.print(theta);
-
+        
         // Validates all positions
         if(theta > Math.abs(Math.PI/2))
             result[2] = Math.PI/2;

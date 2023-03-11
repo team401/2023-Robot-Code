@@ -24,7 +24,6 @@ import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.commands.ArmPositionCalc;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.DriveWithJoysticksSnap;
 import frc.robot.commands.auto.AutoRoutines;
@@ -38,6 +37,7 @@ import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.ArmPositionCalc;
 import frc.robot.util.PositionHelper;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
@@ -100,67 +100,48 @@ public class RobotContainer {
             true
         ));
 
-        pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
-        telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
+        // pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
+        // telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
+        // wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
     private void configureTestBindings() {
-        new JoystickButton(gamepad, Button.kA.value)
-            .whileTrue(new RepeatCommand(new InstantCommand(() -> {
-                armPositionTheta = gamepad.getRightTriggerAxis();
-                double[] pos = ArmPositionCalc.findPositions(armPositionX, armPositionY, armPositionTheta);
-                new ParallelCommandGroup(
-                    new MovePivot(pivot, telescope, () -> pos[0]),
-                    new MoveTelescope(telescope, pivot, () -> pos[1], () -> pos[1]),
-                    new MoveWrist(wrist, pivot, () -> pos[2])
-                ).schedule();
-            })));
-        
-        new POVButton(gamepad, 0)
-            .onTrue(new InstantCommand(() -> {
-                armPositionY += 0.1;
-                double[] pos = ArmPositionCalc.findPositions(armPositionX, armPositionY, armPositionTheta);
-                new ParallelCommandGroup(
-                    new MovePivot(pivot, telescope, () -> pos[0]),
-                    new MoveTelescope(telescope, pivot, () -> pos[1], () -> pos[1]),
-                    new MoveWrist(wrist, pivot, () -> pos[2])
-                ).schedule();
-            }));
 
-        new POVButton(gamepad, 180)
-            .onTrue(new InstantCommand(() -> {
-                armPositionY -= 0.1;
-                double[] pos = ArmPositionCalc.findPositions(armPositionX, armPositionY, armPositionTheta);
-                new ParallelCommandGroup(
-                    new MovePivot(pivot, telescope, () -> pos[0]),
-                    new MoveTelescope(telescope, pivot, () -> pos[1], () -> pos[1]),
-                    new MoveWrist(wrist, pivot, () -> pos[2])
-                ).schedule();
-            }));
+        new JoystickButton(gamepad, Button.kA.value)
+            .onTrue(new InstantCommand(() -> wrist.overrideVolts(3)))
+            .onFalse(new InstantCommand(() -> wrist.overrideVolts(0)));
+
+        // new JoystickButton(gamepad, Button.kA.value)
+        //     .whileTrue(new RepeatCommand(new InstantCommand(() -> {
+        //         armPositionTheta = gamepad.getRightTriggerAxis();
+        //         double[] pos = ArmPositionCalc.findPositions(armPositionX, armPositionY, armPositionTheta);
+        //         new ParallelCommandGroup(
+        //             new MovePivot(pivot, telescope, () -> pos[0]),
+        //             new MoveTelescope(telescope, pivot, () -> pos[1], () -> pos[1]),
+        //             new MoveWrist(wrist, pivot, () -> pos[2])
+        //         ).schedule();
+        //     })));
         
-        new POVButton(gamepad, 90)
-            .onTrue(new InstantCommand(() -> {
-                armPositionX += 0.1;
-                double[] pos = ArmPositionCalc.findPositions(armPositionX, armPositionY, armPositionTheta);
-                new ParallelCommandGroup(
-                    new MovePivot(pivot, telescope, () -> pos[0]),
-                    new MoveTelescope(telescope, pivot, () -> pos[1], () -> pos[1]),
-                    new MoveWrist(wrist, pivot, () -> pos[2])
-                ).schedule();
-            }));
+        // new POVButton(gamepad, 0)
+        //     .onTrue(new InstantCommand(() -> {
+        //         armPositionY += 0.1;
+        //     }));
+
+        // new POVButton(gamepad, 180)
+        //     .onTrue(new InstantCommand(() -> {
+        //         armPositionY -= 0.1;
+        //     }));
         
-        new POVButton(gamepad, 270)
-            .onTrue(new InstantCommand(() -> {
-                armPositionX -= 0.1;
-                double[] pos = ArmPositionCalc.findPositions(armPositionX, armPositionY, armPositionTheta);
-                new ParallelCommandGroup(
-                    new MovePivot(pivot, telescope, () -> pos[0]),
-                    new MoveTelescope(telescope, pivot, () -> pos[1], () -> pos[1]),
-                    new MoveWrist(wrist, pivot, () -> pos[2])
-                ).schedule();
-            }));
+        // new POVButton(gamepad, 90)
+        //     .onTrue(new InstantCommand(() -> {
+        //         armPositionX += 0.1;
+        //     }));
+        
+        // new POVButton(gamepad, 270)
+        //     .onTrue(new InstantCommand(() -> {
+        //         armPositionX -= 0.1;
+        //     }));
     }
 
     private void configureCompBindings() {
@@ -287,8 +268,8 @@ public class RobotContainer {
 
     public void enabledInit() {
         if (DriverStation.isTeleop()) {
-            new HomeTelescope(telescope).schedule();
-            new HomeWrist(wrist).schedule();
+            // new HomeTelescope(telescope).schedule();
+            // new HomeWrist(wrist).schedule();
         }
 
         pivot.setDesiredSetpointRad(new State(Math.PI / 2, 0));
