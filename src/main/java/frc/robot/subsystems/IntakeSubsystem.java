@@ -50,42 +50,55 @@ public class IntakeSubsystem extends SubsystemBase {
         RobotState.getInstance().setIntaking(intakeMode == IntakeMode.Intake);
         intakeTimer.reset();
         intakeTimer.start();
+
+        if (intakeMode == IntakeMode.Intake) {
+            if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+                leftMotor.set(-1);
+                rightMotor.set(-1);
+            }
+            else if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
+                leftMotor.set(1);
+                rightMotor.set(1);
+            }
+        }
+        else {
+            leftMotor.stopMotor();
+            rightMotor.stopMotor();
+        }
     }
 
     public void place() {
         intakeMode = IntakeMode.Place;
         RobotState.getInstance().setIntaked(false);
         RobotState.getInstance().setIntaking(false);
+
+        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+            boolean back = RobotState.getInstance().atBack();
+            leftMotor.set(back ? -0.75 : 0.75);
+            rightMotor.set(back ? 0.75 : -0.75);
+        }
+        if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
+            leftMotor.set(-0.2);
+            rightMotor.set(-0.2);
+        }
     }
 
     public void stop() {
         intakeMode = IntakeMode.None;
         RobotState.getInstance().setIntaked(false);
         RobotState.getInstance().setIntaking(false);
+        leftMotor.stopMotor();
+        rightMotor.stopMotor();
     }
 
     @Override
     public void periodic() {
 
-        double currentDraw = (leftMotor.getOutputCurrent() + rightMotor.getOutputCurrent()) / 2;
-        // SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
-        if (intakeMode == IntakeMode.Intake) {
-            if (!exceededCurrentDraw) {
-                if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-                    leftMotor.set(-1);
-                    rightMotor.set(-1);
-                }
-                else if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
-                    leftMotor.set(1);
-                    rightMotor.set(1);
-                }
-                if (currentDraw > 35 && intakeTimer.hasElapsed(1)) {
-                    exceededCurrentDraw = true;
-                    RobotState.getInstance().setIntaked(true);
-                }
-                
-            }
-            else {
+        if (intakeMode == IntakeMode.Intake && !exceededCurrentDraw) {
+            double currentDraw = (leftMotor.getOutputCurrent() + rightMotor.getOutputCurrent()) / 2;
+            if (currentDraw > 35 && intakeTimer.hasElapsed(0.4)) {
+                exceededCurrentDraw = true;
+                RobotState.getInstance().setIntaked(true);
                 if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
                     leftMotor.set(-0.25);
                     rightMotor.set(-0.25);
@@ -96,23 +109,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 }
             }
         }
-        else if (intakeMode == IntakeMode.Place) {
-            if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-                boolean back = RobotState.getInstance().atBack();
-                leftMotor.set(back ? -0.75 : 0.75);
-                rightMotor.set(back ? 0.75 : -0.75);
-            }
-            if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
-                leftMotor.set(-0.2);
-                rightMotor.set(-0.2);
-            }
-        }
-        else {
-            leftMotor.stopMotor();
-            rightMotor.stopMotor();
-        }
 
     }
-
     
 }

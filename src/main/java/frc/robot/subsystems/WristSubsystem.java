@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
+import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.WristConstants;
 
 public class WristSubsystem extends SubsystemBase {
@@ -48,6 +49,12 @@ public class WristSubsystem extends SubsystemBase {
         WristConstants.kG,
         WristConstants.kV,
         WristConstants.kA);
+    private final ArmFeedforward feedforwardCone = new ArmFeedforward(
+            WristConstants.kSCone,
+            WristConstants.kGCone,
+            WristConstants.kVCone,
+            WristConstants.kACone);
+    
 
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
@@ -118,8 +125,11 @@ public class WristSubsystem extends SubsystemBase {
      * @return The result of the calculation
      */
     public double calculateControl(TrapezoidProfile.State setpointRad, double angleRad) {
-        return controller.calculate(angleRad, setpointRad.position)
-        + feedforward.calculate(setpointRad.position, setpointRad.velocity);
+        boolean coneFF = RobotState.getInstance().hasIntaked() && RobotState.getInstance().getMode().equals(GamePieceMode.ConeBack);
+        double ff = coneFF ? 
+            feedforwardCone.calculate(setpointRad.position, setpointRad.velocity) : 
+            feedforward.calculate(setpointRad.position, setpointRad.velocity);
+        return controller.calculate(angleRad, setpointRad.position) + ff;
     }
 
     /**
@@ -210,7 +220,7 @@ public class WristSubsystem extends SubsystemBase {
         // SmartDashboard.putBoolean("Wrist Homed", homed);
         // SmartDashboard.putNumber("Wrist Velocity", getVelRadS());
 
-        RobotState.getInstance().putWristDisplay(getPositionRad());
+        // RobotState.getInstance().putWristDisplay(getPositionRad());
 
         // checkIfDead();
     }

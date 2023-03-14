@@ -45,8 +45,8 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
         new TrapezoidProfile.Constraints(3, 3);
-        private final ProfiledPIDController controller = 
-            new ProfiledPIDController(TelescopeConstants.kP, 0, 0, constraints);
+        private final PIDController controller = 
+            new PIDController(TelescopeConstants.kP, 0, 0);
         
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
@@ -121,7 +121,7 @@ public class TelescopeSubsystem extends SubsystemBase{
      * Resets the PID controller stored in this subsystem.
      */
     public void resetPID() {
-        controller.reset(new TrapezoidProfile.State(getPositionM(), getVel()));
+        controller.reset();
     }
 
     /**
@@ -193,7 +193,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         // SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
         // SmartDashboard.putNumber("Telescope Amps", getAmps());
 
-        RobotState.getInstance().putTelescopeDisplay(getPositionM());
+        // RobotState.getInstance().putTelescopeDisplay(getPositionM());
 
         SmartDashboard.putNumber("Loop Time", timer.get() * 1000);
         timer.reset();

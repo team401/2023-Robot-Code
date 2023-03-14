@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -18,19 +16,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.DriveWithJoysticksSnap;
 import frc.robot.commands.auto.AutoRoutines;
-import frc.robot.commands.auto.Balance;
-import frc.robot.commands.auto.CenterTag;
-import frc.robot.commands.auto.MeasureWheelRadius;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -38,7 +31,6 @@ import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
-import frc.robot.util.ArmPositionCalc;
 import frc.robot.util.PositionHelper;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
@@ -69,12 +61,6 @@ public class RobotContainer {
     private final XboxController gamepad = new XboxController(2);
 
     SendableChooser<Command> autoChooser = new SendableChooser<Command>();
-
-    private double characterizeVolts = 3;
-
-    // private double armPositionX = 1;
-    // private double armPositionY = 1;
-    // private double armPositionTheta = 0;
 
     private boolean rumbling;
     private final Command endRumbleCommand = new InstantCommand(() -> {
@@ -109,14 +95,6 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new MovePivot(pivot, 0));
-
-        new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(new MovePivot(pivot, Math.PI));
-
-            new JoystickButton(gamepad, Button.kA.value)
-            .onTrue(new MovePivot(pivot, Math.PI / 2));
 
         // new JoystickButton(gamepad, Button.kA.value)
         //     .whileTrue(new RepeatCommand(new InstantCommand(() -> {
@@ -154,14 +132,15 @@ public class RobotContainer {
         
         // Drive
         new JoystickButton(rightStick, 1)
-            .whileTrue(
-                new DriveWithJoysticksSnap(
-                    drive,
-                    () -> -leftStick.getRawAxis(1),
-                    () -> -leftStick.getRawAxis(0),
-                    true
-                )
-            );
+            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+            // .whileTrue(
+            //     new DriveWithJoysticksSnap(
+            //         drive,
+            //         () -> -leftStick.getRawAxis(1),
+            //         () -> -leftStick.getRawAxis(0),
+            //         true
+            //     )
+            // );
 
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
@@ -169,10 +148,6 @@ public class RobotContainer {
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
-
-        new JoystickButton(leftStick, 8) 
-            .onTrue(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0.500)))
-            .onFalse(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0)));
 
         // Overrides
         new JoystickButton(rightStick, 12)
@@ -187,7 +162,6 @@ public class RobotContainer {
         new JoystickButton(rightStick, 14)
             .whileTrue(new RunCommand(() -> pivot.overrideVolts(-1.5), pivot));
 
-        // Kill
         new JoystickButton(leftStick, 7)
             .onTrue(new InstantCommand(pivot::toggleKill));
 
@@ -217,8 +191,8 @@ public class RobotContainer {
 
         masher.special().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace));
             
-        masher.flipSide().onTrue(
-            new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
+        // masher.flipSide().onTrue(
+        //     new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
 
         // Manually jog arm
         masher.jogPivotUp()
@@ -269,7 +243,7 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
-        return getMoveCommand(Position.High);
+        return autoChooser.getSelected();
     }
 
     public void enabledInit() {
@@ -284,31 +258,26 @@ public class RobotContainer {
     }
 
     public Command getMoveCommand(Position position) {
+
         return new InstantCommand(() -> {
 
-            /*
-             * If in auto: do commands
-             * If teleop & valid position: do commands
-             * else: do nothing 
-             */
+            RobotState.getInstance().setStow(position.equals(Position.Stow));
+            double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
 
-            boolean isAuto = DriverStation.isAutonomousEnabled();
-            boolean isValidBlue = (DriverStation.getAlliance() == Alliance.Blue && RobotState.getInstance().getFieldToVehicle().getX() < 4);
-            boolean isValidRed = (DriverStation.getAlliance() == Alliance.Red && RobotState.getInstance().getFieldToVehicle().getX() > 12.5);
-            boolean isPlacingPosition = position.equals(Position.High) || position.equals(Position.Mid);
-
-            if (isPlacingPosition) {
-                if (isAuto || isValidBlue || isValidRed) {
-                    RobotState.getInstance().setStow(position.equals(Position.Stow));
-                    double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
-                    new MovePivot(pivot, positions[0]).schedule();
-                    new MoveTelescope(telescope, pivot, positions[1]).schedule();
-                    new MoveWrist(wrist, pivot, positions[2]).schedule();
-                }
+            if (telescope.getPositionM() > 0.2 && position != Position.Stow) {
+                new ParallelCommandGroup(
+                    new MovePivot(pivot, ArmPositions.stow[0]),
+                    new MoveTelescope(telescope, pivot, ArmPositions.stow[1]),
+                    new MoveWrist(wrist, pivot, ArmPositions.stow[2])
+                ).andThen(
+                    new ParallelCommandGroup(
+                        new MovePivot(pivot, positions[0]),
+                        new MoveTelescope(telescope, pivot, positions[1]),
+                        new MoveWrist(wrist, pivot, positions[2])
+                    )
+                ).schedule();
             }
             else {
-                RobotState.getInstance().setStow(position.equals(Position.Stow));
-                double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
                 new MovePivot(pivot, positions[0]).schedule();
                 new MoveTelescope(telescope, pivot, positions[1]).schedule();
                 new MoveWrist(wrist, pivot, positions[2]).schedule();

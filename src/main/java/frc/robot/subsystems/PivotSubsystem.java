@@ -53,12 +53,11 @@ public class PivotSubsystem extends SubsystemBase {
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
             Units.degreesToRadians(720),
-            Units.degreesToRadians(720));
-    public final ProfiledPIDController controller = new ProfiledPIDController(
+            Units.degreesToRadians(360));
+    public final PIDController controller = new PIDController(
         PivotConstants.kP, 
         0, 
-        PivotConstants.kD,
-        constraintsRad);
+        PivotConstants.kD);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         PivotConstants.kS,
         PivotConstants.kG,
@@ -155,8 +154,7 @@ public class PivotSubsystem extends SubsystemBase {
      * Resets the PID controller stored in this subsystem.
      */
     public void resetPID() {
-        controller.reset(
-            new TrapezoidProfile.State(getPositionRad(), getVelRadS()));
+        controller.reset();
     }
 
     /**
@@ -237,7 +235,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Pivot Position", getPositionRad());
+        // SmartDashboard.putNumber("Pivot Position", getPositionRad());
         // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
         // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
         // SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
@@ -247,7 +245,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         // SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());
 
-        RobotState.getInstance().putPivotDisplay(getPositionRad());
+        // RobotState.getInstance().putPivotDisplay(getPositionRad());
 
         findVel();
 

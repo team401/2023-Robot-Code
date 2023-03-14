@@ -88,22 +88,22 @@ public class AutoRoutines extends SequentialCommandGroup {
         else if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
             addCommands(
                 resetOdometry(pathGroup),
-                new InstantCommand(intake::toggleIntake),
-                home(),
-                invert(),
-                placeCone(),
+                // new InstantCommand(intake::toggleIntake),
+                // home(),
+                // invert(),
+                // placeCone(),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(0)),
-                    invert().andThen(pickupCube()).andThen(hold())
+                    drive(pathGroup.get(0))
+                    // invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(1)),
-                    invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCube()).andThen(hold())
+                    drive(pathGroup.get(1))
+                    // invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCube()).andThen(hold())
                 ),
-                placeCube(),
+                // placeCube(),
                 new ParallelCommandGroup(
-                    drive(pathGroup.get(2)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
-                    invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
+                    drive(pathGroup.get(2)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance())
+                    // invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
                 )
             );
         }
@@ -149,10 +149,6 @@ public class AutoRoutines extends SequentialCommandGroup {
             followPath(drive, trajectory),
             new InstantCommand(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)))
         );
-    }
-
-    private Command center() {
-        return new CenterTag(drive, vision);
     }
 
     private Command placeCone() {
@@ -220,16 +216,6 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command followPath(Drive drive, PathPlannerTrajectory trajectory) {
 
         return new FollowTrajectory(drive, trajectory);
-        // return new PPSwerveControllerCommand(
-        //     trajectory, 
-        //     () -> RobotState.getInstance().getFieldToVehicle(), // Pose supplier
-        //     new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-        //     new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd), // Y controller (usually the same values as X controller)
-        //     new PIDController(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-        //     drive::setGoalChassisSpeeds, // Module states consumer
-        //     false, // Should the path be automatically mirrored depending on alliance color. Optional, defaults to true
-        //     drive // Requires this drive subsystem
-        // ).raceWith(new tmp(trajectory));
 
     }
 
