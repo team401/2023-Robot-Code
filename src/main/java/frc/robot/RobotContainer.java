@@ -10,6 +10,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -67,12 +68,13 @@ public class RobotContainer {
 
     private final XboxController gamepad = new XboxController(2);
 
-    private Command[] autoPathCommands = new Command[9];
     SendableChooser<Command> autoChooser = new SendableChooser<Command>();
 
-    private double armPositionX = 1;
-    private double armPositionY = 1;
-    private double armPositionTheta = 0;
+    private double characterizeVolts = 3;
+
+    // private double armPositionX = 1;
+    // private double armPositionY = 1;
+    // private double armPositionTheta = 0;
 
     private boolean rumbling;
     private final Command endRumbleCommand = new InstantCommand(() -> {
@@ -84,8 +86,8 @@ public class RobotContainer {
     public RobotContainer() {
 
         configureSubsystems();
-        // configureCompBindings();
-        configureTestBindings();
+        configureCompBindings();
+        // configureTestBindings();
         configureAutos();
 
     }
@@ -100,17 +102,21 @@ public class RobotContainer {
             true
         ));
 
-        // pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
-        // telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        // wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
+        pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
+        telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
+        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
     private void configureTestBindings() {
+        new JoystickButton(gamepad, Button.kB.value)
+            .onTrue(new MovePivot(pivot, 0));
 
-        new JoystickButton(gamepad, Button.kA.value)
-            .onTrue(new InstantCommand(() -> wrist.overrideVolts(3)))
-            .onFalse(new InstantCommand(() -> wrist.overrideVolts(0)));
+        new JoystickButton(gamepad, Button.kX.value)
+            .onTrue(new MovePivot(pivot, Math.PI));
+
+            new JoystickButton(gamepad, Button.kA.value)
+            .onTrue(new MovePivot(pivot, Math.PI / 2));
 
         // new JoystickButton(gamepad, Button.kA.value)
         //     .whileTrue(new RepeatCommand(new InstantCommand(() -> {
@@ -209,7 +215,7 @@ public class RobotContainer {
         masher.stow().onTrue(getMoveCommand(Position.Stow)); // move to stow    
         masher.shelf().onTrue(getMoveCommand(Position.Shelf)); // move to shelf
 
-        masher.special().onTrue(new MoveWrist(wrist, pivot, () -> ArmPositions.wristConePlace));
+        masher.special().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace));
             
         masher.flipSide().onTrue(
             new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
@@ -268,23 +274,46 @@ public class RobotContainer {
 
     public void enabledInit() {
         if (DriverStation.isTeleop()) {
-            // new HomeTelescope(telescope).schedule();
-            // new HomeWrist(wrist).schedule();
+            new HomeTelescope(telescope).schedule();
+            new HomeWrist(wrist).schedule();
         }
 
         pivot.setDesiredSetpointRad(new State(Math.PI / 2, 0));
         wrist.updateDesiredSetpointRad(new State(Math.PI / 2, 0));
-        telescope.setDesiredSetpoint(new State(0.05, 0));
+        telescope.setDesiredSetpoint(new State(0.1, 0));
     }
 
     public Command getMoveCommand(Position position) {
-
         return new InstantCommand(() -> {
-            RobotState.getInstance().setStow(position.equals(Position.Stow));
-            double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
-            new MovePivot(pivot,telescope,() -> positions[0]).schedule();
-            new MoveTelescope(telescope, pivot, () -> positions[1],() -> positions[0]).schedule();
-            new MoveWrist(wrist, pivot, () -> positions[2]).schedule();
+
+            /*
+             * If in auto: do commands
+             * If teleop & valid position: do commands
+             * else: do nothing 
+             */
+
+            boolean isAuto = DriverStation.isAutonomousEnabled();
+            boolean isValidBlue = (DriverStation.getAlliance() == Alliance.Blue && RobotState.getInstance().getFieldToVehicle().getX() < 4);
+            boolean isValidRed = (DriverStation.getAlliance() == Alliance.Red && RobotState.getInstance().getFieldToVehicle().getX() > 12.5);
+            boolean isPlacingPosition = position.equals(Position.High) || position.equals(Position.Mid);
+
+            if (isPlacingPosition) {
+                if (isAuto || isValidBlue || isValidRed) {
+                    RobotState.getInstance().setStow(position.equals(Position.Stow));
+                    double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+                    new MovePivot(pivot, positions[0]).schedule();
+                    new MoveTelescope(telescope, pivot, positions[1]).schedule();
+                    new MoveWrist(wrist, pivot, positions[2]).schedule();
+                }
+            }
+            else {
+                RobotState.getInstance().setStow(position.equals(Position.Stow));
+                double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+                new MovePivot(pivot, positions[0]).schedule();
+                new MoveTelescope(telescope, pivot, positions[1]).schedule();
+                new MoveWrist(wrist, pivot, positions[2]).schedule();
+            }
+
         });
 
     }

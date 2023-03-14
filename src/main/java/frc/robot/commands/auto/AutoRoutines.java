@@ -158,7 +158,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command placeCone() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeBack)),
-            new MoveWrist(wrist, pivot, () -> ArmPositions.stow[2]).withTimeout(1),
+            new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(1),
             moveArm(ArmPositions.placeConeBackHigh),
             moveArm(ArmPositions.wristConePlaceHigh),
             new InstantCommand(intake::stop)
@@ -210,9 +210,9 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command moveArm(double[] position) {
         return new ParallelRaceGroup(
-            new MovePivot(pivot, telescope, () -> position[0]).andThen(new HoldPivot(pivot, telescope)),
-            new MoveTelescope(telescope, pivot, () -> position[1], () -> position[0]).andThen(new HoldTelescope(telescope, pivot)),
-            new MoveWrist(wrist, pivot, () -> position[2]).andThen(new HoldWrist(wrist, pivot)),
+            new MovePivot(pivot, position[0]).andThen(new HoldPivot(pivot, telescope)),
+            new MoveTelescope(telescope, pivot, position[1]).andThen(new HoldTelescope(telescope, pivot)),
+            new MoveWrist(wrist, pivot, position[2]).andThen(new HoldWrist(wrist, pivot)),
             new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
         );
     }

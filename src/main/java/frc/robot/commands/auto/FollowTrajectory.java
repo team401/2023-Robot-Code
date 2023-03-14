@@ -84,8 +84,8 @@ public class FollowTrajectory extends CommandBase {
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
         //}
 
-        SmartDashboard.putString("ActualAutoPos", latestFieldToVehicle.toString());
-        SmartDashboard.putString("DesiredAutoPos", desiredState.toString());
+        // SmartDashboard.putString("ActualAutoPos", latestFieldToVehicle.toString());
+        // SmartDashboard.putString("DesiredAutoPos", desiredState.toString());
         drive.setGoalChassisSpeeds(adjustedSpeeds);
     }
 

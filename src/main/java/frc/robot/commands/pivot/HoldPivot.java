@@ -1,5 +1,6 @@
 package frc.robot.commands.pivot;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
@@ -45,7 +46,7 @@ public class HoldPivot extends CommandBase {
         State setpoint = profile.calculate(timer.get());
 
         // Calculate output from feedforward & PID
-        double pivotOut = pivot.calculateControl(setpoint, telescope.getPositionM());
+        double pivotOut = MathUtil.clamp(pivot.calculateControl(setpoint, telescope.getPositionM()), -2, 2);
 
         pivot.setVolts(pivotOut);
         // pivot.setSimPos(goalState.position);

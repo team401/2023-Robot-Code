@@ -20,11 +20,11 @@ public class MoveWrist extends CommandBase {
     private TrapezoidProfile profile;
     private State goalState;
 
-    private DoubleSupplier posRad;
+    private double posRad;
 
     private Timer timer = new Timer();
 
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, DoubleSupplier posRad) {
+    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad) {
         this.wrist = wrist;
         this.pivot = pivot;
         this.posRad = posRad;
@@ -35,7 +35,7 @@ public class MoveWrist extends CommandBase {
     @Override
     public void initialize() {
 
-        goalState = new TrapezoidProfile.State(posRad.getAsDouble(), 0);
+        goalState = new TrapezoidProfile.State(posRad, 0);
 
         if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
@@ -49,7 +49,7 @@ public class MoveWrist extends CommandBase {
 
         wrist.resetPID();
 
-        SmartDashboard.putNumber("MoveWrist started", 1);
+        // SmartDashboard.putNumber("MoveWrist started", 1);
 
         wrist.atGoal = false;
     }
@@ -60,8 +60,8 @@ public class MoveWrist extends CommandBase {
 
         double output = wrist.calculateControl(setpoint, getAdjustedAngle());
 
-        SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
-        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        // SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
+        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
 
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
@@ -83,6 +83,6 @@ public class MoveWrist extends CommandBase {
 
         wrist.atGoal = true;
 
-        SmartDashboard.putNumber("MoveWrist started", 0);
+        // SmartDashboard.putNumber("MoveWrist started", 0);
     }
 }

@@ -68,7 +68,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
 
         double currentDraw = (leftMotor.getOutputCurrent() + rightMotor.getOutputCurrent()) / 2;
-        SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
+        // SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
         if (intakeMode == IntakeMode.Intake) {
             if (!exceededCurrentDraw) {
                 if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {

@@ -28,11 +28,10 @@ import frc.robot.subsystems.TelescopeSubsystem;
  */
 public class MovePivot extends CommandBase{
     private PivotSubsystem pivot;
-    private TelescopeSubsystem telescope;
 
     private TrapezoidProfile profile;
     private State goalState; 
-    private DoubleSupplier posRad;
+    private double posRad;
 
     public Timer timer = new Timer();
 
@@ -40,14 +39,12 @@ public class MovePivot extends CommandBase{
      * Constructs an instance of this command. The position should be field-
      * relative to the front of the robot.
      * @param pivot the pivot subsystem
-     * @param telescope the telescope subsystem
      * @param posRad the setpoint position of the pivot in radians. Again,
      * this should be field-relative to the front.
      * @param velRadS the setpoint velocity.
      */
-    public MovePivot(PivotSubsystem pivot, TelescopeSubsystem telescope, DoubleSupplier posRad) {
+    public MovePivot(PivotSubsystem pivot, double posRad) {
         this.pivot = pivot;
-        this.telescope = telescope;
         this.posRad = posRad;
 
         addRequirements(this.pivot);
@@ -55,7 +52,7 @@ public class MovePivot extends CommandBase{
 
     @Override
     public void initialize() {
-        goalState = new TrapezoidProfile.State(posRad.getAsDouble(), 0);
+        goalState = new TrapezoidProfile.State(posRad, 0);
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
@@ -81,7 +78,9 @@ public class MovePivot extends CommandBase{
     public void execute() {
         State setpoint = profile.calculate(timer.get());
 
-        SmartDashboard.putNumber("MovePivot State", setpoint.position);
+        // SmartDashboard.putNumber("MovePivot State", setpoint.position);
+
+        SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
 
         double pivotOut = pivot.calculateControl(setpoint, 0);
         pivot.setVolts(pivotOut);

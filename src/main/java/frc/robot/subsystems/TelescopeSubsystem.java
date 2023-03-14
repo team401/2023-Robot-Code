@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -34,6 +35,8 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     private double simPos;
 
+    private final Timer timer = new Timer();
+
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the pivot subsytem.
@@ -41,7 +44,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kS,
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
-        new TrapezoidProfile.Constraints(200, 200);
+        new TrapezoidProfile.Constraints(3, 3);
         private final ProfiledPIDController controller = 
             new ProfiledPIDController(TelescopeConstants.kP, 0, 0, constraints);
         
@@ -60,7 +63,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         motor.configStatorCurrentLimit(
             new StatorCurrentLimitConfiguration(true, 40, 50, 0.5));
 
-        SmartDashboard.putNumber("Telescope test setpoint", 0);
+        // SmartDashboard.putNumber("Telescope test setpoint", 0);
     }
 
     public double getPositionM() {
@@ -106,7 +109,7 @@ public class TelescopeSubsystem extends SubsystemBase{
      * @return The result of the calculation. Add kG * sine of the pivot angle
      */
     public double calculateControl(TrapezoidProfile.State setpoint, double pivotAngleRad) {
-        SmartDashboard.putNumber("Telescope calculated", controller.calculate(getPositionM(), setpoint.position));
+        // SmartDashboard.putNumber("Telescope calculated", controller.calculate(getPositionM(), setpoint.position));
         return controller.calculate(getPositionM(), setpoint.position)
             + feedforward.calculate(setpoint.velocity)
             // Compensates for weight of telescope as the pivot goes up
@@ -183,13 +186,17 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Telescope Position", getPositionM()); 
-        SmartDashboard.putNumber("Telescope Velocity", getVel());
-        SmartDashboard.putNumber("Telescope Desired Position", currentSetpoint.position);
-        SmartDashboard.putBoolean("Telescope Dead", dead);
-        SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
-        SmartDashboard.putNumber("Telescope Amps", getAmps());
+        // SmartDashboard.putNumber("Telescope Position", getPositionM()); 
+        // SmartDashboard.putNumber("Telescope Velocity", getVel());
+        // SmartDashboard.putNumber("Telescope Desired Position", currentSetpoint.position);
+        // SmartDashboard.putBoolean("Telescope Dead", dead);
+        // SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
+        // SmartDashboard.putNumber("Telescope Amps", getAmps());
 
         RobotState.getInstance().putTelescopeDisplay(getPositionM());
+
+        SmartDashboard.putNumber("Loop Time", timer.get() * 1000);
+        timer.reset();
+        timer.start();
     }
 }

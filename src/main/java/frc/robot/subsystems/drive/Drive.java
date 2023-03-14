@@ -98,11 +98,11 @@ public class Drive extends SubsystemBase {
     @Override
     public void periodic() {
 
-        SmartDashboard.putNumber("Time", timer.get());
+        // SmartDashboard.putNumber("Time", timer.get());
         timer.reset();
         timer.start();
 
-        SmartDashboard.putNumber("Angle", driveAngle.getHeading());
+        // SmartDashboard.putNumber("Angle", driveAngle.getHeading());
 
         // Driving
         for (int i = 0; i < 4; i++) {
@@ -117,7 +117,7 @@ public class Drive extends SubsystemBase {
             // Set module speed
             double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
             double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
-            SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
+            // SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
             driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
             // SmartDashboard.putNumber("DRiveOutputVolts"+i, driveModules[i].getDriveVoltageApplied());
 
@@ -130,15 +130,15 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
             modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
-            SmartDashboard.putNumber("DriveAngle"+i, modulePositions[i].angle.getRadians());
-            SmartDashboard.putNumber("DriveStator"+i, driveModules[i].getDriveStatorCurrent());
-            SmartDashboard.putNumber("RotationStator"+i, driveModules[i].getRotationStatorCurrent());
+            // SmartDashboard.putNumber("DriveAngle"+i, modulePositions[i].angle.getRadians());
+            // SmartDashboard.putNumber("DriveStator"+i, driveModules[i].getDriveStatorCurrent());
+            // SmartDashboard.putNumber("RotationStator"+i, driveModules[i].getRotationStatorCurrent());
         }
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
         RobotState.getInstance().getFieldToVehicle();
 
-        SmartDashboard.putNumber("Roll", driveAngle.getRoll());
+        // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 
     }
 
@@ -147,9 +147,9 @@ public class Drive extends SubsystemBase {
      * @param states an array of SwerveModuleStates representing the desired state for each swerve module [frontLeft, frontRight, backLeft, backRight]
      */
     public void setGoalModuleStates(SwerveModuleState[] states) {
-        SmartDashboard.putNumber("lol", System.currentTimeMillis());
+        // SmartDashboard.putNumber("lol", System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
-            SmartDashboard.putNumber("lel"+i, states[i].speedMetersPerSecond);
+            // SmartDashboard.putNumber("lel"+i, states[i].speedMetersPerSecond);
             goalModuleStates[i] = states[i];
         }
     }

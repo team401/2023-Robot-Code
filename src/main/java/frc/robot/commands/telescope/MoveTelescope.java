@@ -28,14 +28,11 @@ public class MoveTelescope extends CommandBase {
 
     private TrapezoidProfile profile;
 
-    private TelescopeHelper helper;
+    // private TelescopeHelper helper;
 
-    private State goalState; 
+    private State goalState;
 
-    private State pivotGoal;
-
-    private DoubleSupplier goalM;
-    private DoubleSupplier pivotGoalRad;
+    private double goalM;
 
     private Timer timer = new Timer();
 
@@ -43,11 +40,9 @@ public class MoveTelescope extends CommandBase {
     public MoveTelescope(
         TelescopeSubsystem telescope,
         PivotSubsystem pivot,
-        DoubleSupplier goalM,
-        DoubleSupplier pivotGoalRad) {
+        double goalM) {
         
         this.goalM = goalM;
-        this.pivotGoalRad = pivotGoalRad;
         this.telescope = telescope;
         this.pivot = pivot;
 
@@ -61,31 +56,11 @@ public class MoveTelescope extends CommandBase {
         timer.reset();
         timer.start();
 
-        goalState = new State(goalM.getAsDouble(), 0);
-        pivotGoal = new State(pivotGoalRad.getAsDouble(), 0);
-
-        State holdState = new State(0.05, 0);
-
-        if (RobotState.getInstance().atBack())
-            pivotGoal.position = Math.PI - pivotGoal.position;
-       
-        TrapezoidProfile pivotProfile = new TrapezoidProfile(
-            pivot.getConstraintsRad(),
-            pivotGoal,
-            new State(pivot.getPositionRad(), pivot.getVelRadS()));
-        
-
-        SmartDashboard.putNumber("Fake Pivot Time", pivotProfile.totalTime());
+        goalState = new State(goalM, 0);
 
         State currentState = new State(telescope.getPositionM(), telescope.getVel());
 
-
-        helper = new TelescopeHelper(
-            currentState,
-            holdState,
-            goalState,
-            telescope.getConstraints(),
-            pivotProfile.totalTime());
+        profile = new TrapezoidProfile(telescope.getConstraints(), goalState, currentState);
 
         telescope.setDesiredSetpoint(goalState);
         telescope.resetPID();
@@ -96,11 +71,11 @@ public class MoveTelescope extends CommandBase {
     @Override
     public void execute() {
 
-        State setpoint = helper.calculate(timer.get());
+        State setpoint = profile.calculate(timer.get());
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
-        SmartDashboard.putNumber("Telescope Setpoint", setpoint.position);
+        // SmartDashboard.putNumber("Telescope Setpoint", setpoint.position);
 
         telescope.setVolts(output);
 
@@ -109,7 +84,7 @@ public class MoveTelescope extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return helper.isFinished(timer.get());
+        return profile.isFinished(timer.get());
     }
 
     @Override

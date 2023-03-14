@@ -92,7 +92,7 @@ public class RobotState {
             new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 9999) // Vision measurement standard deviations. X, Y, theta.
             // Increase to trust less
         );
-        SmartDashboard.putData(field);
+        // SmartDashboard.putData(field);
         driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
     }
 
@@ -136,17 +136,17 @@ public class RobotState {
             break;
         }*/
 
-        SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void setStow(boolean stowed) {
@@ -184,19 +184,4 @@ public class RobotState {
     public void setIntaking(boolean i) {
         isIntaking = i;
     }
-
-    public Command getMoveCommand(PivotSubsystem pivot, TelescopeSubsystem telescope, WristSubsystem wrist, Position position) {
-
-        setStow(position.equals(Position.Stow));
-        
-        double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
-
-        return new InstantCommand(() -> {
-            new MovePivot(pivot,telescope,() -> positions[0]).schedule();
-            new MoveTelescope(telescope, pivot, () -> positions[1],() -> positions[0]).schedule();
-            new MoveWrist(wrist, pivot, () -> positions[2]).schedule();
-        });
-
-    }
-    
 }

@@ -52,8 +52,8 @@ public class PivotSubsystem extends SubsystemBase {
     // require information from the telescope subsytem.
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(180),
-            Units.degreesToRadians(180));
+            Units.degreesToRadians(720),
+            Units.degreesToRadians(720));
     public final ProfiledPIDController controller = new ProfiledPIDController(
         PivotConstants.kP, 
         0, 
@@ -98,7 +98,7 @@ public class PivotSubsystem extends SubsystemBase {
             1)
         );
 
-        SmartDashboard.putNumber("Pivot test setpoint", 0);
+        // SmartDashboard.putNumber("Pivot test setpoint", 0);
     }
 
     public double getPositionRad() {
@@ -136,12 +136,12 @@ public class PivotSubsystem extends SubsystemBase {
      * @return
      */
     public double calculateControl(TrapezoidProfile.State setpointRad, double telescopePosM) {
-        SmartDashboard.putNumber(
-            "Pivot PID", 
-            controller.calculate(getPositionRad(), setpointRad.position));
-        SmartDashboard.putNumber(
-            "Pivot Feedforward",
-            feedforward.calculate(setpointRad.position, setpointRad.velocity));
+        // SmartDashboard.putNumber(
+        //     "Pivot PID", 
+        //     controller.calculate(getPositionRad(), setpointRad.position));
+        // SmartDashboard.putNumber(
+        //     "Pivot Feedforward",
+        //     feedforward.calculate(setpointRad.position, setpointRad.velocity));
 
         return controller.calculate(getPositionRad(), setpointRad.position)
             + feedforward.calculate(setpointRad.position, setpointRad.velocity)
@@ -188,7 +188,7 @@ public class PivotSubsystem extends SubsystemBase {
     public void setVolts(double input) {
         if (!dead && withinSoftLimits(input)) {
             rightMotor.set(ControlMode.PercentOutput, input / 12);
-            SmartDashboard.putNumber("Pivot Commanded V", input);
+            // SmartDashboard.putNumber("Pivot Commanded V", input);
         } else {
             rightMotor.set(ControlMode.PercentOutput, 0);
         }
@@ -238,13 +238,14 @@ public class PivotSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Pivot Position", getPositionRad());
-        SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
-        SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
-        SmartDashboard.putNumber("Pivot Desired Setpoint", currentSetpointRad.position);
+        // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
+        // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
+        // SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
+        // SmartDashboard.putNumber("Pivot Desired Setpoint", currentSetpointRad.position);
 
-        SmartDashboard.putBoolean("Pivot Dead", dead);
+        // SmartDashboard.putBoolean("Pivot Dead", dead);
 
-        SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());
+        // SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());
 
         RobotState.getInstance().putPivotDisplay(getPositionRad());
 
