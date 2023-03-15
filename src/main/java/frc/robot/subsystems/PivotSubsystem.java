@@ -235,7 +235,7 @@ public class PivotSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // SmartDashboard.putNumber("Pivot Position", getPositionRad());
+        SmartDashboard.putNumber("Pivot Position", getPositionRad());
         // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
         // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
         // SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());

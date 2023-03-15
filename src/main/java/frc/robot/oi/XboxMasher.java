@@ -77,6 +77,11 @@ public class XboxMasher implements ButtonMasher{
     }
 
     @Override
+    public Trigger otherSpecial() {
+        return new Trigger(() -> controller.getBButton());
+    }
+
+    @Override
     public Trigger cubeMode() {
         return new Trigger(() -> controller.getLeftBumper());
     }

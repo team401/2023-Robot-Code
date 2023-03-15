@@ -93,13 +93,13 @@ public final class Constants {
         public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;
 
-        public static final double driveJoystickDeadbandPercent = 0.09;
+        public static final double driveJoystickDeadbandPercent = 0.12;
         public static final double driveMaxJerk = 200.0;
 
     }
 
     public static final class PivotConstants {
-        public static final double encoderOffsetRad = -Units.rotationsToRadians(0.1775);
+        public static final double encoderOffsetRad = -Units.rotationsToRadians(0.1775) + 0.04;
 
         public static final double armToMotorGearRatio = 1 / 90;
 
@@ -108,7 +108,7 @@ public final class Constants {
 
         public static final double lengthWOTeleM = Units.inchesToMeters(27.75);
 
-        public static final double kP = 18;
+        public static final double kP = 15;
         public static final double kD = 0.5;
         public static final double kV = 1.5;
         public static final double kA = 0.03; // estimate
@@ -140,7 +140,7 @@ public final class Constants {
         public static final double gearRatio = 8.0 / 78;
 
         public static final double kP = 10;
-        public static final double kI = 0;
+        public static final double kI = 15;
         public static final double kV = 0.273;
         public static final double kA = 0.01; // estimate
         public static final double kG = 0.34;
@@ -153,14 +153,14 @@ public final class Constants {
 
     public static final class ArmPositions {
 
-        public static final double[] intakeConeBackShelf = new double[] {0.674, 0.64, -0.87};
-        public static final double[] intakeCubeShelf = new double[] {0.59, 0.55, 0.15};
-        public static final double[] intakeCubeGround = new double[] {-0.33, 0.086, 0.45};
-        public static final double[] intakeConeBackGround = new double[] {-0.06, 0.059, -1.1};
-        public static final double[] placeConeBackHigh = new double[] {0.558, 0.71, 0.8};
-        public static final double[] placeConeBackMid = new double[] {0.551, 0.22, 0.8};
-        public static final double[] placeCubeHigh = new double[] {0.550, 0.781, 1.5};
-        public static final double[] placeCubeMid = new double[] {0.515, 0.276, 1.5};
+        public static final double[] intakeConeBackShelf = new double[] {0.714, 0.64, -0.87};
+        public static final double[] intakeCubeShelf = new double[] {0.63, 0.55, 0.15};
+        public static final double[] intakeCubeGround = new double[] {-0.29, 0.086, 0.4};
+        public static final double[] intakeConeBackGround = new double[] {-0.02, 0.059, -1.1};
+        public static final double[] placeConeBackHigh = new double[] {0.598, 0.71, 0.8};
+        public static final double[] placeConeBackMid = new double[] {0.591, 0.22, 0.8};
+        public static final double[] placeCubeHigh = new double[] {0.590, 0.781, 1.5};
+        public static final double[] placeCubeMid = new double[] {0.555, 0.276, 1.5};
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
 
         public static final double wristConePlace = -0.88;

@@ -156,8 +156,7 @@ public class WristSubsystem extends SubsystemBase {
      * the position the wrist should be at when it goes all the way to the arm.
      */
 
-     //3.36
-     //0.1
+     //2.79
     public void resetOffset() {
         motor.setSelectedSensorPosition(2.79 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
     }

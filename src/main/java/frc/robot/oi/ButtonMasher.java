@@ -39,6 +39,10 @@ public interface ButtonMasher {
         return new Trigger(() -> false);
     }
 
+    public default Trigger otherSpecial() {
+        return new Trigger(() -> false);
+    }
+
     public default Trigger cubeMode() {
         return new Trigger(() -> false);
     }

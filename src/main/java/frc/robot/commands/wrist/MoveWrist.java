@@ -49,7 +49,7 @@ public class MoveWrist extends CommandBase {
 
         wrist.resetPID();
 
-        SmartDashboard.putNumber("MoveWrist started", 1);
+        // SmartDashboard.putNumber("MoveWrist started", 1);
 
         wrist.atGoal = false;
     }
@@ -60,8 +60,8 @@ public class MoveWrist extends CommandBase {
 
         double output = wrist.calculateControl(setpoint, getAdjustedAngle());
 
-        SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
-        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        // SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
+        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
 
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
@@ -83,6 +83,6 @@ public class MoveWrist extends CommandBase {
 
         wrist.atGoal = true;
 
-        SmartDashboard.putNumber("MoveWrist started", 0);
+        // SmartDashboard.putNumber("MoveWrist started", 0);
     }
 }

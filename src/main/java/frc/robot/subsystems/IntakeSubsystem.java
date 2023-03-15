@@ -95,17 +95,17 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
 
         if (intakeMode == IntakeMode.Intake && !exceededCurrentDraw) {
-            double currentDraw = (leftMotor.getOutputCurrent() + rightMotor.getOutputCurrent()) / 2;
-            if (currentDraw > 35 && intakeTimer.hasElapsed(0.4)) {
+            double currentDraw = Math.max(leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent());
+            if (currentDraw > 35 && intakeTimer.hasElapsed(1)) {
                 exceededCurrentDraw = true;
                 RobotState.getInstance().setIntaked(true);
                 if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-                    leftMotor.set(-0.25);
-                    rightMotor.set(-0.25);
+                    leftMotor.set(-0.35);
+                    rightMotor.set(-0.35);
                 }
                 else if (RobotState.getInstance().getMode() == GamePieceMode.ConeBack) {
-                    leftMotor.set(0.25);
-                    rightMotor.set(0.25);
+                    leftMotor.set(0.35);
+                    rightMotor.set(0.35);
                 }
             }
         }

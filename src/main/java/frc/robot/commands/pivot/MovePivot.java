@@ -80,7 +80,7 @@ public class MovePivot extends CommandBase{
 
         // SmartDashboard.putNumber("MovePivot State", setpoint.position);
 
-        // SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
+        SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
 
         double pivotOut = pivot.calculateControl(setpoint, 0);
         pivot.setVolts(pivotOut);
