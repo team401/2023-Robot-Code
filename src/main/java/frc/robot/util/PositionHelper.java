@@ -29,25 +29,29 @@ public final class PositionHelper {
 
     private static double[] getGround(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeGround;
-        if (mode == GamePieceMode.ConeBack) return ArmPositions.intakeConeBackGround;
+        if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownGround;
+        if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpGround;
         return null;
     }
 
     private static double[] getMid(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.placeCubeMid;
-        if (mode == GamePieceMode.ConeBack) return ArmPositions.placeConeBackMid;
+        if (mode == GamePieceMode.ConeDown) return ArmPositions.placeConeDownMid;
+        if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpMid;
         return null;
     }
     
     private static double[] getHigh(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.placeCubeHigh;
-        if (mode == GamePieceMode.ConeBack) return ArmPositions.placeConeBackHigh;
+        if (mode == GamePieceMode.ConeDown) return ArmPositions.placeConeDownHigh;
+        if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpHigh;
         return null;
     }
 
     private static double[] getShelf(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeShelf;
-        if (mode == GamePieceMode.ConeBack) return ArmPositions.intakeConeBackShelf;
+        if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownShelf;
+        if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpShelf;
         return null;
     }
 }

@@ -78,7 +78,7 @@ public class RobotState {
             3,
             new Color8Bit(Color.kCoral)));
 
-    private GamePieceMode gamePieceMode = GamePieceMode.ConeBack;
+    private GamePieceMode gamePieceMode = GamePieceMode.ConeDown;
 
     private final Field2d field = new Field2d();
 

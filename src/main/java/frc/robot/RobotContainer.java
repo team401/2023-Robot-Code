@@ -56,7 +56,7 @@ public class RobotContainer {
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
-    private final ButtonMasher masher = new XboxMasher(new XboxController(2));
+    private final XboxMasher masher = new XboxMasher(new XboxController(2));
 
     private final XboxController gamepad = new XboxController(2);
 
@@ -179,8 +179,10 @@ public class RobotContainer {
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
-        masher.coneMode().onTrue(new InstantCommand(() ->
-            RobotState.getInstance().setMode(GamePieceMode.ConeBack)));
+        masher.coneDownMode().onTrue(new InstantCommand(() ->
+            RobotState.getInstance().setMode(GamePieceMode.ConeDown)));
+        masher.coneUpMode().onTrue(new InstantCommand(() ->
+            RobotState.getInstance().setMode(GamePieceMode.ConeUp)));
         
         // Move arm
         masher.high().onTrue(getMoveCommand(Position.High)); // move to high
@@ -190,7 +192,7 @@ public class RobotContainer {
         masher.shelf().onTrue(getMoveCommand(Position.Shelf)); // move to shelf
 
         masher.special().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace));
-        masher.otherSpecial().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeBackHigh[2]));
+        masher.otherSpecial().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeDownHigh[2]));
             
         // masher.flipSide().onTrue(
         //     new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side

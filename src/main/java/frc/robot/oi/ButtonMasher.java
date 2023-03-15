@@ -47,7 +47,7 @@ public interface ButtonMasher {
         return new Trigger(() -> false);
     }
 
-    public default Trigger coneMode() {
+    public default Trigger coneDownMode() {
         return new Trigger(() -> false);
     }
 

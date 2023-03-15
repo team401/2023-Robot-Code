@@ -193,16 +193,28 @@ public class LEDManager extends SubsystemBase {
 
     private void setIntakeModeIndicator() {
 
-        Color color = RobotState.getInstance().getMode() == GamePieceMode.ConeBack ? new Color(127, 127, 0) : new Color(127, 0, 127);
-        for (int i = 0; i < LEDConstants.armLedCount; i++) {
-            setArmLED(i, color);
-        }
+        Color color = RobotState.getInstance().getMode() != GamePieceMode.Cube ? new Color(127, 127, 0) : new Color(127, 0, 127);
         for (int i = 0; i < LEDConstants.baseLedCount/4; i++) {
             setBaseLED(i, color);
         }
         for (int i = 3*LEDConstants.baseLedCount/4; i < LEDConstants.baseLedCount; i++) {
             setBaseLED(i, color);
         }
+
+        if (RobotState.getInstance().getMode() != GamePieceMode.ConeUp) {
+            for (int i = 0; i < LEDConstants.armLedCount; i++) {
+                setArmLED(i, color);
+            }
+        }
+        else {
+            Color yellow = new Color(127, 127, 0);
+            Color black = new Color(0, 0, 0);
+            for (int i = 0; i < LEDConstants.armLedCount; i++) {
+                setArmLED(i, i/10%2 == 0 ? yellow : black);
+            }
+        }
+
+
 
     }
 

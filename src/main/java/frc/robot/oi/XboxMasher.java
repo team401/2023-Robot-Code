@@ -87,8 +87,12 @@ public class XboxMasher implements ButtonMasher{
     }
 
     @Override
-    public Trigger coneMode() {
+    public Trigger coneDownMode() {
         return new Trigger(() -> controller.getRightBumper());
+    }
+
+    public Trigger coneUpMode() {
+        return new Trigger(() -> controller.getYButton());
     }
 
     @Override
