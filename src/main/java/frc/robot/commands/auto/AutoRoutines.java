@@ -56,7 +56,11 @@ public class AutoRoutines extends SequentialCommandGroup {
         // To transfrom blue path to red path on the x-axis do 16.53-x
         // To rotate blue path to red path adjust rotation 180 and set the heading to (180-abs(heading))*sign(heading)
         // Load path group
+        // PathConstraints constraints = pathName.contains("-2-") ? 
+        //     new PathConstraints(AutoConstants.kMaxVelocitySlowMetersPerSecond, AutoConstants.kMaxAccelerationSlowMetersPerSecondSquared) : 
+        //     new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared);
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared));
+
         if (pathGroup.size() == 0) {
             SmartDashboard.putBoolean("FAILED TO LOAD PATH " + pathName, true);
             System.out.println("FAILED TO LOAD PATH " + pathName);
@@ -90,22 +94,22 @@ public class AutoRoutines extends SequentialCommandGroup {
         else if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
             addCommands(
                 resetOdometry(pathGroup),
-                // new InstantCommand(intake::toggleIntake),
-                // home(),
-                // invert(),
-                // placeCone(),
+                new InstantCommand(intake::toggleIntake),
+                home(),
+                invert(),
+                placeCone(),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(0))
-                    // invert().andThen(pickupCube()).andThen(hold())
+                    drive(pathGroup.get(0)),
+                    invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(1))
-                    // invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCube()).andThen(hold())
+                    drive(pathGroup.get(1)),
+                    invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCube()).andThen(hold())
                 ),
-                // placeCube(),
+                placeCube(),
                 new ParallelCommandGroup(
-                    drive(pathGroup.get(2)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance())
-                    // invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
+                    drive(pathGroup.get(2)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
                 )
             );
         }
@@ -153,11 +157,20 @@ public class AutoRoutines extends SequentialCommandGroup {
         );
     }
 
+    private Command placeConeInitial() {
+        return new SequentialCommandGroup(
+            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
+            new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(0.4),
+            moveArm(ArmPositions.placeConeUpHigh),
+            new InstantCommand(intake::place),
+            new ParallelRaceGroup(hold(), new WaitCommand(0.3)),
+            new InstantCommand(intake::stop)
+        );
+    }
+
     private Command placeCone() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeDown)),
-            new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(0.4),
-            moveArm(ArmPositions.placeConeDownHigh),
+            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
             moveArm(ArmPositions.wristConePlaceHigh),
             new InstantCommand(intake::stop)
         );
@@ -203,7 +216,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new ParallelCommandGroup(
             new HomeTelescope(telescope),
             new InstantCommand(() -> {wrist.resetOffset();wrist.homed = true;})
-        );
+        );  
     }
 
     private Command moveArm(double[] position) {
@@ -216,9 +229,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command followPath(Drive drive, PathPlannerTrajectory trajectory) {
-
         return new FollowTrajectory(drive, trajectory);
-
     }
 
 }

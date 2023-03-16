@@ -55,6 +55,6 @@ public class HoldPivot extends CommandBase {
         double pivotOut = MathUtil.clamp(pivot.calculateControl(setpoint, telescope.getPositionM()), -2, 2);
 
         pivot.setVolts(pivotOut);
-        // pivot.setSimPos(goalState.position);
+        pivot.setSimPos(goalState.position);
    }
 }

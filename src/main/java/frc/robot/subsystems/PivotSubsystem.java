@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -166,11 +167,19 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void jogSetpointForward() {
-        currentSetpointRad.position += Math.PI / 24;
+        currentSetpointRad.position = 
+            MathUtil.clamp(
+                    currentSetpointRad.position + Math.PI/64,
+                    PivotConstants.maxFwdRotationRad,
+                    PivotConstants.maxBackRotationRad);
     }
 
     public void jogSetpointBack() {
-        currentSetpointRad.position -= Math.PI / 24;
+        currentSetpointRad.position = 
+            MathUtil.clamp(
+                    currentSetpointRad.position - Math.PI/64,
+                    PivotConstants.maxFwdRotationRad,
+                    PivotConstants.maxBackRotationRad);
     }
 
     public void setSimPos(double pos) {
@@ -245,7 +254,7 @@ public class PivotSubsystem extends SubsystemBase {
 
         // SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());
 
-        // RobotState.getInstance().putPivotDisplay(getPositionRad());
+        RobotState.getInstance().putPivotDisplay(getPositionRad());
 
         findVel();
 

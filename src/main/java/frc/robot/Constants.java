@@ -132,8 +132,8 @@ public final class Constants {
 
     public static final class WristConstants {
         //TODO: set limits
-        public static final double positiveLimitRad = 0.0;
-        public static final double negativeLimitRad = 0.0;
+        public static final double positiveLimitRad = Units.degreesToRadians(160);
+        public static final double negativeLimitRad = Units.degreesToRadians(-160);
 
         public static final double intakeLengthM = Units.inchesToMeters(10);
 
@@ -159,15 +159,15 @@ public final class Constants {
         public static final double[] placeCubeHigh = new double[] {0.590, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.555, 0.276, 1.5};
 
-        public static final double[] intakeConeDownShelf = new double[] {0.714, 0.64, -0.87};
         public static final double[] intakeConeDownGround = new double[] {-0.02, 0.059, -1.1};
+        public static final double[] intakeConeDownShelf = new double[] {0.714, 0.64, -0.87};
         public static final double[] placeConeDownHigh = new double[] {0.598, 0.71, 0.8};
         public static final double[] placeConeDownMid = new double[] {0.591, 0.22, 0.8};
 
-        public static final double[] intakeConeUpGround = new double[] {0, 0, 0};
-        public static final double[] intakeConeUpShelf = new double[] {0, 0, 0};
-        public static final double[] placeConeUpHigh = new double[] {0, 0, 0};
-        public static final double[] placeConeUpMid = new double[] {0, 0, 0};
+        public static final double[] intakeConeUpGround = new double[] {-0.2, 0.059, -0.7};
+        public static final double[] intakeConeUpShelf = new double[] {0.714, 0.64, -0.7};
+        public static final double[] placeConeUpHigh = new double[] {0.65, 0.71, -0.89};
+        public static final double[] placeConeUpMid = new double[] {0.7, 0.21, -1.08};
 
 
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
@@ -239,17 +239,22 @@ public final class Constants {
     public static final class AutoConstants {
 
         /*
-        1-1: cone
-        1-2: cone + balance
-        2-1: nothing
-        2-2: balance
-        3-1: cone
-        3-2: cone + balance
+        0-1: 1 piece
+        0-2: taxi
+        1-1: 3 piece
+        1-2: 3 piece + balance
+        2-1: 2 piece left + balance
+        2-2: 2 piece right + balance
+        3-1: 3 piece
+        3-2: 3 piece + balance
         */
 
-        // hopefully we can increase these to 3 and 5
+        // maybe 4 and 10 ?????
         public static final double kMaxVelocityMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 5;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+
+        public static final double kMaxVelocitySlowMetersPerSecond = 2;
+        public static final double kMaxAccelerationSlowMetersPerSecondSquared = 3;
 
         public static final double autoTranslationKp = 2;
         public static final double autoTranslationKi = 0;

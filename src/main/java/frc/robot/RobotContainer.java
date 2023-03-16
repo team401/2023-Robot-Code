@@ -229,19 +229,19 @@ public class RobotContainer {
         //         autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
         //     }
         // }
-        autoChooser.addOption("B-1-1", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("R-1-1", new AutoRoutines("R-1-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("R-1-2", new AutoRoutines("R-1-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-2-1", new AutoRoutines("B-2-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("R-2-1", new AutoRoutines("R-2-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-2-2", new AutoRoutines("B-2-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("R-2-2", new AutoRoutines("R-2-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-3-1", new AutoRoutines("B-3-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("R-3-1", new AutoRoutines("R-3-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-3-2", new AutoRoutines("B-3-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("R-3-2", new AutoRoutines("R-3-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.setDefaultOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("B-1-1", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("R-1-1", new AutoRoutines("R-1-1", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("R-1-2", new AutoRoutines("R-1-2", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("B-2-1", new AutoRoutines("B-2-1", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("R-2-1", new AutoRoutines("R-2-1", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("B-2-2", new AutoRoutines("B-2-2", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("R-2-2", new AutoRoutines("R-2-2", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("B-3-1", new AutoRoutines("B-3-1", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("R-3-1", new AutoRoutines("R-3-1", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("B-3-2", new AutoRoutines("B-3-2", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.addOption("R-3-2", new AutoRoutines("R-3-2", drive, pivot, telescope, wrist, intake, vision));
+        // autoChooser.setDefaultOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 

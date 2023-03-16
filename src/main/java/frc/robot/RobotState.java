@@ -21,7 +21,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.Position;
+import frc.robot.Constants.WristConstants;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
 import frc.robot.commands.telescope.MoveTelescope;
@@ -52,12 +54,12 @@ public class RobotState {
 
     private Mechanism2d displayMechanism = 
         new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
-    private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 2.5);
+    private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 0.43);
 
     private MechanismLigament2d pivotLigament = root.append(
         new MechanismLigament2d(
             "pivot",
-            0.4,
+            PivotConstants.lengthWOTeleM,
             0,
             4,
             new Color8Bit(Color.kPurple)));
@@ -73,7 +75,7 @@ public class RobotState {
     private MechanismLigament2d wrisLigament = telescopeLigament.append(
         new MechanismLigament2d(
             "wrist",
-            0.2,
+            WristConstants.intakeLengthM,
             0,
             3,
             new Color8Bit(Color.kCoral)));
@@ -92,7 +94,8 @@ public class RobotState {
             new MatBuilder<>(Nat.N3(), Nat.N1()).fill(0.02, 0.02, 9999) // Vision measurement standard deviations. X, Y, theta.
             // Increase to trust less
         );
-        // SmartDashboard.putData(field);
+        field.setRobotPose(new Pose2d(1.9, 3.29, Rotation2d.fromDegrees(180)));
+        SmartDashboard.putData(field);
         driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
     }
 
@@ -136,17 +139,17 @@ public class RobotState {
             break;
         }*/
 
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void setStow(boolean stowed) {
@@ -167,6 +170,9 @@ public class RobotState {
 
     public void setMode(Constants.GamePieceMode mode) {
         gamePieceMode = mode;
+
+        String str = mode == gamePieceMode.ConeUp ? "up" : "normal";
+        SmartDashboard.putString("Mode", str);
     }
 
     public boolean hasIntaked() {

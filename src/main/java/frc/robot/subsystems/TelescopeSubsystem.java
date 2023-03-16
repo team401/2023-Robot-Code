@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -133,11 +134,19 @@ public class TelescopeSubsystem extends SubsystemBase{
     }
 
     public void jogSetpointForward() {
-        currentSetpoint.position += 0.05;
+        currentSetpoint.position = 
+            MathUtil.clamp(
+                    currentSetpoint.position + 0.05,
+                    TelescopeConstants.minPosM,
+                    TelescopeConstants.maxPosM);
     }
 
     public void jogSetpointBackward() {
-        currentSetpoint.position -= 0.05;
+        currentSetpoint.position = 
+            MathUtil.clamp(
+                    currentSetpoint.position - 0.05,
+                    TelescopeConstants.minPosM,
+                    TelescopeConstants.maxPosM);
     }
 
     public void setSimPos(double pos) {
@@ -193,7 +202,7 @@ public class TelescopeSubsystem extends SubsystemBase{
         // SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
         // SmartDashboard.putNumber("Telescope Amps", getAmps());
 
-        // RobotState.getInstance().putTelescopeDisplay(getPositionM());
+        RobotState.getInstance().putTelescopeDisplay(getPositionM());
 
         SmartDashboard.putNumber("Loop Time", timer.get() * 1000);
         timer.reset();

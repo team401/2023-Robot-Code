@@ -78,8 +78,8 @@ public class IntakeSubsystem extends SubsystemBase {
             rightMotor.set(back ? 0.75 : -0.75);
         }
         if (RobotState.getInstance().getMode() == GamePieceMode.ConeDown) {
-            leftMotor.set(-0.2);
-            rightMotor.set(-0.2);
+            leftMotor.set(-0.75);
+            rightMotor.set(-0.75);
         }
     }
 

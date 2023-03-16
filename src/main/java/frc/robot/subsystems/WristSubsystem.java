@@ -224,7 +224,7 @@ public class WristSubsystem extends SubsystemBase {
         // SmartDashboard.putBoolean("Wrist Homed", homed);
         // SmartDashboard.putNumber("Wrist Velocity", getVelRadS());
 
-        // RobotState.getInstance().putWristDisplay(getPositionRad());
+        RobotState.getInstance().putWristDisplay(getPositionRad());
 
         // checkIfDead();
     }
