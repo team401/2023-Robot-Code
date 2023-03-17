@@ -66,41 +66,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             System.out.println("FAILED TO LOAD PATH " + pathName);
             return;
         }
-
-        // if (pathName.equals("B-1-2")) {
-        //     addCommands(
-        //         new InstantCommand(() -> {
-        //             PathPlannerState desiredState = (PathPlannerState) pathGroup.get(0).sample(0);
-        //             RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
-        //         }),
-        //         resetOdometry(pathGroup),
-        //         invert(),
-        //         placeConeInitial(),
-        //         new ParallelCommandGroup(
-        //             drive(pathGroup.get(0)),
-        //             invert().andThen(pickupCube())
-        //         ),
-        //         new ParallelCommandGroup(
-        //             drive(pathGroup.get(1)),
-        //             invert().andThen(new WaitCommand(0.2)).andThen(preparePlaceCube())
-        //         ),
-        //         placeCube(),
-        //         new ParallelCommandGroup(
-        //             drive(pathGroup.get(2)),
-        //             invert().andThen(pickupCone())
-        //         ),
-        //         new ParallelCommandGroup(
-        //             drive(pathGroup.get(3)),
-        //             invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCone())
-        //         ),
-        //         placeCone(),
-        //         new ParallelCommandGroup(
-        //             drive(pathGroup.get(4)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
-        //             invert().andThen(moveArm(ArmPositions.stow))
-        //         )
-        //     );
-        // }
-        else if (pathName.endsWith("1-1") || pathName.endsWith("3-1")) {
+        if (pathName.endsWith("1-1") || pathName.endsWith("3-1")) {
             addCommands(
                 new InstantCommand(() -> {
                     PathPlannerState desiredState = (PathPlannerState) pathGroup.get(0).sample(0);
@@ -117,7 +83,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(1)),
-                    invert().andThen(new WaitCommand(0.2)).andThen(preparePlaceCube()).andThen(hold())
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCube()).andThen(hold())
                 ),
                 placeCube(),
                 new ParallelRaceGroup(
@@ -126,7 +92,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(3)),
-                    invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCone()).andThen(hold())
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCone()).andThen(hold())
                 ),
                 placeCone(),
                 new ParallelCommandGroup(
@@ -142,31 +108,31 @@ public class AutoRoutines extends SequentialCommandGroup {
                     RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
                 }),
                 resetOdometry(pathGroup),
-                // new InstantCommand(intake::toggleIntake),
-                home(),
+                new InstantCommand(intake::toggleIntake),
+                // home(),
                 invert(),
-                // placeConeInitial(),
+                placeConeInitial(),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(0))
-                    // invert().andThen(pickupCube()).andThen(hold())
+                    drive(pathGroup.get(0)),
+                    invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(1))
-                    // invert().andThen(new WaitCommand(0.2)).andThen(preparePlaceCube()).andThen(hold())
+                    drive(pathGroup.get(1)),
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCube()).andThen(hold())
                 ),
-                // placeCube(),
+                placeCube(),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(2))
-                    // invert().andThen(pickupCone()).andThen(hold())
+                    drive(pathGroup.get(2)),
+                    invert().andThen(pickupCone()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(3))
-                    // invert().andThen(new WaitCommand(0.5)).andThen(preparePlaceCone()).andThen(hold())
+                    drive(pathGroup.get(3)),
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCone()).andThen(hold())
                 ),
-                // placeCone(),
+                placeCone(),
                 new ParallelCommandGroup(
-                    drive(pathGroup.get(4)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance())
-                    // invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
+                    drive(pathGroup.get(4)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
                 )
             );
         }
@@ -191,9 +157,8 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
             new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(0.4),
-            moveArm(ArmPositions.placeConeUpHigh),
-            new InstantCommand(intake::place),
-            new ParallelRaceGroup(hold(), new WaitCommand(0.3)),
+            moveArm(ArmPositions.placeConeDownHigh),
+            moveArm(ArmPositions.wristConePlaceHigh),
             new InstantCommand(intake::stop)
         );
     }
@@ -225,7 +190,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeDown)),
             new InstantCommand(intake::toggleIntake),
-            moveArm(ArmPositions.intakeConeDownGround)
+            moveArm(ArmPositions.intakeConeDownExtendedGround)
         );
     }
 
@@ -233,7 +198,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
             new InstantCommand(intake::toggleIntake),
-            moveArm(ArmPositions.intakeCubeGround)
+            moveArm(ArmPositions.intakeCubeExtendedGround)
         );
     }
 

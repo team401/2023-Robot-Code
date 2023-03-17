@@ -118,9 +118,9 @@ public class RobotState {
     }
 
     public Pose2d getFieldToVehicle() {
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
+        // field.setRobotPose(poseEstimator.getEstimatedPosition());
         // field.setRobotPose(driveOdometry.getPoseMeters());
-        return driveOdometry.getPoseMeters();//poseEstimator.getEstimatedPosition();
+        return poseEstimator.getEstimatedPosition();
     }
 
     public Pose2d getOdometryFieldToVehicle() {

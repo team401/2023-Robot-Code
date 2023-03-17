@@ -157,10 +157,12 @@ public final class Constants {
     public static final class ArmPositions {
         public static final double[] intakeCubeShelf = new double[] {0.63, 0.55, 0.15};
         public static final double[] intakeCubeGround = new double[] {-0.29, 0.086, 0.4};
+        public static final double[] intakeCubeExtendedGround = new double[] {-0.2, 0.75, 0.4};
         public static final double[] placeCubeHigh = new double[] {0.590, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.555, 0.276, 1.5};
 
         public static final double[] intakeConeDownGround = new double[] {-0.02, 0.059, -1.1};
+        public static final double[] intakeConeDownExtendedGround = new double[] {0.01, 0.75, -1.1};
         public static final double[] intakeConeDownShelf = new double[] {0.714, 0.64, -0.87};
         public static final double[] placeConeDownHigh = new double[] {0.598, 0.71, 0.8};
         public static final double[] placeConeDownMid = new double[] {0.591, 0.22, 0.8};
@@ -263,8 +265,8 @@ public final class Constants {
         3-2: 3 piece + balance
         */
 
-        public static final double kMaxVelocityMetersPerSecond = 4;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 8;
+        public static final double kMaxVelocityMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 5;
 
         public static final double kMaxVelocitySlowMetersPerSecond = 2;
         public static final double kMaxAccelerationSlowMetersPerSecondSquared = 3;
