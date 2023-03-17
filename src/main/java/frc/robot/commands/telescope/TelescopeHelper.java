@@ -3,7 +3,6 @@ package frc.robot.commands.telescope;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TelescopeHelper {
     private TrapezoidProfile profile1;
@@ -13,12 +12,9 @@ public class TelescopeHelper {
 
     private boolean bad = false;
 
-    private double totalTime;
     private double delay;
 
     public TelescopeHelper(State start, State mid, State end, Constraints constraints, double totalTime) {
-
-        this.totalTime = totalTime;
 
         bad = start.equals(end);
 
@@ -41,17 +37,17 @@ public class TelescopeHelper {
             profile1 = new TrapezoidProfile(constraints, end, start);
         }
 
-        SmartDashboard.putNumber("MID", mid.position);
+        // SmartDashboard.putNumber("MID", mid.position);
 
     }
 
     public State calculate(double t) {
-        SmartDashboard.putNumber("Total Time", t > totalTime ? 1 : -1);
+        // SmartDashboard.putNumber("Total Time", t > totalTime ? 1 : -1);
         if (skipProfile2 || !profile1.isFinished(t - delay)) {
-            SmartDashboard.putNumber("Profile2", 0.1);
+            // SmartDashboard.putNumber("Profile2", 0.1);
             return profile1.calculate(t);
         }
-        SmartDashboard.putNumber("Profile2", 0.3);
+        // SmartDashboard.putNumber("Profile2", 0.3);
 
 
         return profile2.calculate(t - profile1.totalTime() - delay);

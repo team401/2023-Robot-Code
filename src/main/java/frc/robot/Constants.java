@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -164,16 +165,16 @@ public final class Constants {
         public static final double[] placeConeDownHigh = new double[] {0.598, 0.71, 0.8};
         public static final double[] placeConeDownMid = new double[] {0.591, 0.22, 0.8};
 
-        public static final double[] intakeConeUpGround = new double[] {-0.2, 0.059, -0.7};
+        public static final double[] intakeConeUpGround = new double[] {0.05, 0.05, -0.24};
         public static final double[] intakeConeUpShelf = new double[] {0.714, 0.64, -0.7};
-        public static final double[] placeConeUpHigh = new double[] {0.65, 0.71, -0.89};
+        public static final double[] placeConeUpHigh = new double[] {3.1 - 2.4, 0.71, -1.5};
         public static final double[] placeConeUpMid = new double[] {0.7, 0.21, -1.08};
 
 
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
 
         public static final double wristConePlace = -0.88;
-        public static final double[] wristConePlaceHigh = new double[] {0.558, 0.68, -0.88};
+        public static final double[] wristConePlaceHigh = new double[] {0.598, 0.71, -0.88};
 
     }
 
@@ -220,18 +221,31 @@ public final class Constants {
 
     public static final class VisionConstants {
 
-        public static Transform3d vehicleToFrontCamera = new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, 0, 0));
-        public static Transform3d vehicleToBackCamera = new Transform3d(new Translation3d(0.2794, -0.1778, 0), new Rotation3d(0, 0, Math.PI));//0.23, 0.146
+        public static final String[] cameraNames = {
+            "FrontLeft", 
+            "FrontRight", 
+            "BackLeft", 
+            "BackRight"
+        };
 
-        public static final HashMap<Integer, Pose3d> tagMap = new HashMap<>() {{
-            put(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(2, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1))));
-            put(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
-            put(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0))));
+        public static final Transform3d[] vehicleToCameras = {//10 deg yaw, 5 deg pitch
+            new Transform3d(new Translation3d(-0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
+            new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(350))),
+            new Transform3d(new Translation3d(0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190))),
+            new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190)))
+        };
+        //2.4, 0.72, 1.78
+        //0.05, 0.05, -0.29
+
+        public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
+            add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(2, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
         }};
 
     }
@@ -249,9 +263,8 @@ public final class Constants {
         3-2: 3 piece + balance
         */
 
-        // maybe 4 and 10 ?????
-        public static final double kMaxVelocityMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxVelocityMetersPerSecond = 4;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 8;
 
         public static final double kMaxVelocitySlowMetersPerSecond = 2;
         public static final double kMaxAccelerationSlowMetersPerSecondSquared = 3;

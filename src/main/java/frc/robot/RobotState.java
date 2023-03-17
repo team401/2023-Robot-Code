@@ -113,8 +113,12 @@ public class RobotState {
         driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
+    public void setSimPose(Pose2d pose) {
+        field.setRobotPose(pose);
+    }
+
     public Pose2d getFieldToVehicle() {
-        // field.setRobotPose(poseEstimator.getEstimatedPosition());
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
         // field.setRobotPose(driveOdometry.getPoseMeters());
         return driveOdometry.getPoseMeters();//poseEstimator.getEstimatedPosition();
     }

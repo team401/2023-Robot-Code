@@ -1,14 +1,8 @@
 package frc.robot.util;
 
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.Constants;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.commands.pivot.MovePivot;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
 
 public final class PositionHelper {
     

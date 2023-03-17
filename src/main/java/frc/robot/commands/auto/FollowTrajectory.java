@@ -1,22 +1,17 @@
 package frc.robot.commands.auto;
 
-import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drive.Drive;
 
@@ -36,9 +31,6 @@ public class FollowTrajectory extends CommandBase {
 
     private final HolonomicDriveController controller;
 
-    //private final PPSwerveControllerCommand trajectoryController;
-    private final PathPlannerState pathState;
-
     private final Timer timer = new Timer();
 
     public FollowTrajectory(Drive drive, PathPlannerTrajectory trajectory) {
@@ -49,8 +41,6 @@ public class FollowTrajectory extends CommandBase {
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         this.controller  = new HolonomicDriveController(xController, yController, thetaController);
-
-        pathState = trajectory.getInitialState();
 
         addRequirements(drive);
 
@@ -73,20 +63,12 @@ public class FollowTrajectory extends CommandBase {
         PathPlannerState desiredState = (PathPlannerState) trajectory.sample(timer.get());
 
         ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
-        /*if (timer.get() / trajectory.getTotalTimeSeconds() >= 0.75 && vision.hasTarget()) {
-            double omegaOut = xController.calculate(vision.getTX(), 0);
-            desiredState.poseMeters = new Pose2d(0, desiredState.poseMeters.getY(), new Rotation2d(omegaOut));
             adjustedSpeeds = controller.calculate(
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
-        }
-        else {*/
-            adjustedSpeeds = controller.calculate(
-                latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
-        //}
 
-        // SmartDashboard.putString("ActualAutoPos", latestFieldToVehicle.toString());
-        // SmartDashboard.putString("DesiredAutoPos", desiredState.toString());
         drive.setGoalChassisSpeeds(adjustedSpeeds);
+
+        RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
     }
 
     @Override

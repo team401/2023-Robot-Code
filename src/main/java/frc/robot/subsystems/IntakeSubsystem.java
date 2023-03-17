@@ -56,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
                 leftMotor.set(-1);
                 rightMotor.set(-1);
             }
-            else if (RobotState.getInstance().getMode() == GamePieceMode.ConeDown) {
+            else  {
                 leftMotor.set(1);
                 rightMotor.set(1);
             }
@@ -77,7 +77,7 @@ public class IntakeSubsystem extends SubsystemBase {
             leftMotor.set(back ? -0.75 : 0.75);
             rightMotor.set(back ? 0.75 : -0.75);
         }
-        if (RobotState.getInstance().getMode() == GamePieceMode.ConeDown) {
+        else {
             leftMotor.set(-0.75);
             rightMotor.set(-0.75);
         }
@@ -103,7 +103,7 @@ public class IntakeSubsystem extends SubsystemBase {
                     leftMotor.set(-0.35);
                     rightMotor.set(-0.35);
                 }
-                else if (RobotState.getInstance().getMode() == GamePieceMode.ConeDown) {
+                else {
                     leftMotor.set(0.35);
                     rightMotor.set(0.35);
                 }
