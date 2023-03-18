@@ -45,6 +45,7 @@ public class WristSubsystem extends SubsystemBase {
         Units.degreesToRadians(1080));
     private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
     private final PIDController controllerCone = new PIDController(WristConstants.kPCone, WristConstants.kICone, 0);
+    private final PIDController controllerConeHold = new PIDController(WristConstants.kPConeHold, WristConstants.kIConeHold, 0);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
         WristConstants.kG,
@@ -126,10 +127,16 @@ public class WristSubsystem extends SubsystemBase {
      * direct sensor values
      * @return The result of the calculation
      */
-    public double calculateControl(TrapezoidProfile.State setpointRad, double angleRad) {
+    public double calculateControl(TrapezoidProfile.State setpointRad, double angleRad, boolean holding) {
         boolean cone = RobotState.getInstance().hasIntaked() 
             && (RobotState.getInstance().getMode().equals(GamePieceMode.ConeDown) || RobotState.getInstance().getMode().equals(GamePieceMode.ConeUp));
-        double fb = cone ? controllerCone.calculate(angleRad, setpointRad.position) : controller.calculate(angleRad, setpointRad.position);
+        double fb = controller.calculate(angleRad, setpointRad.position);
+        if (cone && holding) {
+            fb = controllerConeHold.calculate(angleRad, setpointRad.position);
+        }
+        else if (cone) {
+            fb = controllerCone.calculate(angleRad, setpointRad.position);
+        }
         double ff = cone ? 
             feedforwardCone.calculate(setpointRad.position, setpointRad.velocity) : 
             feedforward.calculate(setpointRad.position, setpointRad.velocity);
@@ -142,6 +149,7 @@ public class WristSubsystem extends SubsystemBase {
     public void resetPID() {
         controller.reset();
         controllerCone.reset();
+        controllerConeHold.reset();
     }
 
     /**

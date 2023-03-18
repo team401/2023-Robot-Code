@@ -74,12 +74,12 @@ public class AutoRoutines extends SequentialCommandGroup {
                 }),
                 resetOdometry(pathGroup),
                 new InstantCommand(intake::toggleIntake),
-                home(),
+                // home(),
                 invert(),
                 placeConeInitial(),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(0)),
-                    invert().andThen(pickupCube()).andThen(hold())
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(1)),
@@ -88,7 +88,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 placeCube(),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(2)),
-                    invert().andThen(pickupCone()).andThen(hold())
+                    invert().andThen(moveArm(ArmPositions.stow)).andThen(pickupCone()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(3)),
@@ -117,22 +117,22 @@ public class AutoRoutines extends SequentialCommandGroup {
                     invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(1)),
+                    // drive(pathGroup.get(1))
                     invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCube()).andThen(hold())
                 ),
-                placeCube(),
+                // placeCube(),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(2)),
-                    invert().andThen(pickupCone()).andThen(hold())
+                    drive(pathGroup.get(2))
+                    // invert().andThen(pickupCone()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(3)),
-                    invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCone()).andThen(hold())
+                    drive(pathGroup.get(3))
+                    // invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCone()).andThen(hold())
                 ),
-                placeCone(),
+                // placeCone(),
                 new ParallelCommandGroup(
-                    drive(pathGroup.get(4)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
-                    invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
+                    drive(pathGroup.get(4)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance())
+                    // invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
                 )
             );
         }
@@ -156,11 +156,11 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command placeConeInitial() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
-            new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(0.4),
+            new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(1),
             moveArm(ArmPositions.placeConeDownHigh),
             moveArm(ArmPositions.wristConePlaceHigh),
             new InstantCommand(intake::stop),
-            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.2)
+            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.3)
         );
     }
 
@@ -168,7 +168,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             moveArm(ArmPositions.wristConePlaceHigh),
             new InstantCommand(intake::stop),
-            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.2)
+            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.3)
         );
     }
 

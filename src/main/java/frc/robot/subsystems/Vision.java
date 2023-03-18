@@ -12,6 +12,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
@@ -29,14 +30,34 @@ public class Vision extends SubsystemBase {
     
     private double lastTimestamp = 0;
 
+    private final Notifier notifier = new Notifier(() -> periodicThread());
+
+    private volatile boolean validPose;
+    private volatile Pose2d calculatedPose;
+    private volatile double distance;
+    private volatile double timestamp;
+
     public Vision() {
 
         poseEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, camera, VisionConstants.vehicleToCameras[2]);
+
+        notifier.startPeriodic(0.02);
         
     }
 
     @Override
     public void periodic() {
+
+        if (validPose) {
+            validPose = false;
+            RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
+            SmartDashboard.putNumber("VisionX", calculatedPose.getX());
+            SmartDashboard.putNumber("VisionY", calculatedPose.getY());
+        }
+
+    }
+
+    private void periodicThread() {
 
         double startTimePeriodic = System.currentTimeMillis();
 
@@ -45,25 +66,47 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("VisionTimeCameraResult", System.currentTimeMillis()-startTimeCamResult);
         
         double startTimePoseEstimator = System.currentTimeMillis();
-        // Thread thread = new Thread(() -> estimatedPose = poseEstimator.update(result));
-        PoseEstimate estimate = new PoseEstimate(poseEstimator, result);
-        Thread thread = new Thread(estimate);
-        thread.start();
-        thread.join();
-        int value = foo.getValue();
         Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(result);
         SmartDashboard.putNumber("VisionTimePoseEstimate", System.currentTimeMillis()-startTimePoseEstimator);
         
         if (estimatedPose.isPresent() && estimatedPose.get().timestampSeconds != lastTimestamp) {
+            validPose = true;
             EstimatedRobotPose pose = estimatedPose.get();
             lastTimestamp = pose.timestampSeconds;
-            double distance = getDistance(pose.estimatedPose.toPose2d(), result.getBestTarget().getFiducialId());
-            RobotState.getInstance().recordVisionObservations(pose.estimatedPose.toPose2d(), distance, pose.timestampSeconds);
+            calculatedPose = pose.estimatedPose.toPose2d();
+            distance = getDistance(pose.estimatedPose.toPose2d(), result.getBestTarget().getFiducialId());
+            timestamp = pose.timestampSeconds;
+            // RobotState.getInstance().recordVisionObservations(pose.estimatedPose.toPose2d(), distance, pose.timestampSeconds);
+        }
+        else {
+            validPose = false;
         }
 
         SmartDashboard.putNumber("VisionTimePeriodic", System.currentTimeMillis()-startTimePeriodic);
 
     }
+
+    // private Optional<EstimatedRobotPose> CalculatePose(PhotonPipelineResult result) {
+    //     Timer timer = new Timer();
+    //     timer.reset();
+    //     timer.start();
+    //     PoseEstimate estimate = new PoseEstimate(poseEstimator, result);
+    //     Thread thread = new Thread(estimate);
+    //     thread.start();
+    //     while (thread.isAlive()) {
+    //         if (timer.hasElapsed(0.02)) {
+    //             thread.interrupt();
+    //             return Optional.empty();
+    //         }
+    //         // try {
+    //         //     // Thread.sleep(1, 0);
+    //         // }
+    //         // catch (InterruptedException e) {
+    //         // }
+    //     }
+    //     return estimate.getValue();
+
+    // }
 
     private double getDistance(Pose2d pose, int id) {
         Optional<Pose3d> tagPose3d = tagLayout.getTagPose(id);
@@ -74,22 +117,26 @@ public class Vision extends SubsystemBase {
         return tagPose.getTranslation().getDistance(pose.getTranslation());
     }
 
-    public class PoseEstimate implements Runnable {
-        private final PhotonPoseEstimator poseEstimator;
-        private final PhotonPipelineResult result;
+    // public class PoseEstimate implements Runnable {
+    //     private final PhotonPoseEstimator poseEstimator;
+    //     private final PhotonPipelineResult result;
+    //     private Optional<EstimatedRobotPose> estimatedPose;
 
-        public PoseEstimate(PhotonPoseEstimator poseEstimator) {
-            this.poseEstimator = poseEstimator;
-        }
+    //     public PoseEstimate(PhotonPoseEstimator poseEstimator, PhotonPipelineResult result) {
+    //         this.poseEstimator = poseEstimator;
+    //         this.result = result;
+    //     }
    
-        @Override
-        public void run() {
-           value = 2;
-        }
+    //     @Override
+    //     public void run() {
+    //         estimatedPose = poseEstimator.update(result);
+    //         while (true) {
+    //         }
+    //     }
    
-        public int getValue() {
-            return value;
-        }
-    }
+    //     public Optional<EstimatedRobotPose> getValue() {
+    //         return estimatedPose;
+    //     }
+    // }
 
 }

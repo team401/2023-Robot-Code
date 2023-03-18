@@ -236,7 +236,7 @@ public class RobotContainer {
         // autoChooser.addOption("R-3-1", new AutoRoutines("R-3-1", drive, pivot, telescope, wrist, intake, vision));
         autoChooser.addOption("B-3-2", new AutoRoutines("B-3-2", drive, pivot, telescope, wrist, intake, vision));
         // autoChooser.addOption("R-3-2", new AutoRoutines("R-3-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.setDefaultOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.setDefaultOption("B-1-1", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
@@ -261,8 +261,6 @@ public class RobotContainer {
 
             RobotState.getInstance().setStow(position.equals(Position.Stow));
             double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
-
-            positions = ArmPositions.intakeCubeExtendedGround;
 
             new MovePivot(pivot, positions[0]).schedule();
             new MoveTelescope(telescope, pivot, positions[1], positions[0]).schedule();

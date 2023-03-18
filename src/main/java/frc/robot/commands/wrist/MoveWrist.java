@@ -58,7 +58,7 @@ public class MoveWrist extends CommandBase {
     public void execute() {
         State setpoint = profile.calculate(timer.get());
 
-        double output = wrist.calculateControl(setpoint, getAdjustedAngle());
+        double output = wrist.calculateControl(setpoint, getAdjustedAngle(), false);
 
         SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
         SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());

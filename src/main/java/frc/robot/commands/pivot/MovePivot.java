@@ -12,6 +12,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -63,7 +64,8 @@ public class MovePivot extends CommandBase{
         // as well as the current starting state
         timer.reset();
         timer.start();
-        profile = new TrapezoidProfile(pivot.getConstraintsRad(), goalState,
+        Constraints constraints = DriverStation.isAutonomous() ? new TrapezoidProfile.Constraints(720, 180) : pivot.getConstraintsRad();
+        profile = new TrapezoidProfile(constraints, goalState,
             new State(pivot.getPositionRad(), pivot.getVelRadS()));
 
         // Marks setpoint in pivot subsystem for the hold command

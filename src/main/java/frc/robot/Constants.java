@@ -142,8 +142,10 @@ public final class Constants {
 
         public static final double kP = 10;
         public static final double kI = 15;
-        public static final double kPCone = 20;
+        public static final double kPCone = 40;
         public static final double kICone = 0;
+        public static final double kPConeHold = 15;
+        public static final double kIConeHold = 0;
         public static final double kV = 0.273;
         public static final double kA = 0.01; // estimate
         public static final double kG = 0.34;
@@ -164,7 +166,7 @@ public final class Constants {
         public static final double[] intakeConeDownGround = new double[] {-0.02, 0.059, -1.1};
         public static final double[] intakeConeDownExtendedGround = new double[] {-0.02, 0.70, -1.1};
         public static final double[] intakeConeDownShelf = new double[] {0.714, 0.64, -0.87};
-        public static final double[] placeConeDownHigh = new double[] {0.598, 0.71, 0.8};
+        public static final double[] placeConeDownHigh = new double[] {0.598, 0.68, 0.8};
         public static final double[] placeConeDownMid = new double[] {0.591, 0.22, 0.8};
 
         public static final double[] intakeConeUpGround = new double[] {0.05, 0.05, -0.24};
@@ -263,8 +265,8 @@ public final class Constants {
         3-2: 3 piece + balance
         */
 
-        public static final double kMaxVelocityMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 4;
+        public static final double kMaxVelocityMetersPerSecond = 2;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
 
         public static final double kMaxVelocitySlowMetersPerSecond = 2;
         public static final double kMaxAccelerationSlowMetersPerSecondSquared = 3;

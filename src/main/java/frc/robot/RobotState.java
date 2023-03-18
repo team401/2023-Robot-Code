@@ -107,7 +107,7 @@ public class RobotState {
         // if (pose.getX() < 4 || pose.getX() > 12.5) {
             // poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()-latencyS);
             // }
-        poseEstimator.addVisionMeasurement(pose, latencyS, VecBuilder.fill(distance, distance, 100));
+        poseEstimator.addVisionMeasurement(pose, latencyS, VecBuilder.fill(distance / 2, distance / 2, 100));
 
     }
 
@@ -117,14 +117,14 @@ public class RobotState {
     }
 
     public void setSimPose(Pose2d pose) {
-        // field.setRobotPose(pose);
+        field.setRobotPose(pose);
     }
 
     public Pose2d getFieldToVehicle() {
         SmartDashboard.putNumber("OdometryX", driveOdometry.getPoseMeters().getX());    
         SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
         SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
+        // field.setRobotPose(poseEstimator.getEstimatedPosition());
         // field.setRobotPose(driveOdometry.getPoseMeters());
         return poseEstimator.getEstimatedPosition();
     }
