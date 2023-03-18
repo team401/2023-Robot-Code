@@ -109,7 +109,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 }),
                 resetOdometry(pathGroup),
                 new InstantCommand(intake::toggleIntake),
-                // home(),
+                home(),
                 invert(),
                 placeConeInitial(),
                 new ParallelRaceGroup(
@@ -159,14 +159,16 @@ public class AutoRoutines extends SequentialCommandGroup {
             new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(0.4),
             moveArm(ArmPositions.placeConeDownHigh),
             moveArm(ArmPositions.wristConePlaceHigh),
-            new InstantCommand(intake::stop)
+            new InstantCommand(intake::stop),
+            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.2)
         );
     }
 
     private Command placeCone() {
         return new SequentialCommandGroup(
             moveArm(ArmPositions.wristConePlaceHigh),
-            new InstantCommand(intake::stop)
+            new InstantCommand(intake::stop),
+            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.2)
         );
     }
 

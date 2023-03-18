@@ -224,11 +224,6 @@ public class RobotContainer {
 
     private void configureAutos() {
         // Select path
-        // for (int start = 1; start <= 3; start++) {
-        //     for (int path = 1; path <= 2; path++) {
-        //         autoChooser.addOption(start+"-"+path, new AutoRoutines(start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
-        //     }
-        // }
         autoChooser.addOption("B-1-1", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
         // autoChooser.addOption("R-1-1", new AutoRoutines("R-1-1", drive, pivot, telescope, wrist, intake, vision));
         autoChooser.addOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
@@ -267,12 +262,13 @@ public class RobotContainer {
             RobotState.getInstance().setStow(position.equals(Position.Stow));
             double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
 
+            positions = ArmPositions.intakeCubeExtendedGround;
+
             new MovePivot(pivot, positions[0]).schedule();
             new MoveTelescope(telescope, pivot, positions[1], positions[0]).schedule();
             new MoveWrist(wrist, pivot, positions[2]).schedule();
 
             /*
-
             if (telescope.getPositionM() > 0.2 && position != Position.Stow) {
                 new ParallelCommandGroup(
                     new MovePivot(pivot, ArmPositions.stow[0]),

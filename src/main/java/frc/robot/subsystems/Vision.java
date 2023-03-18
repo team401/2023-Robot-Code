@@ -20,27 +20,29 @@ public class Vision extends SubsystemBase {
 
     //http://10.4.1.80:5800
 
-    private final PhotonCamera[] cameras = {
-        // new PhotonCamera(VisionConstants.cameraNames[0]),
-        // new PhotonCamera(VisionConstants.cameraNames[1]),
-        new PhotonCamera(VisionConstants.cameraNames[2])
-        // new PhotonCamera(VisionConstants.cameraNames[3])
-    };
+    // private final PhotonCamera[] cameras = {
+    //     // new PhotonCamera(VisionConstants.cameraNames[0]),
+    //     // new PhotonCamera(VisionConstants.cameraNames[1]),
+    //     new PhotonCamera(VisionConstants.cameraNames[2])
+    //     // new PhotonCamera(VisionConstants.cameraNames[3])
+    // };
 
-    private final AprilTagFieldLayout tagLayout = new AprilTagFieldLayout(VisionConstants.tags, 16.54175, 8.0137);
+    // private final AprilTagFieldLayout tagLayout = new AprilTagFieldLayout(VisionConstants.tags, 16.54175, 8.0137);
 
-    private final PhotonPoseEstimator[] poseEstimators;
+    // private final PhotonPoseEstimator[] poseEstimators;
 
-    private final Field2d field = new Field2d();
+    // private final Field2d field = new Field2d();
+
+    // private double lastLatency = 0;
 
     public Vision() {
 
-        poseEstimators = new PhotonPoseEstimator[] {
-            // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[0], VisionConstants.vehicleToCameras[0]),
-            // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[1], VisionConstants.vehicleToCameras[1]),
-            new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[0], VisionConstants.vehicleToCameras[0])
+        // poseEstimators = new PhotonPoseEstimator[] {
+        //     // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[0], VisionConstants.vehicleToCameras[0]),
+        //     // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[1], VisionConstants.vehicleToCameras[1]),
+        //     new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[0], VisionConstants.vehicleToCameras[0])
             // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[3], VisionConstants.vehicleToCameras[3])
-        };
+        // };
 
         // SmartDashboard.putData(field);
         
@@ -50,38 +52,44 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
 
-        Pose2d pose = new Pose2d(0, 0, new Rotation2d());
+        // Pose2d pose = new Pose2d(0, 0, new Rotation2d());
 
-        int validPoseCount = 0;
-        double latency = 0;
+        // int validPoseCount = 0;
+        // double latency = 0;
+        // for (int i = 0; i < 1; i++) {
 
-        for (int i = 0; i < 1; i++) {
+        //     Optional<EstimatedRobotPose> estimatedPose = poseEstimators[i].update();
+        //     if (estimatedPose.isPresent() && estimatedPose.get().targetsUsed.size() >= 2) {
 
-            Optional<EstimatedRobotPose> estimatedPose = poseEstimators[i].update();
-            if (estimatedPose.isPresent() && estimatedPose.get().targetsUsed.size() >= 2) {
+        //         pose = new Pose2d(
+        //             pose.getX()+estimatedPose.get().estimatedPose.toPose2d().getX(), 
+        //             pose.getY()+estimatedPose.get().estimatedPose.toPose2d().getY(), 
+        //             new Rotation2d(pose.getRotation().getRadians()+estimatedPose.get().estimatedPose.toPose2d().getRotation().getRadians())
+        //         );
+        //         validPoseCount += 1;
+        //         latency += cameras[i].getLatestResult().getLatencyMillis() / 1000;
 
-                pose = new Pose2d(
-                    pose.getX()+estimatedPose.get().estimatedPose.toPose2d().getX(), 
-                    pose.getY()+estimatedPose.get().estimatedPose.toPose2d().getY(), 
-                    new Rotation2d(pose.getRotation().getRadians()+estimatedPose.get().estimatedPose.toPose2d().getRotation().getRadians())
-                );
-                validPoseCount += 1;
-                latency += cameras[i].getLatestResult().getLatencyMillis() / 1000;
+        //     }
 
-            }
+        // }
 
-        }
+        // if (validPoseCount > 0) {
+        //     latency /= validPoseCount;
 
-        if (validPoseCount > 0) {
-            latency /= validPoseCount;
+        //     if (latency == lastLatency) return;
 
-            pose = new Pose2d(pose.getX()/validPoseCount, pose.getY()/validPoseCount, new Rotation2d(pose.getRotation().getRadians()/validPoseCount));
+        //     lastLatency = latency;
 
-            RobotState.getInstance().recordVisionObservations(pose, latency);
+        //     pose = new Pose2d(pose.getX()/validPoseCount, pose.getY()/validPoseCount, new Rotation2d((pose.getRotation().getRadians()/validPoseCount)+Math.PI));
 
-            field.setRobotPose(pose);
+        //     // RobotState.getInstance().recordVisionObservations(pose, latency);
 
-        }
+        //     SmartDashboard.putNumber("VisionX", pose.getX());
+        //     SmartDashboard.putNumber("VisionY", pose.getY());
+
+        //     // field.setRobotPose(pose);
+
+        // }
 
     }
 

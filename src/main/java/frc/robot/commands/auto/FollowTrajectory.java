@@ -10,6 +10,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -69,6 +70,11 @@ public class FollowTrajectory extends CommandBase {
         drive.setGoalChassisSpeeds(adjustedSpeeds);
 
         RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
+
+        SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
+        SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
+        SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
+        SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
     }
 
     @Override
