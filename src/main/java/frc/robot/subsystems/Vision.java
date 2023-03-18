@@ -6,11 +6,12 @@ import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
@@ -20,77 +21,75 @@ public class Vision extends SubsystemBase {
 
     //http://10.4.1.80:5800
 
-    // private final PhotonCamera[] cameras = {
-    //     // new PhotonCamera(VisionConstants.cameraNames[0]),
-    //     // new PhotonCamera(VisionConstants.cameraNames[1]),
-    //     new PhotonCamera(VisionConstants.cameraNames[2])
-    //     // new PhotonCamera(VisionConstants.cameraNames[3])
-    // };
+    private final PhotonCamera camera = new PhotonCamera(VisionConstants.cameraNames[2]);
+    
+    private final AprilTagFieldLayout tagLayout = new AprilTagFieldLayout(VisionConstants.tags, 16.54175, 8.0137);
 
-    // private final AprilTagFieldLayout tagLayout = new AprilTagFieldLayout(VisionConstants.tags, 16.54175, 8.0137);
-
-    // private final PhotonPoseEstimator[] poseEstimators;
-
-    // private final Field2d field = new Field2d();
-
-    // private double lastLatency = 0;
+    private final PhotonPoseEstimator poseEstimator;
+    
+    private double lastTimestamp = 0;
 
     public Vision() {
 
-        // poseEstimators = new PhotonPoseEstimator[] {
-        //     // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[0], VisionConstants.vehicleToCameras[0]),
-        //     // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[1], VisionConstants.vehicleToCameras[1]),
-        //     new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[0], VisionConstants.vehicleToCameras[0])
-            // new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, cameras[3], VisionConstants.vehicleToCameras[3])
-        // };
-
-        // SmartDashboard.putData(field);
+        poseEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, camera, VisionConstants.vehicleToCameras[2]);
         
     }
-
 
     @Override
     public void periodic() {
 
-        // Pose2d pose = new Pose2d(0, 0, new Rotation2d());
+        double startTimePeriodic = System.currentTimeMillis();
 
-        // int validPoseCount = 0;
-        // double latency = 0;
-        // for (int i = 0; i < 1; i++) {
+        double startTimeCamResult = System.currentTimeMillis();
+        PhotonPipelineResult result = camera.getLatestResult();
+        SmartDashboard.putNumber("VisionTimeCameraResult", System.currentTimeMillis()-startTimeCamResult);
+        
+        double startTimePoseEstimator = System.currentTimeMillis();
+        // Thread thread = new Thread(() -> estimatedPose = poseEstimator.update(result));
+        PoseEstimate estimate = new PoseEstimate(poseEstimator, result);
+        Thread thread = new Thread(estimate);
+        thread.start();
+        thread.join();
+        int value = foo.getValue();
+        Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(result);
+        SmartDashboard.putNumber("VisionTimePoseEstimate", System.currentTimeMillis()-startTimePoseEstimator);
+        
+        if (estimatedPose.isPresent() && estimatedPose.get().timestampSeconds != lastTimestamp) {
+            EstimatedRobotPose pose = estimatedPose.get();
+            lastTimestamp = pose.timestampSeconds;
+            double distance = getDistance(pose.estimatedPose.toPose2d(), result.getBestTarget().getFiducialId());
+            RobotState.getInstance().recordVisionObservations(pose.estimatedPose.toPose2d(), distance, pose.timestampSeconds);
+        }
 
-        //     Optional<EstimatedRobotPose> estimatedPose = poseEstimators[i].update();
-        //     if (estimatedPose.isPresent() && estimatedPose.get().targetsUsed.size() >= 2) {
+        SmartDashboard.putNumber("VisionTimePeriodic", System.currentTimeMillis()-startTimePeriodic);
 
-        //         pose = new Pose2d(
-        //             pose.getX()+estimatedPose.get().estimatedPose.toPose2d().getX(), 
-        //             pose.getY()+estimatedPose.get().estimatedPose.toPose2d().getY(), 
-        //             new Rotation2d(pose.getRotation().getRadians()+estimatedPose.get().estimatedPose.toPose2d().getRotation().getRadians())
-        //         );
-        //         validPoseCount += 1;
-        //         latency += cameras[i].getLatestResult().getLatencyMillis() / 1000;
+    }
 
-        //     }
+    private double getDistance(Pose2d pose, int id) {
+        Optional<Pose3d> tagPose3d = tagLayout.getTagPose(id);
+        if (tagPose3d.isEmpty()) {
+            return 100;
+        }
+        Pose2d tagPose = tagPose3d.get().toPose2d();
+        return tagPose.getTranslation().getDistance(pose.getTranslation());
+    }
 
-        // }
+    public class PoseEstimate implements Runnable {
+        private final PhotonPoseEstimator poseEstimator;
+        private final PhotonPipelineResult result;
 
-        // if (validPoseCount > 0) {
-        //     latency /= validPoseCount;
-
-        //     if (latency == lastLatency) return;
-
-        //     lastLatency = latency;
-
-        //     pose = new Pose2d(pose.getX()/validPoseCount, pose.getY()/validPoseCount, new Rotation2d((pose.getRotation().getRadians()/validPoseCount)+Math.PI));
-
-        //     // RobotState.getInstance().recordVisionObservations(pose, latency);
-
-        //     SmartDashboard.putNumber("VisionX", pose.getX());
-        //     SmartDashboard.putNumber("VisionY", pose.getY());
-
-        //     // field.setRobotPose(pose);
-
-        // }
-
+        public PoseEstimate(PhotonPoseEstimator poseEstimator) {
+            this.poseEstimator = poseEstimator;
+        }
+   
+        @Override
+        public void run() {
+           value = 2;
+        }
+   
+        public int getValue() {
+            return value;
+        }
     }
 
 }

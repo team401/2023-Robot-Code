@@ -36,8 +36,6 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     private double simPos;
 
-    private final Timer timer = new Timer();
-
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the pivot subsytem.
@@ -203,9 +201,5 @@ public class TelescopeSubsystem extends SubsystemBase{
         // SmartDashboard.putNumber("Telescope Amps", getAmps());
 
         RobotState.getInstance().putTelescopeDisplay(getPositionM());
-
-        SmartDashboard.putNumber("Loop Time", timer.get() * 1000);
-        timer.reset();
-        timer.start();
     }
 }

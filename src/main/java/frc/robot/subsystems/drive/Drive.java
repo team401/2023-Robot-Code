@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -52,8 +52,6 @@ public class Drive extends SubsystemBase {
      */
     private boolean babyMode = false;
 
-    private final Timer timer = new Timer();
-
     /**
      * Initialize all the modules, data arrays, and RobotState
      */
@@ -92,16 +90,8 @@ public class Drive extends SubsystemBase {
 
     }
 
-    /**
-     * Updates RobotState with the drive observations for pose estimation
-     */
     @Override
     public void periodic() {
-
-        // SmartDashboard.putNumber("Time", timer.get());
-        timer.reset();
-        timer.start();
-
         // SmartDashboard.putNumber("Angle", driveAngle.getHeading());
 
         // Driving

@@ -231,13 +231,11 @@ public final class Constants {
         };
 
         public static final Transform3d[] vehicleToCameras = {//10 deg yaw, 5 deg pitch
-            new Transform3d(new Translation3d(-0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
+            new Transform3d(new Translation3d(-0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-10))),
             new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(350))),
             new Transform3d(new Translation3d(0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190))),
             new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190)))
         };
-        //2.4, 0.72, 1.78
-        //0.05, 0.05, -0.29
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
             add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
