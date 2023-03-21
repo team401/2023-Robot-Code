@@ -72,8 +72,6 @@ public class Balance extends CommandBase {
 
         ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, 0, omegaRadPerS, drive.getRotation());
         drive.setGoalChassisSpeeds(targetSpeeds);
-
-        // SmartDashboard.putNumber("ErorCheckerTime", errorChecker.get());
         
     }
 

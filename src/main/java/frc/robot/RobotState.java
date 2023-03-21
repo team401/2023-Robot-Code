@@ -103,11 +103,9 @@ public class RobotState {
         driveOdometry.update(rotation, modulePositions);
     }
 
-    public void recordVisionObservations(Pose2d pose, double distance, double latencyS) {
-        // if (pose.getX() < 4 || pose.getX() > 12.5) {
-            // poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp()-latencyS);
-            // }
-        poseEstimator.addVisionMeasurement(pose, latencyS, VecBuilder.fill(distance / 2, distance / 2, 100));
+    public void recordVisionObservations(Pose2d pose, double distance, double timestamp) {
+        
+        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(distance / 2, distance / 2, 100));
 
     }
 

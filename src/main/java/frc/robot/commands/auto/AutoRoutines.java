@@ -74,7 +74,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 }),
                 resetOdometry(pathGroup),
                 new InstantCommand(intake::toggleIntake),
-                // home(),
+                home(),
                 invert(),
                 placeConeInitial(),
                 new ParallelRaceGroup(
@@ -108,17 +108,17 @@ public class AutoRoutines extends SequentialCommandGroup {
                     RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
                 }),
                 resetOdometry(pathGroup),
-                new InstantCommand(intake::toggleIntake),
-                home(),
-                invert(),
-                placeConeInitial(),
+                // new InstantCommand(intake::toggleIntake),
+                // home(),
+                // invert(),
+                // placeConeInitial(),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(0)),
-                    invert().andThen(pickupCube()).andThen(hold())
+                    drive(pathGroup.get(0))
+                    // invert().andThen(pickupCube()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    // drive(pathGroup.get(1))
-                    invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCube()).andThen(hold())
+                    drive(pathGroup.get(1))
+                    // invert().andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCube()).andThen(hold())
                 ),
                 // placeCube(),
                 new ParallelRaceGroup(
@@ -192,6 +192,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeDown)),
             new InstantCommand(intake::toggleIntake),
+            moveArm(ArmPositions.intakeConeDownGround),
             moveArm(ArmPositions.intakeConeDownExtendedGround)
         );
     }
@@ -200,6 +201,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
             new InstantCommand(intake::toggleIntake),
+            moveArm(ArmPositions.intakeCubeGround),
             moveArm(ArmPositions.intakeCubeExtendedGround)
         );
     }

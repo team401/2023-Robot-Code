@@ -89,13 +89,21 @@ public final class Constants {
                 new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0) //rear right
         );
 
-        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.24, 3.265);
+        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.22, 2.151);
 
         public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;
 
         public static final double driveJoystickDeadbandPercent = 0.12;
         public static final double driveMaxJerk = 200.0;
+
+        public static final double poseMoveTranslationkP = 3;
+        public static final double poseMoveTranslationMaxVel = 1;
+        public static final double poseMoveTranslationMaxAccel = 1;
+
+        public static final double poseMoveRotationkP = 5;
+        public static final double poseMoveRotationMaxVel = Math.PI;
+        public static final double poseMoveRotationMaxAccel = Math.PI;
 
     }
 
@@ -265,8 +273,8 @@ public final class Constants {
         3-2: 3 piece + balance
         */
 
-        public static final double kMaxVelocityMetersPerSecond = 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double kMaxVelocityMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 4;
 
         public static final double kMaxVelocitySlowMetersPerSecond = 2;
         public static final double kMaxAccelerationSlowMetersPerSecondSquared = 3;

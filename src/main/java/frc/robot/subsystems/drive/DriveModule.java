@@ -42,7 +42,7 @@ public class DriveModule {
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 255, 1000);
     }
 
-    public DriveModule(int driveMotorID, int rotationMotorID, int cancoderID, double measuredOffsetsRadians) {
+    public DriveModule(int driveMotorID, int rotationMotorID, int cancoderID, double measuredOffsetsRadians, boolean driveInverted) {
 
         driveMotor = new TalonFX(driveMotorID, CANDevices.canivoreName);
         rotationMotor = new TalonFX(rotationMotorID, CANDevices.canivoreName);

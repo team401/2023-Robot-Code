@@ -64,8 +64,8 @@ public class MovePivot extends CommandBase{
         // as well as the current starting state
         timer.reset();
         timer.start();
-        Constraints constraints = DriverStation.isAutonomous() ? new TrapezoidProfile.Constraints(720, 180) : pivot.getConstraintsRad();
-        profile = new TrapezoidProfile(constraints, goalState,
+        // Constraints constraints = DriverStation.isAutonomous() ? new TrapezoidProfile.Constraints(720, 180) : pivot.getConstraintsRad();
+        profile = new TrapezoidProfile(pivot.getConstraintsRad(), goalState,
             new State(pivot.getPositionRad(), pivot.getVelRadS()));
 
         // Marks setpoint in pivot subsystem for the hold command

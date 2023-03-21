@@ -58,13 +58,13 @@ public class Drive extends SubsystemBase {
     public Drive() {
 
         driveModules[0] = new DriveModule(CANDevices.frontLeftDriveMotorID, CANDevices.frontLeftRotationMotorID,
-            CANDevices.frontLeftRotationEncoderID, DriveConstants.frontLeftAngleOffset);
+            CANDevices.frontLeftRotationEncoderID, DriveConstants.frontLeftAngleOffset, false);
         driveModules[1] = new DriveModule(CANDevices.frontRightDriveMotorID, CANDevices.frontRightRotationMotorID,
-            CANDevices.frontRightRotationEncoderID, DriveConstants.frontRightAngleOffset);
+            CANDevices.frontRightRotationEncoderID, DriveConstants.frontRightAngleOffset, true);
         driveModules[2] = new DriveModule(CANDevices.backLeftDriveMotorID, CANDevices.backLeftRotationMotorID,
-            CANDevices.backLeftRotationEncoderID, DriveConstants.backLeftAngleOffset);
+            CANDevices.backLeftRotationEncoderID, DriveConstants.backLeftAngleOffset, true);
         driveModules[3] = new DriveModule(CANDevices.backRightDriveMotorID, CANDevices.backRightRotationMotorID,
-            CANDevices.backRightRotationEncoderID, DriveConstants.backRightAngleOffset);
+            CANDevices.backRightRotationEncoderID, DriveConstants.backRightAngleOffset, true);
 
         for (int i = 0; i < 4; i++) {
             driveModules[i].zeroEncoders();
@@ -127,6 +127,8 @@ public class Drive extends SubsystemBase {
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
         RobotState.getInstance().getFieldToVehicle();
+
+        SmartDashboard.putNumber("DriveVelocity", getVelocity());
 
         // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 
@@ -212,7 +214,7 @@ public class Drive extends SubsystemBase {
     }
 
     public void setVolts(double v) {
-        driveModules[0].setDriveVoltage(-v);
+        driveModules[0].setDriveVoltage(v);
         driveModules[1].setDriveVoltage(v);
         driveModules[2].setDriveVoltage(v);
         driveModules[3].setDriveVoltage(v);
