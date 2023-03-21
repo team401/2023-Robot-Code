@@ -59,6 +59,8 @@ public class Vision extends SubsystemBase {
 
     private void periodicThread() {
 
+        if (!camera.isConnected()) return;
+
         PhotonPipelineResult result = camera.getLatestResult();
         
         Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(result);

@@ -79,13 +79,6 @@
       "/SmartDashboard/Arm Mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Mode": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
-    },
-    "windows": {
-      "/SmartDashboard/Arm Mechanism": {
-        "window": {
-          "visible": true
-        }
-      }
     }
   },
   "NetworkTables": {
@@ -93,7 +86,6 @@
       "SmartDashboard": {
         "Arm Mechanism": {
           "arm": {
-            "open": true,
             "pivot": {
               "open": true,
               "telescope": {
@@ -104,6 +96,9 @@
               }
             }
           },
+          "open": true
+        },
+        "Field": {
           "open": true
         },
         "open": true

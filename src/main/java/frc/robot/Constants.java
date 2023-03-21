@@ -98,7 +98,7 @@ public final class Constants {
         public static final double driveMaxJerk = 200.0;
 
         public static final double poseMoveTranslationkP = 3;
-        public static final double poseMoveTranslationMaxVel = 1;
+        public static final double poseMoveTranslationMaxVel = 4;
         public static final double poseMoveTranslationMaxAccel = 1;
 
         public static final double poseMoveRotationkP = 5;
@@ -273,8 +273,8 @@ public final class Constants {
         3-2: 3 piece + balance
         */
 
-        public static final double kMaxVelocityMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 4;
+        public static final double kMaxVelocityMetersPerSecond = 4;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 5;
 
         public static final double kMaxVelocitySlowMetersPerSecond = 2;
         public static final double kMaxAccelerationSlowMetersPerSecondSquared = 3;

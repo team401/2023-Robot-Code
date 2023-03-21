@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -18,11 +20,13 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.AutoRoutines;
+import frc.robot.commands.auto.DriveToPose;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -95,70 +99,6 @@ public class RobotContainer {
 
     private void configureTestBindings() {
 
-        new POVButton(gamepad, 0)
-            .onTrue(new InstantCommand(() -> {
-                SmartDashboard.putNumber("Volts", volts);
-                volts += 0.1;
-            }));
-
-        new POVButton(gamepad, 90)
-            .onTrue(new InstantCommand(() -> {
-                SmartDashboard.putNumber("Volts", volts);
-                volts += 0.01;
-            }));
-
-        new POVButton(gamepad, 180)
-            .onTrue(new InstantCommand(() -> {
-                SmartDashboard.putNumber("Volts", volts);
-                volts -= 0.1;
-            }));
-
-        new POVButton(gamepad, 270)
-            .onTrue(new InstantCommand(() -> {
-                SmartDashboard.putNumber("Volts", volts);
-                volts -= 0.01;
-            }));
-
-        new JoystickButton(gamepad, Button.kX.value)
-            .onTrue(new InstantCommand(() -> drive.setVolts(volts)))
-            .onFalse(new InstantCommand(() -> drive.setVolts(0)));
-
-        new JoystickButton(gamepad, Button.kB.value)
-            .onTrue(new InstantCommand(() -> drive.setVolts(-volts)))
-            .onFalse(new InstantCommand(() -> drive.setVolts(0)));
-
-        
-
-        // new JoystickButton(gamepad, Button.kA.value)
-        //     .whileTrue(new RepeatCommand(new InstantCommand(() -> {
-        //         armPositionTheta = gamepad.getRightTriggerAxis();
-        //         double[] pos = ArmPositionCalc.findPositions(armPositionX, armPositionY, armPositionTheta);
-        //         new ParallelCommandGroup(
-        //             new MovePivot(pivot, telescope, () -> pos[0]),
-        //             new MoveTelescope(telescope, pivot, () -> pos[1], () -> pos[1]),
-        //             new MoveWrist(wrist, pivot, () -> pos[2])
-        //         ).schedule();
-        //     })));
-        
-        // new POVButton(gamepad, 0)
-        //     .onTrue(new InstantCommand(() -> {
-        //         armPositionY += 0.1;
-        //     }));
-
-        // new POVButton(gamepad, 180)
-        //     .onTrue(new InstantCommand(() -> {
-        //         armPositionY -= 0.1;
-        //     }));
-        
-        // new POVButton(gamepad, 90)
-        //     .onTrue(new InstantCommand(() -> {
-        //         armPositionX += 0.1;
-        //     }));
-        
-        // new POVButton(gamepad, 270)
-        //     .onTrue(new InstantCommand(() -> {
-        //         armPositionX -= 0.1;
-        //     }));
     }
 
     private void configureCompBindings() {
@@ -181,6 +121,11 @@ public class RobotContainer {
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+
+        new JoystickButton(leftStick, 3)
+            .whileTrue(new DriveToPose(drive, false));
+        new JoystickButton(leftStick, 4)
+            .whileTrue(new DriveToPose(drive, true));
 
         // Overrides
         new JoystickButton(rightStick, 12)

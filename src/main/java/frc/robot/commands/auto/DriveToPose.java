@@ -32,6 +32,7 @@ public class DriveToPose extends CommandBase {
 
     public DriveToPose (Drive drive, boolean left) {
         this.drive = drive;
+        this.left = left;
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         
@@ -40,9 +41,10 @@ public class DriveToPose extends CommandBase {
 
     @Override 
     public void initialize() {
-        xController.reset(RobotState.getInstance().getFieldToVehicle().getX());
-        yController.reset(RobotState.getInstance().getFieldToVehicle().getY());
-        thetaController.reset(RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
+        Pose2d currentPose = RobotState.getInstance().getFieldToVehicle();
+        xController.reset(currentPose.getX());
+        yController.reset(currentPose.getY());
+        thetaController.reset(currentPose.getRotation().getRadians());
 
         goalPose = getGoalPose();
     }
