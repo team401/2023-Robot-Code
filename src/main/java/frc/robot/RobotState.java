@@ -117,14 +117,14 @@ public class RobotState {
     public Pose2d simPose = new Pose2d();
     public void setSimPose(Pose2d pose) {
         simPose = pose;
-        field.setRobotPose(simPose);
+        // field.setRobotPose(simPose);
     }
 
     public Pose2d getFieldToVehicle() {
         SmartDashboard.putNumber("OdometryX", driveOdometry.getPoseMeters().getX());    
         SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
         SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
-        // field.setRobotPose(poseEstimator.getEstimatedPosition());
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
         // field.setRobotPose(driveOdometry.getPoseMeters());
         return poseEstimator.getEstimatedPosition();
     }

@@ -9,6 +9,7 @@ import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
@@ -22,8 +23,8 @@ public class FollowTrajectory extends CommandBase {
     private Pose2d latestFieldToVehicle;
     private final RobotState robotState;
     private final PathPlannerTrajectory trajectory;
-    private final PIDController xController = new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd);
-    private final PIDController yController = new PIDController(AutoConstants.autoTranslationKp, AutoConstants.autoTranslationKi, AutoConstants.autoTranslationKd);
+    private final PIDController xController = new PIDController(AutoConstants.autoTranslationXKp, AutoConstants.autoTranslationXKi, AutoConstants.autoTranslationXKd);
+    private final PIDController yController = new PIDController(AutoConstants.autoTranslationYKp, AutoConstants.autoTranslationYKi, AutoConstants.autoTranslationYKd);
     private final ProfiledPIDController thetaController = 
         new ProfiledPIDController(
             AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd,
@@ -34,11 +35,16 @@ public class FollowTrajectory extends CommandBase {
 
     private final Timer timer = new Timer();
 
-    public FollowTrajectory(Drive drive, PathPlannerTrajectory trajectory) {
+    private final boolean verifyRotation;
+    private final Timer rotationTimer = new Timer();
+    private boolean rotationTimerStarted = false;
+
+    public FollowTrajectory(Drive drive, PathPlannerTrajectory trajectory, boolean verifyRotation) {
         
         this.drive = drive;
         this.robotState = RobotState.getInstance();
         this.trajectory = trajectory;
+        this.verifyRotation = verifyRotation;
 
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         this.controller  = new HolonomicDriveController(xController, yController, thetaController);
@@ -52,34 +58,60 @@ public class FollowTrajectory extends CommandBase {
         timer.reset();
         timer.start();
 
-        //drive.resetOdometry(new Pose2d(pathState.poseMeters.getTranslation(), pathState.holonomicRotation));
+        rotationTimer.reset();
+        rotationTimer.stop();
+
+        xController.reset();
+        yController.reset();
+        thetaController.reset(new State(robotState.getFieldToVehicle().getRotation().getRadians(), 0));
+
+        rotationTimerStarted = false;
 
     }
 
     @Override
     public void execute() {
-    
-        latestFieldToVehicle = robotState.getFieldToVehicle();
+
+    latestFieldToVehicle = robotState.getFieldToVehicle();
+
+        if (!rotationTimerStarted) {
         
-        PathPlannerState desiredState = (PathPlannerState) trajectory.sample(timer.get());
+            PathPlannerState desiredState = (PathPlannerState) trajectory.sample(timer.get());
+    
+            ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
+                adjustedSpeeds = controller.calculate(
+                    latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
 
-        ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
-            adjustedSpeeds = controller.calculate(
+            drive.setGoalChassisSpeeds(adjustedSpeeds);
+
+            SmartDashboard.putNumber("OutputSpeedX", adjustedSpeeds.vxMetersPerSecond);
+
+            SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
+            SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
+            SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
+            SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
+            SmartDashboard.putNumber("DesiredTheta", desiredState.holonomicRotation.getRadians());
+            SmartDashboard.putNumber("ActualTheta", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
+
+            if (timer.hasElapsed(trajectory.getTotalTimeSeconds())) {
+                rotationTimerStarted = true;
+                rotationTimer.reset();
+                rotationTimer.start();
+            }
+
+        }
+        else {
+            PathPlannerState desiredState = (PathPlannerState) trajectory.getEndState();
+            ChassisSpeeds adjustedSpeeds = controller.calculate(
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
-
-        drive.setGoalChassisSpeeds(adjustedSpeeds);
-
-        RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
-
-        SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
-        SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
-        SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
-        SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
+            drive.setGoalChassisSpeeds(adjustedSpeeds);
+        }
+    
     }
 
     @Override
     public boolean isFinished() {
-        return timer.hasElapsed(trajectory.getTotalTimeSeconds());
+        return (verifyRotation && rotationTimer.hasElapsed(1)) || (!verifyRotation && timer.hasElapsed(trajectory.getTotalTimeSeconds()));
     }
 
     @Override

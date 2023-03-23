@@ -98,7 +98,6 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-
     }
 
     private void configureCompBindings() {
@@ -123,9 +122,9 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         new JoystickButton(leftStick, 3)
-            .whileTrue(new DriveToPose(drive, false));
-        new JoystickButton(leftStick, 4)
             .whileTrue(new DriveToPose(drive, true));
+        new JoystickButton(leftStick, 4)
+            .whileTrue(new DriveToPose(drive, false));
 
         // Overrides
         new JoystickButton(rightStick, 12)
@@ -202,19 +201,14 @@ public class RobotContainer {
 
     private void configureAutos() {
         // Select path
-        autoChooser.addOption("B-1-1", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
-        // autoChooser.addOption("R-1-1", new AutoRoutines("R-1-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
-        // autoChooser.addOption("R-1-2", new AutoRoutines("R-1-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-2-1", new AutoRoutines("B-2-1", drive, pivot, telescope, wrist, intake, vision));
-        // autoChooser.addOption("R-2-1", new AutoRoutines("R-2-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-2-2", new AutoRoutines("B-2-2", drive, pivot, telescope, wrist, intake, vision));
-        // autoChooser.addOption("R-2-2", new AutoRoutines("R-2-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-3-1", new AutoRoutines("B-3-1", drive, pivot, telescope, wrist, intake, vision));
-        // autoChooser.addOption("R-3-1", new AutoRoutines("R-3-1", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.addOption("B-3-2", new AutoRoutines("B-3-2", drive, pivot, telescope, wrist, intake, vision));
-        // autoChooser.addOption("R-3-2", new AutoRoutines("R-3-2", drive, pivot, telescope, wrist, intake, vision));
-        autoChooser.setDefaultOption("B-1-2", new AutoRoutines("B-1-2", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.addOption("0-0", new AutoRoutines("0-0", drive, pivot, telescope, wrist, intake, vision));
+        for (int start = 1; start <= 3; start++) {
+            for (int path = 1; path <= 2; path++) {
+                autoChooser.addOption("B-"+start+"-"+path, new AutoRoutines("B-"+start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
+                autoChooser.addOption("R-"+start+"-"+path, new AutoRoutines("R-"+start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
+            }
+        }
+        autoChooser.setDefaultOption("default", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
@@ -241,7 +235,7 @@ public class RobotContainer {
             double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
 
             if (telescope.getPositionM() > 0.2 && position != Position.Stow) {
-                new ParallelCommandGroup(
+                new ParallelCommandGroup(   
                     new MovePivot(pivot, ArmPositions.stow[0]),
                     new MoveTelescope(telescope, pivot, ArmPositions.stow[1], ArmPositions.stow[0]),
                     new MoveWrist(wrist, pivot, ArmPositions.stow[2])

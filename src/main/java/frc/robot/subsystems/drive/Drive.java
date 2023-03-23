@@ -151,13 +151,6 @@ public class Drive extends SubsystemBase {
      * @param speeds the desired speed of the robot
      */
     public void setGoalChassisSpeeds(ChassisSpeeds speeds) {
-        if (DriverStation.isAutonomousEnabled()) {
-            speeds = new ChassisSpeeds(
-                Math.max(Math.min(speeds.vxMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), -AutoConstants.kMaxVelocityMetersPerSecond), 
-                Math.max(Math.min(speeds.vyMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), -AutoConstants.kMaxVelocityMetersPerSecond),
-                speeds.omegaRadiansPerSecond
-            );
-        }
         speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.2 : 1));
         SwerveModuleState[] goalModuleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(goalModuleStates, DriveConstants.maxDriveSpeed);
@@ -221,7 +214,7 @@ public class Drive extends SubsystemBase {
     }
 
     public double getVelocity() {
-        return (driveModules[0].getDriveVelocityMPerS() + driveModules[1].getDriveVelocityMPerS() + driveModules[2].getDriveVelocityMPerS() + driveModules[3].getDriveVelocityMPerS()) / 4;
+        return (driveModules[0].getDriveVelocityMPerS() + driveModules[1].getDriveVelocityMPerS() - driveModules[2].getDriveVelocityMPerS() + driveModules[3].getDriveVelocityMPerS()) / 4;
     }
 
 }

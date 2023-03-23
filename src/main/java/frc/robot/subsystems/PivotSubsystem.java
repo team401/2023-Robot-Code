@@ -42,7 +42,7 @@ public class PivotSubsystem extends SubsystemBase {
     private double velocityRadS;
     
     // For safety; detect when encoder stops sending new data
-    private boolean dead = true;
+    private boolean dead = false;
 
     public boolean atGoal = false;
 

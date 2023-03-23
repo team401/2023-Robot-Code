@@ -30,7 +30,7 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     // For safety; detect when encoder stops sending new data
     private double lastEncoderPos;
-    private boolean dead = true;
+    private boolean dead = false;
 
     public boolean atGoal = false;
 
