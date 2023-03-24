@@ -193,7 +193,7 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Telescope Position", getPositionM()); 
+        // SmartDashboard.putNumber("Telescope Position", getPositionM()); 
         // SmartDashboard.putNumber("Telescope Velocity", getVel());
         // SmartDashboard.putNumber("Telescope Desired Position", currentSetpoint.position);
         // SmartDashboard.putBoolean("Telescope Dead", dead);

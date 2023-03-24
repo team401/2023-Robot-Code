@@ -128,7 +128,7 @@ public class Drive extends SubsystemBase {
 
         RobotState.getInstance().getFieldToVehicle();
 
-        SmartDashboard.putNumber("DriveVelocity", getVelocity());
+        // SmartDashboard.putNumber("DriveVelocity", getVelocity());
 
         // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 

@@ -40,7 +40,7 @@ public class HomeWrist extends CommandBase {
     }
 
     public void execute() {
-        SmartDashboard.putNumber("wRISTaMPS", Math.abs(wrist.getAmps()));
+        // SmartDashboard.putNumber("wRISTaMPS", Math.abs(wrist.getAmps()));
         if (Math.abs(wrist.getAmps()) < 40) {
             timer.reset();
         }

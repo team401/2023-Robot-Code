@@ -121,10 +121,10 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
-        new JoystickButton(leftStick, 3)
-            .whileTrue(new DriveToPose(drive, true));
-        new JoystickButton(leftStick, 4)
-            .whileTrue(new DriveToPose(drive, false));
+        // new JoystickButton(leftStick, 3)
+        //     .whileTrue(new DriveToPose(drive, true));
+        // new JoystickButton(leftStick, 4)
+        //     .whileTrue(new DriveToPose(drive, false));
 
         // Overrides
         new JoystickButton(rightStick, 12)
@@ -140,13 +140,13 @@ public class RobotContainer {
             .whileTrue(new RunCommand(() -> pivot.overrideVolts(-1.5), pivot));
 
         new JoystickButton(leftStick, 7)
-            .onTrue(new InstantCommand(pivot::toggleKill));
+            .onTrue(new InstantCommand(pivot::toggleKill, pivot));
 
         new JoystickButton(leftStick, 6)
-            .onTrue(new InstantCommand(telescope::toggleKill));
+            .onTrue(new InstantCommand(telescope::toggleKill, telescope));
 
         new JoystickButton(leftStick, 5)
-            .onTrue(new InstantCommand(wrist::toggleKill));
+            .onTrue(new InstantCommand(wrist::toggleKill, wrist));
 
         new JoystickButton(leftStick, 10)
             .onTrue(new InstantCommand(pivot::toggleKill))

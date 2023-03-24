@@ -179,15 +179,15 @@ public final class Constants {
         
         public static final double[] intakeConeUpGround = new double[] {0.05, 0.05, -0.24};
         public static final double[] intakeConeUpShelf = new double[] {0.714, 0.64, -0.7};
-        public static final double[] placeConeUpHigh = new double[] {3.1 - 2.4, 0.7, -0.5};
+        public static final double[] placeConeUpHigh = new double[] {0.69, 0.78, -0.5};
         public static final double[] placeConeUpMid = new double[] {0.7, 0.21, -0.5};
         
         
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
         
         public static final double wristConePlace = -0.88;
-        public static final double[] placeConeDownHighAuto = new double[] {0.59, 0.70, 0.8};
-        public static final double[] wristConePlaceHighAuto = new double[] {0.598, 0.70, -0.88};
+        public static final double[] placeConeDownHighAuto = new double[] {0.585, 0.70, 0.8};
+        public static final double[] wristConePlaceHighAuto = new double[] {0.585, 0.70, -1.3};
 
     }
 

@@ -84,14 +84,14 @@ public class FollowTrajectory extends CommandBase {
 
             drive.setGoalChassisSpeeds(adjustedSpeeds);
 
-            SmartDashboard.putNumber("OutputSpeedX", adjustedSpeeds.vxMetersPerSecond);
+            // SmartDashboard.putNumber("OutputSpeedX", adjustedSpeeds.vxMetersPerSecond);
 
-            SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
-            SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
-            SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
-            SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
-            SmartDashboard.putNumber("DesiredTheta", desiredState.holonomicRotation.getRadians());
-            SmartDashboard.putNumber("ActualTheta", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
+            // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
+            // SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
+            // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
+            // SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
+            // SmartDashboard.putNumber("DesiredTheta", desiredState.holonomicRotation.getRadians());
+            // SmartDashboard.putNumber("ActualTheta", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
 
             if (timer.hasElapsed(trajectory.getTotalTimeSeconds())) {
                 rotationTimerStarted = true;

@@ -51,8 +51,8 @@ public class Vision extends SubsystemBase {
         if (validPose) {
             validPose = false;
             RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
-            SmartDashboard.putNumber("VisionX", calculatedPose.getX());
-            SmartDashboard.putNumber("VisionY", calculatedPose.getY());
+            // SmartDashboard.putNumber("VisionX", calculatedPose.getX());
+            // SmartDashboard.putNumber("VisionY", calculatedPose.getY());
         }
 
     }

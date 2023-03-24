@@ -225,11 +225,11 @@ public class WristSubsystem extends SubsystemBase {
 
     public void periodic() {
 
-        SmartDashboard.putNumber("Wrist Position", getPositionRad());
+        // SmartDashboard.putNumber("Wrist Position", getPositionRad());
         // SmartDashboard.putNumber("Wrist Desired Position", currentSetpointRad.position);
         // SmartDashboard.putNumber("Wrist Amps", getAmps());
         // SmartDashboard.putBoolean("Wrist Dead", dead);
-        // //SmartDashboard.putNumber("Wrist Input Voltage", motor.getmotor)
+        // SmartDashboard.putNumber("Wrist Input Voltage", motor.getmotor)
         // SmartDashboard.putNumber("Wrist Voltage", motor.getMotorOutputVoltage());
         // SmartDashboard.putBoolean("Wrist Homed", homed);
         // SmartDashboard.putNumber("Wrist Velocity", getVelRadS());
