@@ -100,7 +100,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             addCommands(
                 new ParallelRaceGroup(
                     drive(pathGroup.get(0), false),
-                    movingHome().andThen(pickupCube()).andThen(hold())
+                    pickupCube().andThen(hold())
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(1), true),

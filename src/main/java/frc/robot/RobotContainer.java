@@ -26,6 +26,7 @@ import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.AutoRoutines;
+import frc.robot.commands.auto.Balance;
 import frc.robot.commands.auto.DriveToPose;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
@@ -121,6 +122,9 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
+        new JoystickButton(leftStick, 2)
+            .whileTrue(new Balance(drive));
+
         // new JoystickButton(leftStick, 3)
         //     .whileTrue(new DriveToPose(drive, true));
         // new JoystickButton(leftStick, 4)
@@ -134,10 +138,10 @@ public class RobotContainer {
             .onTrue(new HomeTelescope(telescope));
         
         new JoystickButton(rightStick, 15)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(1.5), pivot));
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(3), pivot));
 
         new JoystickButton(rightStick, 14)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-1.5), pivot));
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-3), pivot));
 
         new JoystickButton(leftStick, 7)
             .onTrue(new InstantCommand(pivot::toggleKill, pivot));

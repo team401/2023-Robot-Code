@@ -60,8 +60,8 @@ public class MoveWrist extends CommandBase {
 
         double output = wrist.calculateControl(setpoint, getAdjustedAngle(), false);
 
-        // SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
-        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
+        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
 
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());

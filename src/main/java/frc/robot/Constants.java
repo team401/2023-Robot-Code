@@ -149,7 +149,7 @@ public final class Constants {
         public static final double gearRatio = 8.0 / 78;
 
         public static final double kP = 10;
-        public static final double kI = 15;
+        public static final double kI = 3;
         public static final double kPCone = 40;
         public static final double kICone = 0;
         public static final double kPConeHold = 15;
@@ -290,7 +290,7 @@ public final class Constants {
         public static final double autoRotationKi = 0.1;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.1;
+        public static final double autoBalanceKp = 0.15;
         public static final double autoBalanceKi = 0.0;
         public static final double autoBalanceKd = 0.0;
 
