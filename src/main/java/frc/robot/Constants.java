@@ -290,8 +290,8 @@ public final class Constants {
         public static final double autoRotationKi = 0.1;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.15;
-        public static final double autoBalanceKi = 0.0;
+        public static final double autoBalanceKp = 0.3;
+        public static final double autoBalanceKi = 0.05;
         public static final double autoBalanceKd = 0.0;
 
         public static final double initialBalanceSpeed = 1;
