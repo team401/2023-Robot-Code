@@ -249,19 +249,19 @@ public final class Constants {
         };
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
-            add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
-            add(new AprilTag(2, new Pose3d(new Translation3d(15.51, 2.75, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
-            add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.42, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.08, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(2, new Pose3d(new Translation3d(15.51, 2.76, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.52, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.42, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.54, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.77, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
             add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
         }};
 
     }
 
-    public static final class AutoConstants {
+    public static final class AutoConstants { // 16 ft recorded 5.25
 
         /*
             0-0: nothing

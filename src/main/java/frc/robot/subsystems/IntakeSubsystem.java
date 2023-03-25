@@ -94,9 +94,10 @@ public class IntakeSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
+        double currentDraw = Math.max(leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent());
+        // SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
         if (intakeMode == IntakeMode.Intake && !exceededCurrentDraw) {
-            double currentDraw = Math.max(leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent());
-            if (currentDraw > 35 && intakeTimer.hasElapsed(1)) {
+            if (currentDraw > 20 && intakeTimer.hasElapsed(0.3)) {
                 exceededCurrentDraw = true;
                 RobotState.getInstance().setIntaked(true);
                 if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {

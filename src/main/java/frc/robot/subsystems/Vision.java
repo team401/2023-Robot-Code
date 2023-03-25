@@ -11,6 +11,7 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -59,7 +60,12 @@ public class Vision extends SubsystemBase {
 
     private void periodicThread() {
 
-        if (!camera.isConnected()) return;
+        if (!camera.isConnected()) {
+            if (!DriverStation.isEnabled()) {
+                DriverStation.reportError("\nTURN ON VISION DUMMY!!!!!\n", false);
+            }
+            return;
+        }
 
         PhotonPipelineResult result = camera.getLatestResult();
         
