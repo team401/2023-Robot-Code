@@ -118,7 +118,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 ),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(3), true),
-                    invert().andThen(moveArm(ArmPositions.stow)).andThen(hold())
+                    invert()
                 )
             );
         }

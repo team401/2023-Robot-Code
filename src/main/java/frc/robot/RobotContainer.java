@@ -123,7 +123,8 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         new JoystickButton(leftStick, 2)
-            .whileTrue(new Balance(drive));
+            .onTrue(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0.5)))
+            .onFalse(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0)));
 
         // new JoystickButton(leftStick, 3)
         //     .whileTrue(new DriveToPose(drive, true));

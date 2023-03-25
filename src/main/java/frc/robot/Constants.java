@@ -187,7 +187,7 @@ public final class Constants {
         
         public static final double wristConePlace = -0.88;
         public static final double[] placeConeDownHighAuto = new double[] {0.585, 0.70, 0.8};
-        public static final double[] wristConePlaceHighAuto = new double[] {0.585, 0.70, -1.3};
+        public static final double[] wristConePlaceHighAuto = new double[] {0.585, 0.70, -1.5};
 
     }
 
@@ -290,7 +290,7 @@ public final class Constants {
         public static final double autoRotationKi = 0.1;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.3;
+        public static final double autoBalanceKp = 0.4;
         public static final double autoBalanceKi = 0.05;
         public static final double autoBalanceKd = 0.0;
 

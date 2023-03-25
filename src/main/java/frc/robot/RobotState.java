@@ -100,7 +100,7 @@ public class RobotState {
 
     public void recordDriveObservations(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator.update(rotation, modulePositions);
-        driveOdometry.update(rotation, modulePositions);
+        // driveOdometry.update(rotation, modulePositions);
     }
 
     public void recordVisionObservations(Pose2d pose, double distance, double timestamp) {
@@ -149,17 +149,17 @@ public class RobotState {
             break;
         }*/
 
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void setStow(boolean stowed) {

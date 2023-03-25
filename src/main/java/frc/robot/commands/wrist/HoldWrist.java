@@ -21,6 +21,7 @@ public class HoldWrist extends CommandBase {
     @Override
     public void initialize() {
         goalState = new State(wrist.getDesiredSetpointRad().position, 0);
+        wrist.resetPID();
     }
 
     @Override

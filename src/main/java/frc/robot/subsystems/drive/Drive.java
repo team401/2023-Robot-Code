@@ -132,6 +132,8 @@ public class Drive extends SubsystemBase {
 
         // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 
+        SmartDashboard.putNumber("TIME", DriverStation.getMatchTime());
+
     }
 
     /**
