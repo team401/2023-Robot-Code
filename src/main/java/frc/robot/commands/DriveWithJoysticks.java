@@ -8,8 +8,10 @@ import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
 
@@ -23,6 +25,9 @@ public class DriveWithJoysticks extends CommandBase {
     private final AxisProcessor xProcessor = new AxisProcessor(false);
     private final AxisProcessor yProcessor = new AxisProcessor(false);
     private final AxisProcessor omegaProcessor = new AxisProcessor(true);
+
+    private final Timer directionTimer = new Timer();
+    private double currentDirection = 1;
 
     /** Creates a new DriveWithJoysticks. */
     public DriveWithJoysticks(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, DoubleSupplier omegaPercent, boolean fieldRelative) {
@@ -41,6 +46,9 @@ public class DriveWithJoysticks extends CommandBase {
         xProcessor.reset(xPercent.getAsDouble());
         yProcessor.reset(yPercent.getAsDouble());
         omegaProcessor.reset(omegaPercent.getAsDouble());
+
+        directionTimer.reset();
+        directionTimer.start();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -56,6 +64,22 @@ public class DriveWithJoysticks extends CommandBase {
             : new ChassisSpeeds(xMPerS, yMPerS, omegaRadPerS);
 
         drive.setGoalChassisSpeeds(targetSpeeds);
+
+        if (Math.signum(xMPerS) != currentDirection) {
+            currentDirection = Math.signum(xMPerS);
+            directionTimer.reset();
+            directionTimer.start();
+        }
+        if (directionTimer.hasElapsed(1) && currentDirection != 0) {
+            boolean atBack = (currentDirection > 0 && Math.abs(drive.getRotation().getRadians()) > Math.PI / 2) || 
+                            (currentDirection < 0 && Math.abs(drive.getRotation().getRadians()) < Math.PI / 2);
+            if (!RobotState.getInstance().getBackOverride()) {
+                RobotState.getInstance().setBack(atBack);
+            }
+            directionTimer.reset();
+            directionTimer.start();
+        }
+
     }
 
     // Called once the command ends or is interrupted.

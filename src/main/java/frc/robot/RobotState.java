@@ -6,6 +6,7 @@ import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.util.Units;
@@ -50,6 +51,7 @@ public class RobotState {
 
     /**Whether the arm is supposed to be in the front or the back*/
     private boolean atBack = false;
+    private boolean autoBackOverridden = false;
 
     private boolean atStow = true;
 
@@ -90,6 +92,7 @@ public class RobotState {
     private SwerveDriveOdometry driveOdometry;
 
     private boolean isIntaking = false;
+    
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d());
@@ -117,7 +120,14 @@ public class RobotState {
     public Pose2d simPose = new Pose2d();
     public void setSimPose(Pose2d pose) {
         simPose = pose;
-        // field.setRobotPose(simPose);
+        field.setRobotPose(simPose);
+    }
+    public void updateSimPose(ChassisSpeeds speeds) {
+        simPose = new Pose2d(
+            simPose.getX() + speeds.vxMetersPerSecond * 0.02,
+            simPose.getY() + speeds.vyMetersPerSecond * 0.02,
+            simPose.getRotation().plus(Rotation2d.fromRadians(speeds.omegaRadiansPerSecond).times(0.02)));
+        field.setRobotPose(simPose);
     }
 
     public Pose2d getFieldToVehicle() {
@@ -133,9 +143,22 @@ public class RobotState {
         return driveOdometry.getPoseMeters();
     }
 
+    public boolean getBackOverride() {
+        return autoBackOverridden;
+    }
+
+    public void setBackOverride(boolean override) {
+        autoBackOverridden = override;
+    }
+
     public void invertBack() {
         atBack = !atBack;
     }
+
+    public void setBack(boolean back) {
+        atBack = back;
+    }
+
 
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));

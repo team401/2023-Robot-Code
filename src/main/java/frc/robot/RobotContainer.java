@@ -104,15 +104,11 @@ public class RobotContainer {
         
         // Drive
         new JoystickButton(rightStick, 1)
+            .onTrue(new InstantCommand(() -> RobotState.getInstance().setBackOverride(true)))
+            .onFalse(new InstantCommand(() -> RobotState.getInstance().setBackOverride(false)));
+        
+        new JoystickButton(leftStick, 2)
             .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
-            // .whileTrue(
-            //     new DriveWithJoysticksSnap(
-            //         drive,
-            //         () -> -leftStick.getRawAxis(1),
-            //         () -> -leftStick.getRawAxis(0),
-            //         true
-            //     )
-            // );
 
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
@@ -120,6 +116,7 @@ public class RobotContainer {
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+
 
         // new JoystickButton(leftStick, 3)
         //     .whileTrue(new DriveToPose(drive, true));
@@ -228,33 +225,13 @@ public class RobotContainer {
     }
 
     public Command getMoveArmCommand(Position position) {
-
         return new InstantCommand(() -> {
-
             RobotState.getInstance().setStow(position.equals(Position.Stow));
             double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
 
-            if (telescope.getPositionM() > 0.2 && position != Position.Stow) {
-                new ParallelCommandGroup(   
-                    new MovePivot(pivot, ArmPositions.stow[0]),
-                    new MoveTelescope(telescope, pivot, ArmPositions.stow[1], ArmPositions.stow[0]),
-                    new MoveWrist(wrist, pivot, ArmPositions.stow[2])
-                ).andThen(
-                    new ParallelCommandGroup(
-                        new MovePivot(pivot, positions[0]),
-                        new MoveTelescope(telescope, pivot, positions[1], positions[0]),
-                        new MoveWrist(wrist, pivot, positions[2])
-                    )
-                ).schedule();
-            }
-            else {
-                new MovePivot(pivot, positions[0]).schedule();
-                new MoveTelescope(telescope, pivot, positions[1], positions[0]).schedule();
-                new MoveWrist(wrist, pivot, positions[2]).schedule();
-            }
-
+            new MovePivot(pivot, positions[0]).schedule();
+            new MoveTelescope(telescope, pivot, positions[1], positions[0]).schedule();
+            new MoveWrist(wrist, pivot, positions[2]).schedule();
         });
-
     }
-
 }
