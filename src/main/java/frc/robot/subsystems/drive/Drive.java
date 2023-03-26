@@ -132,6 +132,8 @@ public class Drive extends SubsystemBase {
 
         // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 
+        SmartDashboard.putNumber("TIME", DriverStation.getMatchTime());
+
     }
 
     /**
@@ -151,7 +153,7 @@ public class Drive extends SubsystemBase {
      * @param speeds the desired speed of the robot
      */
     public void setGoalChassisSpeeds(ChassisSpeeds speeds) {
-        speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.2 : 1));
+        speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.1 : 1));
         SwerveModuleState[] goalModuleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(goalModuleStates, DriveConstants.maxDriveSpeed);
         if (speeds.vxMetersPerSecond == 0 && speeds.vyMetersPerSecond == 0 && speeds.omegaRadiansPerSecond == 0) {

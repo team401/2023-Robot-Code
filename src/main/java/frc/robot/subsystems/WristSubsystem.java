@@ -132,14 +132,16 @@ public class WristSubsystem extends SubsystemBase {
         boolean cone = RobotState.getInstance().hasIntaked() && !RobotState.getInstance().getMode().equals(GamePieceMode.Cube);
 
         double fb = controller.calculate(angleRad, setpointRad.position);
-        if (cone && holding)
-            fb = controllerConeHold.calculate(angleRad, setpointRad.position);
-        else if (cone)
-            fb = controllerCone.calculate(angleRad, setpointRad.position);
+        // if (cone && holding)
+        //     fb = controllerConeHold.calculate(angleRad, setpointRad.position);
+        // else if (cone)
+        //     fb = controllerCone.calculate(angleRad, setpointRad.position);
         
-        double ff = cone ? 
-            feedforwardCone.calculate(setpointRad.position, setpointRad.velocity) : 
-            feedforward.calculate(setpointRad.position, setpointRad.velocity);
+        // double ff = cone ? 
+        //     feedforwardCone.calculate(setpointRad.position, setpointRad.velocity) : 
+        //     feedforward.calculate(setpointRad.position, setpointRad.velocity);
+
+        double ff = feedforward.calculate(setpointRad.position, setpointRad.velocity);
 
         return fb + ff;
         

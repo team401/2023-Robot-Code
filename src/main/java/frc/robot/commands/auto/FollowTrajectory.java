@@ -111,7 +111,7 @@ public class FollowTrajectory extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (verifyRotation && rotationTimer.hasElapsed(1)) || (!verifyRotation && timer.hasElapsed(trajectory.getTotalTimeSeconds()));
+        return (verifyRotation && rotationTimer.hasElapsed(0.75)) || (!verifyRotation && timer.hasElapsed(trajectory.getTotalTimeSeconds()));
     }
 
     @Override

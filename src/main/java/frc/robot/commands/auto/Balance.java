@@ -1,5 +1,6 @@
 package frc.robot.commands.auto;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -66,7 +67,7 @@ public class Balance extends CommandBase {
         }
         else {
             double output = -rollController.calculate(drive.getRoll(), 0);
-            xMPerS = output;
+            xMPerS = MathUtil.clamp(output, -1, 1);
             omegaRadPerS = 0;
         }
 
