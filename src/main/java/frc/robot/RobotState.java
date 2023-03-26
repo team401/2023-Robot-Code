@@ -143,13 +143,13 @@ public class RobotState {
         return driveOdometry.getPoseMeters();
     }
 
-    public boolean getBackOverride() {
-        return autoBackOverridden;
-    }
+    // public boolean getBackOverride() {
+    //     return autoBackOverridden;
+    // }
 
-    public void setBackOverride(boolean override) {
-        autoBackOverridden = override;
-    }
+    // public void setBackOverride(boolean override) {
+    //     autoBackOverridden = override;
+    // }
 
     public void invertBack() {
         atBack = !atBack;

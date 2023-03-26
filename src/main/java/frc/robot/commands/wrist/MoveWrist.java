@@ -24,6 +24,8 @@ public class MoveWrist extends CommandBase {
 
     private Timer timer = new Timer();
 
+    private Timer finishedTimer = new Timer();
+
     public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad) {
         this.wrist = wrist;
         this.pivot = pivot;
@@ -39,6 +41,9 @@ public class MoveWrist extends CommandBase {
 
         if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
+
+        finishedTimer.reset();
+        finishedTimer.start();
 
         timer.reset();
         timer.start();
@@ -65,11 +70,15 @@ public class MoveWrist extends CommandBase {
 
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
+
+        if (Math.abs(getAdjustedAngle()-goalState.position) > Units.degreesToRadians(3)) {
+            finishedTimer.reset();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return profile.isFinished(timer.get());
+        return finishedTimer.hasElapsed(0.2);
         // return false;
     }
 

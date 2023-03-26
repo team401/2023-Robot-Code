@@ -105,11 +105,12 @@ public class RobotContainer {
         
         // Drive
         new JoystickButton(rightStick, 1)
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().setBackOverride(true)))
-            .onFalse(new InstantCommand(() -> RobotState.getInstance().setBackOverride(false)));
-        
-        new JoystickButton(leftStick, 2)
             .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+            // .onTrue(new InstantCommand(() -> RobotState.getInstance().setBackOverride(true)))
+            // .onFalse(new InstantCommand(() -> RobotState.getInstance().setBackOverride(false)));
+        
+        // new JoystickButton(leftStick, 2)
+        //     .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
 
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
@@ -117,10 +118,6 @@ public class RobotContainer {
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
-
-        new JoystickButton(leftStick, 2)
-            .onTrue(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0.5)))
-            .onFalse(new InstantCommand(() -> gamepad.setRumble(RumbleType.kBothRumble, 0)));
 
         // new JoystickButton(leftStick, 3)
         //     .whileTrue(new DriveToPose(drive, true));
@@ -135,10 +132,16 @@ public class RobotContainer {
             .onTrue(new HomeTelescope(telescope));
         
         new JoystickButton(rightStick, 15)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(3), pivot));
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(12), pivot));
 
         new JoystickButton(rightStick, 14)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-3), pivot));
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-12), pivot));
+
+        new JoystickButton(rightStick, 11)
+            .whileTrue(new RunCommand(() -> wrist.overrideVolts(5), pivot));
+
+        new JoystickButton(rightStick, 16)
+            .whileTrue(new RunCommand(() -> wrist.overrideVolts(-5), pivot));
 
         new JoystickButton(leftStick, 7)
             .onTrue(new InstantCommand(pivot::toggleKill, pivot));
@@ -209,7 +212,7 @@ public class RobotContainer {
                 autoChooser.addOption("R-"+start+"-"+path, new AutoRoutines("R-"+start+"-"+path, drive, pivot, telescope, wrist, intake, vision));
             }
         }
-        autoChooser.setDefaultOption("default", new AutoRoutines("B-1-1", drive, pivot, telescope, wrist, intake, vision));
+        autoChooser.setDefaultOption("default", new AutoRoutines("0-0", drive, pivot, telescope, wrist, intake, vision));
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 

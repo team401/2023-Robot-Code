@@ -37,6 +37,8 @@ public class MoveTelescope extends CommandBase {
 
     private Timer timer = new Timer();
 
+    private Timer finishedTimer = new Timer();
+
 
     public MoveTelescope(
         TelescopeSubsystem telescope,
@@ -48,16 +50,17 @@ public class MoveTelescope extends CommandBase {
         this.pivotGoalRad = pivotGoalRad;
         this.telescope = telescope;
         this.pivot = pivot;
-
-
+        
         addRequirements(telescope);
     }
 
     @Override
     public void initialize() {
-
         timer.reset();
         timer.start();
+
+        finishedTimer.reset();
+        finishedTimer.start();
 
         State goalState = new State(goalM, 0);
         State pivotGoalState = new State(pivotGoalRad, 0);
@@ -65,8 +68,8 @@ public class MoveTelescope extends CommandBase {
         if (RobotState.getInstance().atBack())
             pivotGoalState.position = Math.PI - pivotGoalState.position;
 
-        State currentState = new State(telescope.getPositionM(), telescope.getVel());
-
+            State currentState = new State(telescope.getPositionM(), telescope.getVel());
+        
         TrapezoidProfile pivotProfile = new TrapezoidProfile(
             pivot.getConstraintsRad(),
             pivotGoalState,
@@ -101,11 +104,15 @@ public class MoveTelescope extends CommandBase {
         telescope.setVolts(output);
 
         telescope.setSimPos(setpoint.position);
+
+        if (Math.abs(telescope.getPositionM()-goalM) > 0.01) {
+            finishedTimer.reset();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return helper.isFinished(timer.get());
+        return finishedTimer.hasElapsed(0.2);
     }
 
     @Override

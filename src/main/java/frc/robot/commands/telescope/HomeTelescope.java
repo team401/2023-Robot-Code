@@ -31,7 +31,7 @@ public class HomeTelescope extends CommandBase{
     }
 
     public boolean isFinished() {
-        return timer.hasElapsed(0.1);
+        return timer.hasElapsed(0.3);
     }
 
     public void end(boolean interrupted) {

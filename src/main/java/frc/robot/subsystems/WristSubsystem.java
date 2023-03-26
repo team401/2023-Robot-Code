@@ -119,6 +119,12 @@ public class WristSubsystem extends SubsystemBase {
         dead = !dead;
     }
 
+    public void setCurrentLimit(double currentLimit, double triggerThresholdCurrent, double triggerThresholdTime) {
+        motor.configStatorCurrentLimit(
+            new StatorCurrentLimitConfiguration(true, currentLimit, triggerThresholdCurrent, triggerThresholdTime));
+
+    }
+
     /**
      * Does control calculations from its ArmFeedforward and PID controllers.
      * Does not command any motors.

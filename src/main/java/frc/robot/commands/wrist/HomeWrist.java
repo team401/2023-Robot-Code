@@ -37,11 +37,13 @@ public class HomeWrist extends CommandBase {
         otherTimer.stop();
 
         otherTimerStarted = false;
+
+        wrist.setCurrentLimit(70, 80, 0.5);
     }
 
     public void execute() {
         // SmartDashboard.putNumber("wRISTaMPS", Math.abs(wrist.getAmps()));
-        if (Math.abs(wrist.getAmps()) < 40) {
+        if (Math.abs(wrist.getAmps()) < 60) {
             timer.reset();
         }
         if (timer.hasElapsed(0.25) && !otherTimerStarted) {
@@ -61,6 +63,8 @@ public class HomeWrist extends CommandBase {
             wrist.resetOffset();
             wrist.homed = true;
         }
+
+        wrist.setCurrentLimit(50, 60, 0.5);
     
         // wrist.updateDesiredSetpointRad(
         //     new TrapezoidProfile.State(

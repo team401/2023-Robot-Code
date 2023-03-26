@@ -103,7 +103,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                     pickupCube().andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(1), true),
+                    drive(pathGroup.get(1), false),
                     invert().andThen(new WaitCommand(0.4)).andThen(moveArm(ArmPositions.stow)).andThen(preparePlaceCube()).andThen(hold())
                 ),
                 placeCube(),
@@ -117,7 +117,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                     new WaitCommand(0.15).andThen(pickupCone()).andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(3), true),
+                    drive(pathGroup.get(3), false),
                     invert()
                 )
             );
@@ -150,21 +150,23 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command placeConeInitial() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
+            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeDown)),
             new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(0.5),
             moveArm(new double[]{0.8, 0.03, 1.2}).withTimeout(0.5),
             moveArm(ArmPositions.placeConeDownHighAuto),
             moveArm(ArmPositions.wristConePlaceHighAuto),
-            new InstantCommand(intake::stop),
-            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.6)
+            new InstantCommand(intake::place),
+            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], 0.78, Math.PI}).withTimeout(0.6),
+            new InstantCommand(intake::stop)
         );
     }
 
     private Command placeCone() {
         return new SequentialCommandGroup(
             moveArm(ArmPositions.wristConePlaceHighAuto),
-            new InstantCommand(intake::stop),
-            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.3)
+            new InstantCommand(intake::place),
+            moveArm(new double[]{ArmPositions.placeConeDownHigh[0], ArmPositions.placeConeDownHigh[1], ArmPositions.stow[2]}).withTimeout(0.3),
+            new InstantCommand(intake::place)
         );
     }
 

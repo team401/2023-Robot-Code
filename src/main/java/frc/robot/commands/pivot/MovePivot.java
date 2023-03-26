@@ -34,7 +34,9 @@ public class MovePivot extends CommandBase{
     private State goalState; 
     private double posRad;
 
-    public Timer timer = new Timer();
+    private final Timer timer = new Timer();
+
+    private final Timer finishedTimer = new Timer();
 
     /**
      * Constructs an instance of this command. The position should be field-
@@ -54,6 +56,9 @@ public class MovePivot extends CommandBase{
     @Override
     public void initialize() {
         goalState = new TrapezoidProfile.State(posRad, 0);
+
+        finishedTimer.reset();
+        finishedTimer.start();
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
@@ -82,16 +87,20 @@ public class MovePivot extends CommandBase{
 
         // SmartDashboard.putNumber("MovePivot State", setpoint.position);
 
-        // SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
+        SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
 
         double pivotOut = pivot.calculateControl(setpoint, 0);
         pivot.setVolts(pivotOut);
         pivot.setSimPos(setpoint.position);
+
+        if (Math.abs(pivot.getPositionRad()-goalState.position) > Units.degreesToRadians(2)) {
+            finishedTimer.reset();
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return profile.isFinished(timer.get());
+        return finishedTimer.hasElapsed(0.2);
         // return false;
     }
 
