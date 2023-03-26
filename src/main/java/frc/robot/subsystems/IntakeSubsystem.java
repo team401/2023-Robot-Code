@@ -83,6 +83,22 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    public void slowPlace() {
+        intakeMode = IntakeMode.Place;
+        RobotState.getInstance().setIntaked(false);
+        RobotState.getInstance().setIntaking(false);
+
+        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+            boolean back = RobotState.getInstance().atBack();
+            leftMotor.set(back ? -0.75 : 0.75);
+            rightMotor.set(back ? 0.75 : -0.75);
+        }
+        else {
+            leftMotor.set(-0.1);
+            rightMotor.set(-0.1);
+        }
+    }
+
     public void stop() {
         intakeMode = IntakeMode.None;
         RobotState.getInstance().setIntaked(false);

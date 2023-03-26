@@ -26,10 +26,22 @@ public class MoveWrist extends CommandBase {
 
     private Timer finishedTimer = new Timer();
 
+    private final boolean ignoreValidation;
+
     public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad) {
         this.wrist = wrist;
         this.pivot = pivot;
         this.posRad = posRad;
+        this.ignoreValidation = false;
+
+        addRequirements(this.wrist);
+    }
+
+    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad, boolean ignoreValidation) {
+        this.wrist = wrist;
+        this.pivot = pivot;
+        this.posRad = posRad;
+        this.ignoreValidation = ignoreValidation;
 
         addRequirements(this.wrist);
     }
@@ -78,7 +90,7 @@ public class MoveWrist extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return finishedTimer.hasElapsed(0.2);
+        return finishedTimer.hasElapsed(0.2) || (ignoreValidation && profile.isFinished(timer.get()));
         // return false;
     }
 
