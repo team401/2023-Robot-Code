@@ -65,7 +65,7 @@ public class DriveWithJoysticks extends CommandBase {
 
         drive.setGoalChassisSpeeds(targetSpeeds);
 
-        // if (Math.signum(xMPerS) != currentDirection) {
+        // if (Math.signum(xMPerS) != currentDirection && Math.abs(xMPerS) <= 1) {
         //     currentDirection = Math.signum(xMPerS);
         //     directionTimer.reset();
         //     directionTimer.start();

@@ -120,14 +120,14 @@ public class RobotState {
     public Pose2d simPose = new Pose2d();
     public void setSimPose(Pose2d pose) {
         simPose = pose;
-        field.setRobotPose(simPose);
+        // field.setRobotPose(simPose);
     }
     public void updateSimPose(ChassisSpeeds speeds) {
         simPose = new Pose2d(
             simPose.getX() + speeds.vxMetersPerSecond * 0.02,
             simPose.getY() + speeds.vyMetersPerSecond * 0.02,
             simPose.getRotation().plus(Rotation2d.fromRadians(speeds.omegaRadiansPerSecond).times(0.02)));
-        field.setRobotPose(simPose);
+        // field.setRobotPose(simPose);
     }
 
     public Pose2d getFieldToVehicle() {
@@ -162,15 +162,6 @@ public class RobotState {
 
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
-
-        /*switch(getMode()) {
-            case Cube:
-                pivotLigament.setColor(new Color8Bit(Color.kPurple));
-                break;
-            default:
-                pivotLigament.setColor(new Color8Bit(Color.kYellow));
-            break;
-        }*/
 
         SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }

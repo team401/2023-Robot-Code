@@ -97,11 +97,11 @@ public final class Constants {
         public static final double driveJoystickDeadbandPercent = 0.12;
         public static final double driveMaxJerk = 200.0;
 
-        public static final double poseMoveTranslationkP = 3;
+        public static final double poseMoveTranslationkP = 2.5;
         public static final double poseMoveTranslationMaxVel = 4;
-        public static final double poseMoveTranslationMaxAccel = 1;
+        public static final double poseMoveTranslationMaxAccel = 8;
 
-        public static final double poseMoveRotationkP = 5;
+        public static final double poseMoveRotationkP = 4;
         public static final double poseMoveRotationMaxVel = Math.PI;
         public static final double poseMoveRotationMaxAccel = Math.PI;
 
