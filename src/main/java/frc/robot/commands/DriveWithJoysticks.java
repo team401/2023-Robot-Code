@@ -7,11 +7,7 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotState;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
 
@@ -21,10 +17,6 @@ public class DriveWithJoysticks extends CommandBase {
     private final DoubleSupplier yPercent;
     private final DoubleSupplier omegaPercent;
     private final boolean fieldRelative;
-
-    private final AxisProcessor xProcessor = new AxisProcessor(false);
-    private final AxisProcessor yProcessor = new AxisProcessor(false);
-    private final AxisProcessor omegaProcessor = new AxisProcessor(true);
 
     // private final Timer directionTimer = new Timer();
     // private double currentDirection = 1;
@@ -43,20 +35,14 @@ public class DriveWithJoysticks extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        xProcessor.reset(xPercent.getAsDouble());
-        yProcessor.reset(yPercent.getAsDouble());
-        omegaProcessor.reset(omegaPercent.getAsDouble());
-
-        // directionTimer.reset();
-        // directionTimer.start();
     }
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double xMPerS = xProcessor.processJoystickInputs(xPercent.getAsDouble()) * DriveConstants.maxDriveSpeed;
-        double yMPerS = yProcessor.processJoystickInputs(yPercent.getAsDouble()) * DriveConstants.maxDriveSpeed;
-        double omegaRadPerS = omegaProcessor.processJoystickInputs(omegaPercent.getAsDouble()) * DriveConstants.maxTurnRate;
+        double xMPerS = processJoystickInputs(xPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
+        double yMPerS = processJoystickInputs(yPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
+        double omegaRadPerS = processJoystickInputs(omegaPercent.getAsDouble(), true) * DriveConstants.maxTurnRate;
 
         //Convert to field relative speeds
         ChassisSpeeds targetSpeeds = fieldRelative
@@ -64,19 +50,6 @@ public class DriveWithJoysticks extends CommandBase {
             : new ChassisSpeeds(xMPerS, yMPerS, omegaRadPerS);
 
         drive.setGoalChassisSpeeds(targetSpeeds);
-
-        // if (Math.signum(xMPerS) != currentDirection && Math.abs(xMPerS) <= 1) {
-        //     currentDirection = Math.signum(xMPerS);
-        //     directionTimer.reset();
-        //     directionTimer.start();
-        // }
-        // if (directionTimer.hasElapsed(0.5) && currentDirection != 0) {
-        //     boolean atBack = (currentDirection > 0 && Math.abs(drive.getRotation().getRadians()) > Math.PI / 2) || 
-        //                     (currentDirection < 0 && Math.abs(drive.getRotation().getRadians()) < Math.PI / 2);
-        //     if (!RobotState.getInstance().getBackOverride()) {
-        //         RobotState.getInstance().setBack(atBack);
-        //     }
-        // }
 
     }
 
@@ -90,40 +63,18 @@ public class DriveWithJoysticks extends CommandBase {
         return false;
     }
 
-    public static class AxisProcessor {
-        private TrapezoidProfile.State state = new TrapezoidProfile.State();
-        private static final double deadband = DriveConstants.driveJoystickDeadbandPercent;
-        private final boolean square;
-
-        public AxisProcessor(boolean square) {
-            this.square = square;
-        }
-
-        public void reset(double value) {
-            state = new TrapezoidProfile.State(value, 0.0);
-        }
-
-        //If joystick input exceeds deadbands, 
-        public double processJoystickInputs(double value) {
-            double scaledValue = 0.0;
-            if (Math.abs(value) > deadband) {
-                //Joystick input that starts after deadband as ratio of total possible joystick inputs
-                scaledValue = (Math.abs(value) - deadband) / (1 - deadband);
-                //scaled value is squared
-                if (square) {
-                    scaledValue = Math.copySign(scaledValue * scaledValue, value);
-                } else {
-                    scaledValue = Math.copySign(scaledValue, value);
-                }
+    private double processJoystickInputs(double value, boolean square) {
+        double scaledValue = 0.0;
+        double deadband = DriveConstants.driveJoystickDeadbandPercent;
+        if (Math.abs(value) > deadband) {
+            scaledValue = (Math.abs(value) - deadband) / (1 - deadband);
+            if (square) {
+                scaledValue = Math.copySign(scaledValue * scaledValue, value);
+            } else {
+                scaledValue = Math.copySign(scaledValue, value);
             }
-            return scaledValue;
-            //   TrapezoidProfile profile = new TrapezoidProfile(
-            //       new TrapezoidProfile.Constraints(99999,
-            //           DriveConstants.driveMaxJerk),
-            //       new TrapezoidProfile.State(scaledValue, 0.0), state);
-            //   //calculate velocity and position 0.02 seconds in the future
-            //   state = profile.calculate(0.02);
-            //   return state.position;
         }
+        return scaledValue;
     }
+
 }

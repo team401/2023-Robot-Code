@@ -5,23 +5,15 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.InvertType;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,8 +45,8 @@ public class PivotSubsystem extends SubsystemBase {
     // require information from the telescope subsytem.
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(720),
-            Units.degreesToRadians(360));
+            Units.degreesToRadians(420),
+            Units.degreesToRadians(720));
     public final PIDController controller = new PIDController(
         PivotConstants.kP, 
         0, 
@@ -81,7 +73,7 @@ public class PivotSubsystem extends SubsystemBase {
         rightMotor.configNeutralDeadband(0.004);
 
         leftMotor.setNeutralMode(NeutralMode.Brake);
-        rightMotor.setNeutralMode(NeutralMode.Coast);
+        rightMotor.setNeutralMode(NeutralMode.Brake);
 
         rightMotor.configStatorCurrentLimit(
             new StatorCurrentLimitConfiguration(
@@ -245,7 +237,7 @@ public class PivotSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putNumber("Pivot Position", getPositionRad());
-        // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
+        SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
         // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
         // SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
         // SmartDashboard.putNumber("Pivot Desired Setpoint", currentSetpointRad.position);

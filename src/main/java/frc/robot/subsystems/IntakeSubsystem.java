@@ -4,7 +4,6 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
@@ -78,8 +77,8 @@ public class IntakeSubsystem extends SubsystemBase {
             rightMotor.set(back ? 0.75 : -0.75);
         }
         else {
-            leftMotor.set(-0.3);
-            rightMotor.set(-0.3);
+            leftMotor.set(-0.75);
+            rightMotor.set(-0.75);
         }
     }
 

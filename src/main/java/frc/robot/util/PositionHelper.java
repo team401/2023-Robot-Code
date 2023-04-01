@@ -1,5 +1,6 @@
 package frc.robot.util;
 
+import frc.robot.RobotState;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
@@ -24,7 +25,10 @@ public final class PositionHelper {
     private static double[] getGround(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeGround;
         if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownGround;
-        if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpGround;
+        if (mode == GamePieceMode.ConeUp)  {
+            if (RobotState.getInstance().atBack()) return ArmPositions.intakeConeUpBackGround;
+            return ArmPositions.intakeConeUpFrontGround;
+        }
         return null;
     }
 

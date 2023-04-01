@@ -15,7 +15,7 @@ public class HoldWrist extends CommandBase {
         this.wrist = wrist;
         this.pivot = pivot;
 
-        addRequirements(this.wrist);
+        addRequirements(wrist);
     }
 
     @Override

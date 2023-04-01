@@ -1,13 +1,9 @@
 package frc.robot.commands.wrist;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
@@ -43,19 +39,20 @@ public class MoveWrist extends CommandBase {
         this.posRad = posRad;
         this.ignoreValidation = ignoreValidation;
 
-        addRequirements(this.wrist);
+        addRequirements(wrist);
     }
 
     @Override
     public void initialize() {
+
+        finishedTimer.reset();
+        finishedTimer.start();
 
         goalState = new TrapezoidProfile.State(posRad, 0);
 
         if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
 
-        finishedTimer.reset();
-        finishedTimer.start();
 
         timer.reset();
         timer.start();
@@ -77,8 +74,8 @@ public class MoveWrist extends CommandBase {
 
         double output = wrist.calculateControl(setpoint, getAdjustedAngle(), false);
 
-        SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
-        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        // SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
+        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
 
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());

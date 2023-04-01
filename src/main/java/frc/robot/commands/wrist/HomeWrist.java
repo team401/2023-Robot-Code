@@ -1,12 +1,7 @@
 package frc.robot.commands.wrist;
 
-import java.util.function.DoubleSupplier;
-
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.WristSubsystem;
 
@@ -43,6 +38,7 @@ public class HomeWrist extends CommandBase {
 
     public void execute() {
         // SmartDashboard.putNumber("wRISTaMPS", Math.abs(wrist.getAmps()));
+        
         if (Math.abs(wrist.getAmps()) < 60) {
             timer.reset();
         }

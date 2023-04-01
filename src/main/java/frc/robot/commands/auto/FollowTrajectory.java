@@ -6,6 +6,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
@@ -13,11 +14,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -66,8 +65,8 @@ public class FollowTrajectory extends CommandBase {
             Pose2d goalPose = getGoalPose(left);
             trajectory = PathPlanner.generatePath(
                 new PathConstraints(DriveConstants.poseMoveTranslationMaxVel, DriveConstants.poseMoveTranslationMaxAccel),
-                new PathPoint(currentPose.getTranslation(), new Rotation2d(0), currentPose.getRotation()),
-                new PathPoint(goalPose.getTranslation(), new Rotation2d(0), goalPose.getRotation())
+                new PathPoint(currentPose.getTranslation(), new Rotation2d(0), currentPose.getRotation(), drive.getVelocity().vxMetersPerSecond),
+                new PathPoint(goalPose.getTranslation(), new Rotation2d(0), goalPose.getRotation(), 0)
             );
             xController = new PIDController(DriveConstants.poseMoveTranslationkP, 0, 0);
             yController = new PIDController(DriveConstants.poseMoveTranslationkP, 0, 0);
@@ -90,7 +89,6 @@ public class FollowTrajectory extends CommandBase {
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         controller  = new HolonomicDriveController(xController, yController, thetaController);
 
-
     }
 
     @Override
@@ -104,7 +102,23 @@ public class FollowTrajectory extends CommandBase {
             adjustedSpeeds = controller.calculate(
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
         
-        RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
+        // RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
+
+        // adjustedSpeeds = new ChassisSpeeds(
+        //     MathUtil.clamp(adjustedSpeeds.vxMetersPerSecond, -AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), 
+        //     MathUtil.clamp(adjustedSpeeds.vyMetersPerSecond, -AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxVelocityMetersPerSecond), 
+        //     adjustedSpeeds.omegaRadiansPerSecond
+        // );
+
+        // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
+        // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
+        // SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
+        // SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
+        // SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
+        // SmartDashboard.putNumber("ActualOmega", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
+
+        // SmartDashboard.putNumber("DesiredSpeedX", adjustedSpeeds.vxMetersPerSecond);
+        // SmartDashboard.putNumber("ActualSpeedX", drive.getVelocity().vxMetersPerSecond);
 
         drive.setGoalChassisSpeeds(adjustedSpeeds);
     

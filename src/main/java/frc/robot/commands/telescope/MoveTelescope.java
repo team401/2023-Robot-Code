@@ -1,33 +1,17 @@
 package frc.robot.commands.telescope;
 
-
-import java.util.function.DoubleSupplier;
-import java.util.function.Supplier;
-
-import org.ejml.dense.row.linsol.AdjustableLinearSolver_DDRM;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.Constants.ArmPositions;
-import frc.robot.Constants.TelescopeConstants;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
 public class MoveTelescope extends CommandBase {
     private TelescopeSubsystem telescope;
     private PivotSubsystem pivot;
-
-    private TrapezoidProfile profile;
 
     private TelescopeHelper helper;
 
@@ -39,20 +23,30 @@ public class MoveTelescope extends CommandBase {
 
     private Timer finishedTimer = new Timer();
 
+    private final boolean ignoreValidation;
 
     public MoveTelescope(
         TelescopeSubsystem telescope,
         PivotSubsystem pivot,
         double goalM,
-        double pivotGoalRad) {
+        double pivotGoalRad,
+        boolean ignoreValidation) {
         
         this.goalM = goalM;
         this.pivotGoalRad = pivotGoalRad;
         this.telescope = telescope;
         this.pivot = pivot;
+        this.ignoreValidation = ignoreValidation;
         
         addRequirements(telescope);
     }
+
+    public MoveTelescope(TelescopeSubsystem telescope,
+        PivotSubsystem pivot,
+        double goalM,
+        double pivotGoalRad) {
+        this(telescope, pivot, goalM, pivotGoalRad, false);
+    }   
 
     @Override
     public void initialize() {
@@ -76,8 +70,6 @@ public class MoveTelescope extends CommandBase {
             new State(pivot.getPositionRad(), pivot.getVelRadS())
         );
 
-        profile = new TrapezoidProfile(telescope.getConstraints(), goalState, currentState);
-
         helper = new TelescopeHelper(
             currentState,
             holdState,
@@ -90,6 +82,7 @@ public class MoveTelescope extends CommandBase {
         telescope.resetPID();
 
         telescope.atGoal = false;
+
     }
 
     @Override
@@ -99,7 +92,7 @@ public class MoveTelescope extends CommandBase {
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
-        SmartDashboard.putNumber("Telescope Setpoint", setpoint.position);
+        // SmartDashboard.putNumber("Telescope Setpoint", setpoint.position);
 
         telescope.setVolts(output);
 
@@ -112,7 +105,7 @@ public class MoveTelescope extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return finishedTimer.hasElapsed(0.2);
+        return finishedTimer.hasElapsed(0.2) || (ignoreValidation && helper.isFinished(timer.get()));
     }
 
     @Override

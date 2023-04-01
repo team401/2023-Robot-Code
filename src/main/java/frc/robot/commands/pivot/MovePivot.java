@@ -1,27 +1,12 @@
 package frc.robot.commands.pivot;
 
-
-import java.util.function.DoubleSupplier;
-
-import org.opencv.core.Mat;
-
-import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
-import frc.robot.Constants.PivotConstants;
-import frc.robot.Constants.TelescopeConstants;
 import frc.robot.subsystems.PivotSubsystem;
-// import frc.robot.subsystems.TelescopeSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
 
 /**
  * Command that moves the pivot from its current location to a new setpoint.<n>
@@ -38,6 +23,8 @@ public class MovePivot extends CommandBase{
 
     private final Timer finishedTimer = new Timer();
 
+    private final boolean ignoreValidation;
+
     /**
      * Constructs an instance of this command. The position should be field-
      * relative to the front of the robot.
@@ -46,19 +33,24 @@ public class MovePivot extends CommandBase{
      * this should be field-relative to the front.
      * @param velRadS the setpoint velocity.
      */
-    public MovePivot(PivotSubsystem pivot, double posRad) {
+    public MovePivot(PivotSubsystem pivot, double posRad, boolean ignoreValidation) {
         this.pivot = pivot;
         this.posRad = posRad;
+        this.ignoreValidation = ignoreValidation;
 
         addRequirements(this.pivot);
     }
 
+    public MovePivot(PivotSubsystem pivot, double posRad) {
+        this(pivot, posRad, false);
+    }
+
     @Override
     public void initialize() {
-        goalState = new TrapezoidProfile.State(posRad, 0);
-
         finishedTimer.reset();
         finishedTimer.start();
+
+        goalState = new TrapezoidProfile.State(posRad, 0);
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
@@ -87,7 +79,7 @@ public class MovePivot extends CommandBase{
 
         // SmartDashboard.putNumber("MovePivot State", setpoint.position);
 
-        SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
+        // SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
 
         double pivotOut = pivot.calculateControl(setpoint, 0);
         pivot.setVolts(pivotOut);
@@ -100,7 +92,7 @@ public class MovePivot extends CommandBase{
 
     @Override
     public boolean isFinished() {
-        return finishedTimer.hasElapsed(0.2);
+        return finishedTimer.hasElapsed(0.2) || (ignoreValidation && profile.isFinished(timer.get()));
         // return false;
     }
 

@@ -28,5 +28,6 @@
   "java.test.defaultConfig": "WPIlibUnitTests",
   "editor.tabSize": 4,
   "editor.detectIndentation": false,
-  "editor.insertSpaces": true
+  "editor.insertSpaces": true,
+  "editor.inlayHints.enabled": "offUnlessPressed"
 }

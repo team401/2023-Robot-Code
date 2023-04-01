@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Notifier;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -79,11 +80,6 @@ public class Drive extends SubsystemBase {
             modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
         }
 
-        for (int i = 0; i < 4; i++) {
-            modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
-            modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
-        }
-
         setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
 
         RobotState.getInstance().initializePoseEstimator(getRotation(), modulePositions);
@@ -92,11 +88,12 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
+
         // SmartDashboard.putNumber("Angle", driveAngle.getHeading());
 
         // Driving
         for (int i = 0; i < 4; i++) {
-            // Wrap encoder value to be within -pi, pi radians
+            // Get encoder value
             Rotation2d moduleRotation = new Rotation2d(driveModules[i].getRotationPosition());
 
             // Optimize each module state
@@ -126,13 +123,9 @@ public class Drive extends SubsystemBase {
         }
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
-        RobotState.getInstance().getFieldToVehicle();
-
         // SmartDashboard.putNumber("DriveVelocity", getVelocity());
 
         // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
-
-        SmartDashboard.putNumber("TIME", DriverStation.getMatchTime());
 
     }
 
@@ -215,8 +208,16 @@ public class Drive extends SubsystemBase {
         driveModules[3].setDriveVoltage(v);
     }
 
-    public double getVelocity() {
-        return (driveModules[0].getDriveVelocityMPerS() + driveModules[1].getDriveVelocityMPerS() - driveModules[2].getDriveVelocityMPerS() + driveModules[3].getDriveVelocityMPerS()) / 4;
+    public SwerveModuleState[] getModuleStates() {
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {
+            states[i] = driveModules[i].getModuleState();
+        }
+        return states;
+    }
+
+    public ChassisSpeeds getVelocity() {
+        return DriveConstants.kinematics.toChassisSpeeds(getModuleStates());
     }
 
 }

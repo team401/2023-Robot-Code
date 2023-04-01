@@ -124,6 +124,14 @@ public final class Constants {
         public static final double kG = 0.23;
         public static final double kS = 0.22;
         public static final double extraKg = 0.55;
+
+        public static final double singlekP = 15;
+        public static final double singlekD = 0.5;
+        public static final double singlekV = 1.5;
+        public static final double singlekA = 0.03;
+        public static final double singlekG = 0.46;
+        public static final double singlekS = 0.44;
+        public static final double singleextraKg = 1.1;
     }
 
     public static final class TelescopeConstants {
@@ -177,11 +185,11 @@ public final class Constants {
         public static final double[] placeConeDownHigh = new double[] {0.59, 0.71, 0.8};
         public static final double[] placeConeDownMid = new double[] {0.58, 0.22, 0.8};
         
-        public static final double[] intakeConeUpGround = new double[] {0.05, 0.05, -0.24};
+        public static final double[] intakeConeUpBackGround = new double[] {-0.42, 0.09, -0.04};
+        public static final double[] intakeConeUpFrontGround = new double[] {-0.42, 0.09, -0.08};
         public static final double[] intakeConeUpShelf = new double[] {0.714, 0.64, -0.7};
-        public static final double[] placeConeUpHigh = new double[] {0.69, 0.78, -0.5};
+        public static final double[] placeConeUpHigh = new double[] {0.69 + Math.PI/32, 0.78, -0.379 - Math.PI/24};
         public static final double[] placeConeUpMid = new double[] {0.7, 0.21, -0.5};
-        
         
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
         
@@ -243,9 +251,9 @@ public final class Constants {
 
         public static final Transform3d[] vehicleToCameras = {//10 deg yaw, 5 deg pitch
             new Transform3d(new Translation3d(-0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-10))),
-            new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(350))),
-            new Transform3d(new Translation3d(0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190))),
-            new Transform3d(new Translation3d(0, 0, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190)))
+            new Transform3d(new Translation3d(-0.03, -0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
+            new Transform3d(new Translation3d(0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190))), // correct
+            new Transform3d(new Translation3d(0.03, -0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(170)))
         };
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
@@ -259,9 +267,12 @@ public final class Constants {
             add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
         }};
 
+        public static final double fieldLength = 16.542;
+        public static final double fieldWidth = 8.014;
+
     }
 
-    public static final class AutoConstants { // 16 ft recorded 5.25
+    public static final class AutoConstants {
 
         /*
             0-0: nothing
@@ -273,21 +284,19 @@ public final class Constants {
             3-2: 2 + balance
         */
         
-        public static final double kMaxVelocityMetersPerSecond = 2;
+        public static final double kMaxVelocityMetersPerSecond = 2.5;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
 
-        public static final double kMaxVelocitySlowMetersPerSecond = 2;
-        public static final double kMaxAccelerationSlowMetersPerSecondSquared = 3;
-
-        public static final double autoTranslationXKp = 10;
+        public static final double autoTranslationXKp = 15;
         public static final double autoTranslationXKi = 0;
         public static final double autoTranslationXKd = 0;
-        public static final double autoTranslationYKp = 10;
+
+        public static final double autoTranslationYKp = 15;
         public static final double autoTranslationYKi = 0;
         public static final double autoTranslationYKd = 0;
 
-        public static final double autoRotationKp = 4;
-        public static final double autoRotationKi = 0.1;
+        public static final double autoRotationKp = 10;
+        public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
         public static final double autoBalanceKp = 0.3;
