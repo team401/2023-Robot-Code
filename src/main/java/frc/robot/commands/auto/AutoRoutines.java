@@ -153,20 +153,10 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command placeConeInitial() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeDown)),
-            // new MoveWrist(wrist, pivot, ArmPositions.stow[2]).withTimeout(0.5),
-            moveArm(new double[]{0.9, 0.05, 1}).withTimeout(0.5),
-            moveArmSpecial(ArmPositions.placeConeDownHighAuto),
-            moveArm(ArmPositions.wristConePlaceHighAuto, true),
-            new ParallelRaceGroup(
-                hold(),
-                new SequentialCommandGroup(
-                    new InstantCommand(intake::slowPlace),
-                    new WaitCommand(0.2),
-                    new InstantCommand(intake::stop)
-                )
-            ),
-            moveArm(new double[]{0.65, 0.75, Math.PI/2}).withTimeout(0.5)
+            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
+            // moveArmSpecial(new double[]{0.9, 0.6, 0}),
+            moveArm(ArmPositions.placeConeUpHigh),
+            placeCone()
         );
     }
 
@@ -175,7 +165,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             hold(),
             new SequentialCommandGroup(
                 new InstantCommand(intake::place),
-                new WaitCommand(0.4),
+                new WaitCommand(0.2),
                 new InstantCommand(intake::stop)
             )
         );
@@ -241,10 +231,12 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command home() {
-        return new ParallelCommandGroup(
-            new HomeTelescope(telescope),
-            new InstantCommand(() -> {wrist.resetOffset();wrist.homed = true;})
-        );  
+        return new InstantCommand(() -> {
+            telescope.resetOffset();
+            telescope.homed = true;
+            wrist.resetOffset();
+            wrist.homed = true;
+        }); 
     }
 
     private Command moveArm(double[] position) {

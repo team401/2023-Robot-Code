@@ -98,8 +98,8 @@ public final class Constants {
         public static final double driveMaxJerk = 200.0;
 
         public static final double poseMoveTranslationkP = 2.5;
-        public static final double poseMoveTranslationMaxVel = 4;
-        public static final double poseMoveTranslationMaxAccel = 8;
+        public static final double poseMoveTranslationMaxVel = 1.5;
+        public static final double poseMoveTranslationMaxAccel = 3;
 
         public static final double poseMoveRotationkP = 4;
         public static final double poseMoveRotationMaxVel = Math.PI;
@@ -186,9 +186,9 @@ public final class Constants {
         public static final double[] placeConeDownMid = new double[] {0.58, 0.22, 0.8};
         
         public static final double[] intakeConeUpBackGround = new double[] {-0.42, 0.09, -0.04};
-        public static final double[] intakeConeUpFrontGround = new double[] {-0.42, 0.09, -0.08};
-        public static final double[] intakeConeUpShelf = new double[] {0.714, 0.64, -0.7};
-        public static final double[] placeConeUpHigh = new double[] {0.69 + Math.PI/32, 0.78, -0.379 - Math.PI/24};
+        public static final double[] intakeConeUpFrontGround = new double[] {-0.42, 0.09, -0.2};
+        public static final double[] intakeConeUpShelf = new double[] {0.81, 0.03, -0.0};
+        public static final double[] placeConeUpHigh = new double[] {0.69, 0.78, -0.379};
         public static final double[] placeConeUpMid = new double[] {0.7, 0.21, -0.5};
         
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
@@ -252,8 +252,8 @@ public final class Constants {
         public static final Transform3d[] vehicleToCameras = {//10 deg yaw, 5 deg pitch
             new Transform3d(new Translation3d(-0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-10))),
             new Transform3d(new Translation3d(-0.03, -0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
-            new Transform3d(new Translation3d(0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(190))), // correct
-            new Transform3d(new Translation3d(0.03, -0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(170)))
+            new Transform3d(new Translation3d(0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-170))),//0.03, 0.18, 0
+            new Transform3d(new Translation3d(0.03, -0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(170)))//0.03, -0.18, 0
         };
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
@@ -262,9 +262,14 @@ public final class Constants {
             add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.52, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.54, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.77, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.34, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.68, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
             add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+
+            // 1.61 from 8 to 7, 
+            // 1.66 from 6 to 7
+
+            //0.65
         }};
 
         public static final double fieldLength = 16.542;
@@ -284,7 +289,7 @@ public final class Constants {
             3-2: 2 + balance
         */
         
-        public static final double kMaxVelocityMetersPerSecond = 2.5;
+        public static final double kMaxVelocityMetersPerSecond = 3;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
 
         public static final double autoTranslationXKp = 15;
@@ -295,7 +300,7 @@ public final class Constants {
         public static final double autoTranslationYKi = 0;
         public static final double autoTranslationYKd = 0;
 
-        public static final double autoRotationKp = 10;
+        public static final double autoRotationKp = 1.5;
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 

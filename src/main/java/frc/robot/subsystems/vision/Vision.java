@@ -18,14 +18,14 @@ public class Vision extends SubsystemBase {
     public Vision() {
 
         cameras = new Camera[] {
-            // new Camera(VisionConstants.cameraNames[0], VisionConstants.vehicleToCameras[0], rotation),
+            new Camera(VisionConstants.cameraNames[0], VisionConstants.vehicleToCameras[0], rotation),
             // new Camera(VisionConstants.cameraNames[1], VisionConstants.vehicleToCameras[1], rotation),
-            new Camera(VisionConstants.cameraNames[2], VisionConstants.vehicleToCameras[2], rotation)
-            // new Camera(VisionConstants.cameraNames[3], VisionConstants.vehicleToCameras[3], rotation)
+            new Camera(VisionConstants.cameraNames[2], VisionConstants.vehicleToCameras[2], rotation),
+            new Camera(VisionConstants.cameraNames[3], VisionConstants.vehicleToCameras[3], rotation)
         };
 
         notifier = new Notifier(() -> {
-            for (int i = 0; i < 1; i++) {
+            for (int i = 0; i < 3; i++) {
                 cameras[i].periodic();
             }
         });
@@ -36,7 +36,7 @@ public class Vision extends SubsystemBase {
     @Override
     public void periodic() {
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 3; i++) {
             if (cameras[i].hasNewObservation()) {
                 cameras[i].recordVisionObservation();
             }

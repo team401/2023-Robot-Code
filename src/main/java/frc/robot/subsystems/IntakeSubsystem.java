@@ -77,8 +77,8 @@ public class IntakeSubsystem extends SubsystemBase {
             rightMotor.set(back ? 0.75 : -0.75);
         }
         else {
-            leftMotor.set(-0.75);
-            rightMotor.set(-0.75);
+            leftMotor.set(-0.4);
+            rightMotor.set(-0.4);
         }
     }
 

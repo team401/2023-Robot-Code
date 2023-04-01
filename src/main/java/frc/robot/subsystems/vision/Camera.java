@@ -66,10 +66,10 @@ public class Camera {
     }
 
     public void recordVisionObservation() {
-        RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
+        // RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
         hasNewPose = false;
         SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());
-        SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getX());
+        SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getY());
         SmartDashboard.putNumber(camera.getName()+"Theta", calculatedPose.getRotation().getRadians());
     }
 
