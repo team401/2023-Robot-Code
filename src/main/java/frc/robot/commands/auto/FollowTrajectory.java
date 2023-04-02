@@ -17,6 +17,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
@@ -35,9 +36,12 @@ public class FollowTrajectory extends CommandBase {
 
     private HolonomicDriveController controller;
 
+    private final PIDController snapController = new PIDController(DriveConstants.driveSnapKp, DriveConstants.driveSnapKi, DriveConstants.driveSnapKd);
+
     private final Timer timer = new Timer();
 
     private boolean left;
+    private boolean snap;
 
     public FollowTrajectory(Drive drive, boolean left) {
         this.drive = drive;
@@ -46,10 +50,11 @@ public class FollowTrajectory extends CommandBase {
         addRequirements(drive);
     }
 
-    public FollowTrajectory(Drive drive, PathPlannerTrajectory trajectory) {
+    public FollowTrajectory(Drive drive, PathPlannerTrajectory trajectory, boolean snap) {
         
         this.drive = drive;
         this.trajectory = trajectory;
+        this.snap = snap;
 
         addRequirements(drive);
 
@@ -88,7 +93,8 @@ public class FollowTrajectory extends CommandBase {
         
         thetaController.enableContinuousInput(-Math.PI, Math.PI);
         controller  = new HolonomicDriveController(xController, yController, thetaController);
-
+        snapController.enableContinuousInput(-Math.PI, Math.PI);
+        snapController.reset();
     }
 
     @Override
@@ -97,10 +103,16 @@ public class FollowTrajectory extends CommandBase {
         latestFieldToVehicle = RobotState.getInstance().getFieldToVehicle();
 
         PathPlannerState desiredState = (PathPlannerState) trajectory.sample(timer.get());
+
+        double snapRadPerS = Math.max(Math.min(snapController.calculate(drive.getRotation().getRadians(), 0), DriveConstants.maxTurnRate), -DriveConstants.maxTurnRate);
         
         ChassisSpeeds adjustedSpeeds = new ChassisSpeeds();
             adjustedSpeeds = controller.calculate(
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
+
+        if (DriverStation.isAutonomous() && snap) {
+            adjustedSpeeds.omegaRadiansPerSecond = snapRadPerS;
+        }
         
         // RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
 
@@ -110,12 +122,12 @@ public class FollowTrajectory extends CommandBase {
         //     adjustedSpeeds.omegaRadiansPerSecond
         // );
 
-        // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
-        // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
-        // SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
-        // SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
-        // SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
-        // SmartDashboard.putNumber("ActualOmega", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
+        SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
+        SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
+        SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
+        SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
+        SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
+        SmartDashboard.putNumber("ActualOmega", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
 
         // SmartDashboard.putNumber("DesiredSpeedX", adjustedSpeeds.vxMetersPerSecond);
         // SmartDashboard.putNumber("ActualSpeedX", drive.getVelocity().vxMetersPerSecond);

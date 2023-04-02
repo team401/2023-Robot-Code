@@ -38,8 +38,8 @@ public class WristSubsystem extends SubsystemBase {
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the pivot subsytem.
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
-        Units.degreesToRadians(960),
-        Units.degreesToRadians(800));
+        Units.degreesToRadians(720),
+        Units.degreesToRadians(720));
     private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
     private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
     private final ArmFeedforward feedforward = new ArmFeedforward(
@@ -89,6 +89,10 @@ public class WristSubsystem extends SubsystemBase {
 
     public double getAmps() {
         return Math.abs(motor.getStatorCurrent());
+    }
+
+    public void setBrakeMode(boolean braked) {
+        motor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
     }
 
     /**

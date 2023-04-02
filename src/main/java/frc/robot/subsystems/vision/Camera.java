@@ -29,13 +29,10 @@ public class Camera {
     private volatile DoubleSupplier rotation;
     private volatile boolean cameraOn = true;
 
-    private final MedianFilter filterX = new MedianFilter(5);
-    private final MedianFilter filterY = new MedianFilter(5);
-
     private volatile boolean hasNewPose = false;
-    private volatile Pose2d calculatedPose;
-    private volatile double distance;
-    private volatile double timestamp;
+    private volatile Pose2d calculatedPose = new Pose2d();
+    private volatile double distance = 1;
+    private volatile double timestamp = 1;
 
     public Camera(String cameraName, Transform3d vehicleToCamera, DoubleSupplier rotationSupplier) {
         
@@ -57,7 +54,7 @@ public class Camera {
         PhotonPipelineResult result = camera.getLatestResult(); 
         Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(result);
         
-        if (estimatedPose.isPresent() && result.targets.size() > 1 && estimatedPose.get().timestampSeconds != timestamp) {
+        if (estimatedPose.isPresent() && estimatedPose.get().timestampSeconds != timestamp) {
             hasNewPose = true;
             calculatedPose = estimatedPose.get().estimatedPose.toPose2d();
             distance = getDistance(estimatedPose.get().estimatedPose.toPose2d(), result.getBestTarget().getFiducialId());
@@ -71,9 +68,7 @@ public class Camera {
     }
 
     public void recordVisionObservation() {
-        double x = filterX.calculate(calculatedPose.getX());
-        double y = filterX.calculate(calculatedPose.getX());
-        RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
+        // RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
         hasNewPose = false;
         SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());
         SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getY());

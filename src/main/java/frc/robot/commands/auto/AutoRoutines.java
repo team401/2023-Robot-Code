@@ -57,16 +57,6 @@ public class AutoRoutines extends SequentialCommandGroup {
         PathConstraints constraints = new PathConstraints(AutoConstants.kMaxVelocityMetersPerSecond, AutoConstants.kMaxAccelerationMetersPerSecondSquared);
         List<PathPlannerTrajectory> pathGroup = pathName.contains("-1-") || pathName.contains("-3-") ? PathPlanner.loadPathGroup(pathName, constraints) : PathPlanner.loadPathGroup("B-1-1", constraints);
 
-        /*
-            0-0: nothing
-            1-1: 2.5
-            1-2: 2 + balance
-            2-1: 1
-            2-2: 1 + balance
-            3-1: 2.5
-            3-2: 2 + balance
-        */
-
         if (!pathName.equals("0-0")) {
             addCommands(
                 resetOdometry(pathGroup),
@@ -96,13 +86,14 @@ public class AutoRoutines extends SequentialCommandGroup {
         if (pathName.contains("-1-") || pathName.contains("-3-")) {
             addCommands(
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(0)),
+                    drive(pathGroup.get(0), true),
                     pickupCube().andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(1)),
-                    invert().andThen(preparePlaceCube()).andThen(hold())
+                    drive(pathGroup.get(1), true),
+                    invert().andThen(stow()).andThen(hold())
                 ),
+                preparePlaceCube(),
                 placeCube(),
                 invert()
             );
@@ -110,26 +101,23 @@ public class AutoRoutines extends SequentialCommandGroup {
         if (pathName.endsWith("1-1") || pathName.endsWith("3-1")) {
             addCommands(
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(2)),
+                    drive(pathGroup.get(2), false),
                     pickupCone().andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(3)),
-                    invert().andThen(preparePlaceCone()).andThen(hold())
-                ),
-                placeCone(),
-                stow(),
-                hold()
+                    drive(pathGroup.get(3), true),
+                    invert().andThen(stow()).andThen(hold())
+                )
             );
         }
         if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
             addCommands(
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(2)),
+                    drive(pathGroup.get(2), false),
                     pickupCone().andThen(hold())
                 ),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(3)).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
+                    drive(pathGroup.get(3), true).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
                     invert().andThen(stow()).andThen(hold())
                 )
             );
@@ -144,18 +132,19 @@ public class AutoRoutines extends SequentialCommandGroup {
         });
     }
 
-    private Command drive(PathPlannerTrajectory trajectory) {
-        return new SequentialCommandGroup(
-            followPath(drive, trajectory),
-            new InstantCommand(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)))
-        );
+    private Command drive(PathPlannerTrajectory trajectory, boolean snap) {
+        return new FollowTrajectory(drive, trajectory, false);
+        // return new SequentialCommandGroup(
+        //     followPath(drive, trajectory),
+        //     new InstantCommand(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)))
+        // );
     }
 
     private Command placeConeInitial() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
             // moveArmSpecial(new double[]{0.9, 0.6, 0}),
-            moveArm(ArmPositions.placeConeUpHigh),
+            moveArmRetractInitial(ArmPositions.placeConeUpHigh),
             placeCone()
         );
     }
@@ -183,22 +172,22 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command stow() {
-        return moveArmSpecial(ArmPositions.stow);
+        return moveArmRetract(ArmPositions.stow);
     }
 
     private Command preparePlaceCube() {
-        return moveArmSpecial(ArmPositions.placeCubeHigh);
+        return moveArmRetract(ArmPositions.placeCubeHigh);
     }
 
     private Command preparePlaceCone() {
-        return moveArmSpecial(ArmPositions.placeConeUpHigh);
+        return moveArmRetract(ArmPositions.placeConeUpHigh);
     }
 
     private Command pickupCone() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
             new InstantCommand(intake::toggleIntake),
-            moveArmSpecial(ArmPositions.intakeConeUpFrontGround)
+            moveArmRetract(ArmPositions.intakeConeUpFrontGround)
         );
     }
 
@@ -206,7 +195,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
             new InstantCommand(intake::toggleIntake),
-            moveArmSpecial(ArmPositions.intakeCubeGround)
+            moveArmRetract(ArmPositions.intakeCubeGround)
         );
     }
 
@@ -247,46 +236,80 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new ParallelRaceGroup(
             new MovePivot(pivot, position[0]).andThen(new HoldPivot(pivot, telescope)),
             new MoveTelescope(telescope, pivot, position[1], position[0]).andThen(new HoldTelescope(telescope, pivot)),
-            // new MoveWrist(wrist, pivot, position[2], wristIgnoreValidation).andThen(new HoldWrist(wrist, pivot)),
+            new MoveWrist(wrist, pivot, position[2], wristIgnoreValidation).andThen(new HoldWrist(wrist, pivot)),
             new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
         );
     }
-    
-    private Command moveArmSpecial(double[] position) {
+
+    private Command moveArmRetract(double[] position) {
         return new SequentialCommandGroup(
             new ParallelRaceGroup(
                 new HoldPivot(pivot, telescope),
                 new MoveTelescope(telescope, pivot, 0.05, position[0], true),
-                // new MoveWrist(wrist, pivot, Math.PI / 2, false).andThen(new HoldWrist(wrist, pivot)),
+                new HoldWrist(wrist, pivot),
                 new WaitUntilCommand(() -> telescope.getPositionM() < 0.1)
             ),
             new ParallelRaceGroup(
                 new MovePivot(pivot, position[0], true).andThen(new HoldPivot(pivot, telescope)),
                 new HoldTelescope(telescope, pivot),
-                // new MoveWrist(wrist, pivot, position[2], true).andThen(new HoldWrist(wrist, pivot)),
+                new MoveWrist(wrist, pivot, position[2], true).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (pivot.atGoal && wrist.atGoal))
             ),
             new ParallelRaceGroup(
                 new MovePivot(pivot, position[0], false).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, position[1], position[0], false).andThen(new HoldTelescope(telescope, pivot)),
-                // new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
+                new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
+                new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
+            )
+        );
+    }
+    
+    private Command moveArmRetractInitial(double[] position) {
+        return new SequentialCommandGroup(
+            new ParallelRaceGroup(
+                new HoldPivot(pivot, telescope),
+                new MoveTelescope(telescope, pivot, 0.05, position[0], true),
+                new MoveWrist(wrist, pivot, Math.PI / 2, true).andThen(new HoldWrist(wrist, pivot)),
+                new WaitUntilCommand(() -> telescope.getPositionM() < 0.1 && wrist.atGoal)
+            ),
+            new ParallelRaceGroup(
+                new MovePivot(pivot, position[0], true).andThen(new HoldPivot(pivot, telescope)),
+                new HoldTelescope(telescope, pivot),
+                new MoveWrist(wrist, pivot, position[2], true).andThen(new HoldWrist(wrist, pivot)),
+                new WaitUntilCommand(() -> (pivot.atGoal && wrist.atGoal))
+            ),
+            new ParallelRaceGroup(
+                new MovePivot(pivot, position[0], false).andThen(new HoldPivot(pivot, telescope)),
+                new MoveTelescope(telescope, pivot, position[1], position[0], false).andThen(new HoldTelescope(telescope, pivot)),
+                new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
             )
         );
     }
 
     private Command followPath(Drive drive, PathPlannerTrajectory trajectory) {
-        // return new FollowTrajectory(drive, trajectory);
-
-        return new PPSwerveControllerCommand(
-            trajectory, 
-            () -> RobotState.getInstance().getFieldToVehicle(),
-            new PIDController(AutoConstants.autoTranslationXKp, AutoConstants.autoTranslationXKi, AutoConstants.autoTranslationXKd), 
-            new PIDController(AutoConstants.autoTranslationYKp, AutoConstants.autoTranslationYKi, AutoConstants.autoTranslationYKd), 
-            new PIDController(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), 
-            (speeds) -> drive.setGoalChassisSpeeds(speeds),
-            drive
-        ).andThen(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)));
+        return new FollowTrajectory(drive, trajectory, false);
+        // return new ParallelRaceGroup(
+        //     new FollowTrajectory(drive, trajectory),
+        //     new PPSwerveControllerCommand(
+        //         trajectory, 
+        //         () -> RobotState.getInstance().getFieldToVehicle(),
+        //         new PIDController(AutoConstants.autoTranslationXKp, AutoConstants.autoTranslationXKi, AutoConstants.autoTranslationXKd), 
+        //         new PIDController(AutoConstants.autoTranslationYKp, AutoConstants.autoTranslationYKi, AutoConstants.autoTranslationYKd), 
+        //         new PIDController(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), 
+        //         (speeds) -> drive.setGoalChassisSpeeds(speeds),
+        //         drive
+        //     ).andThen(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)))
+        // );
+        // return new PPSwerveControllerCommand(
+        //     trajectory, 
+        //     () -> RobotState.getInstance().getFieldToVehicle(),
+        //     new PIDController(AutoConstants.autoTranslationXKp, AutoConstants.autoTranslationXKi, AutoConstants.autoTranslationXKd), 
+        //     new PIDController(AutoConstants.autoTranslationYKp, AutoConstants.autoTranslationYKi, AutoConstants.autoTranslationYKd), 
+        //     new PIDController(AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd), 
+        //     (speeds) -> drive.setGoalChassisSpeeds(speeds),
+        //     drive
+        // ).andThen(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0)));
     }
 
 }

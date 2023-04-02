@@ -220,4 +220,10 @@ public class Drive extends SubsystemBase {
         return DriveConstants.kinematics.toChassisSpeeds(getModuleStates());
     }
 
+    public void setBrakeMode(boolean braked) {
+        for (int i = 0; i < 4; i++) {
+            driveModules[i].setBrake(braked);
+        }
+    }
+
 }

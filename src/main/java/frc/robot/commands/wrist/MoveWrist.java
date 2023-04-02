@@ -18,7 +18,6 @@ public class MoveWrist extends CommandBase {
     private State goalState;
 
     private double goalRad;
-    private double pivotGoalRad;
 
     private Timer timer = new Timer();
 
@@ -26,21 +25,19 @@ public class MoveWrist extends CommandBase {
 
     private final boolean ignoreValidation;
 
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad, double pivotGoalRad) {
+    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad) {
         this.wrist = wrist;
         this.pivot = pivot;
         this.goalRad = goalRad;
-        this.pivotGoalRad = pivotGoalRad;
         this.ignoreValidation = false;
 
         addRequirements(this.wrist);
     }
 
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad, double pivotGoalRad, boolean ignoreValidation) {
+    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad, boolean ignoreValidation) {
         this.wrist = wrist;
         this.pivot = pivot;
         this.goalRad = goalRad;
-        this.pivotGoalRad = pivotGoalRad;
         this.ignoreValidation = ignoreValidation;
 
         addRequirements(wrist);
@@ -52,8 +49,6 @@ public class MoveWrist extends CommandBase {
         finishedTimer.reset();
         finishedTimer.start();
 
-        goalRad -= pivotGoalRad;
-
         goalState = new TrapezoidProfile.State(goalRad, 0);
 
         if (RobotState.getInstance().atBack())
@@ -63,9 +58,9 @@ public class MoveWrist extends CommandBase {
         timer.reset();
         timer.start();
         profile = new TrapezoidProfile(wrist.getConstraintsRad(), goalState,
-            new State(wrist.getPositionRad(), wrist.getVelRadS()));
+            new State(getAdjustedAngle(), wrist.getVelRadS()));
         
-        wrist.updateDesiredSetpointRad(new TrapezoidProfile.State(goalRad+pivotGoalRad, 0));
+        wrist.updateDesiredSetpointRad(goalState);
 
         wrist.resetPID();
 
@@ -78,15 +73,15 @@ public class MoveWrist extends CommandBase {
     public void execute() {
         State setpoint = profile.calculate(timer.get());
 
-        double output = wrist.calculateControl(setpoint, wrist.getPositionRad(), false);
+        double output = wrist.calculateControl(setpoint, getAdjustedAngle(), false);
 
         SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
-        SmartDashboard.putNumber("Wrist real pos", wrist.getPositionRad());
+        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
 
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
 
-        if (Math.abs(wrist.getPositionRad()-goalState.position) > Units.degreesToRadians(3)) {
+        if (Math.abs(getAdjustedAngle()-goalState.position) > Units.degreesToRadians(3)) {
             finishedTimer.reset();
         }
     }

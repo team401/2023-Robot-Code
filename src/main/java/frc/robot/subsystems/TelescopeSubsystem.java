@@ -176,6 +176,10 @@ public class TelescopeSubsystem extends SubsystemBase{
         dead = true;
     }
 
+    public void setBrakeMode(boolean braked) {
+        motor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
     /**
      * 'Revives' the subsytem. If it is dead, the motor will start responding.<p>
      * DO NOT have regular code call this method. Only a human button should do this.

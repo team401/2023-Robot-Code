@@ -30,6 +30,7 @@ public class LEDManager extends SubsystemBase {
     private Color allianceColor = Color.kWhite;
     private final Timer flashTimer = new Timer();
 
+    private boolean off = false;
 
     public LEDManager() {
 
@@ -51,20 +52,25 @@ public class LEDManager extends SubsystemBase {
     public void periodic() {
 
         allianceColor = DriverStation.getAlliance() == DriverStation.Alliance.Red ? new Color(127, 0, 0) : new Color(0, 0, 127);
-        
-        if (!DriverStation.isDSAttached()) {
-            // preMatchClimbPattern();
-        }
-        if (DriverStation.isDisabled()){
-            rainbow();
+
+        if (!off) {
+            if (!DriverStation.isDSAttached()) {
+                // preMatchClimbPattern();
+            }
+            if (DriverStation.isDisabled()){
+                rainbow();
+            }
+            else {
+                clear();
+                setSideIndicator();
+                setIntakeModeIndicator();
+                flashOnWhistle();
+                flashActiveSide();
+                flashOnIntake();
+            }
         }
         else {
             clear();
-            setSideIndicator();
-            setIntakeModeIndicator();
-            flashOnWhistle();
-            flashActiveSide();
-            flashOnIntake();
         }
 
         led.setData(ledBuffer);
@@ -239,6 +245,10 @@ public class LEDManager extends SubsystemBase {
                 setBaseLED(i, color);
             }
         }
+    }
+
+    public void setOff(boolean offf) {
+        off = offf;
     }
     
 }

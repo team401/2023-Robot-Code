@@ -45,8 +45,8 @@ public class PivotSubsystem extends SubsystemBase {
     // require information from the telescope subsytem.
     private final TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
-            Units.degreesToRadians(420),
-            Units.degreesToRadians(720));
+            Units.degreesToRadians(360),
+            Units.degreesToRadians(600));
     public final PIDController controller = new PIDController(
         PivotConstants.kP, 
         0, 
@@ -215,6 +215,11 @@ public class PivotSubsystem extends SubsystemBase {
     public void die() {
         setVolts(0);
         dead = true;
+    }
+
+    public void setBrakeMode(boolean braked) {
+        leftMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+        rightMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
     }
     
     /**

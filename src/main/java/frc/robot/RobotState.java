@@ -108,7 +108,7 @@ public class RobotState {
 
     public void recordVisionObservations(Pose2d pose, double distance, double timestamp) {
         
-        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(distance, distance, 10000));
+        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(distance / 2, distance / 2, 100));
         field.setRobotPose(poseEstimator.getEstimatedPosition());
 
     }
@@ -164,17 +164,17 @@ public class RobotState {
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
 
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void setStow(boolean stowed) {

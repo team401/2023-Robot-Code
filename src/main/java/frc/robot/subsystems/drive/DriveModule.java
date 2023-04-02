@@ -129,5 +129,10 @@ public class DriveModule {
     public double getRotationStatorCurrent() {
         return rotationMotor.getStatorCurrent();
     }
+
+    public void setBrake(boolean braked) {
+        driveMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+        rotationMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+    }
     
 }
