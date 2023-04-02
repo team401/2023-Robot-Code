@@ -250,10 +250,10 @@ public final class Constants {
         };
 
         public static final Transform3d[] vehicleToCameras = {//10 deg yaw, 5 deg pitch
-            new Transform3d(new Translation3d(-0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-10))),
-            new Transform3d(new Translation3d(-0.03, -0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
-            new Transform3d(new Translation3d(0.03, 0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-170))),//0.03, 0.18, 0
-            new Transform3d(new Translation3d(0.03, -0.18, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(170)))//0.03, -0.18, 0
+            new Transform3d(new Translation3d(0.03, 0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-10))),
+            new Transform3d(new Translation3d(0.03, -0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
+            new Transform3d(new Translation3d(-0.03, 0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-175))),
+            new Transform3d(new Translation3d(-0.03, -0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(175)))
         };
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
