@@ -4,6 +4,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
@@ -16,7 +17,8 @@ public class MoveWrist extends CommandBase {
     private TrapezoidProfile profile;
     private State goalState;
 
-    private double posRad;
+    private double goalRad;
+    private double pivotGoalRad;
 
     private Timer timer = new Timer();
 
@@ -24,19 +26,21 @@ public class MoveWrist extends CommandBase {
 
     private final boolean ignoreValidation;
 
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad) {
+    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad, double pivotGoalRad) {
         this.wrist = wrist;
         this.pivot = pivot;
-        this.posRad = posRad;
+        this.goalRad = goalRad;
+        this.pivotGoalRad = pivotGoalRad;
         this.ignoreValidation = false;
 
         addRequirements(this.wrist);
     }
 
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double posRad, boolean ignoreValidation) {
+    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad, double pivotGoalRad, boolean ignoreValidation) {
         this.wrist = wrist;
         this.pivot = pivot;
-        this.posRad = posRad;
+        this.goalRad = goalRad;
+        this.pivotGoalRad = pivotGoalRad;
         this.ignoreValidation = ignoreValidation;
 
         addRequirements(wrist);
@@ -48,7 +52,9 @@ public class MoveWrist extends CommandBase {
         finishedTimer.reset();
         finishedTimer.start();
 
-        goalState = new TrapezoidProfile.State(posRad, 0);
+        goalRad -= pivotGoalRad;
+
+        goalState = new TrapezoidProfile.State(goalRad, 0);
 
         if (RobotState.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
@@ -57,13 +63,13 @@ public class MoveWrist extends CommandBase {
         timer.reset();
         timer.start();
         profile = new TrapezoidProfile(wrist.getConstraintsRad(), goalState,
-            new State(getAdjustedAngle(), wrist.getVelRadS()));
+            new State(wrist.getPositionRad(), wrist.getVelRadS()));
         
-        wrist.updateDesiredSetpointRad(goalState);
+        wrist.updateDesiredSetpointRad(new TrapezoidProfile.State(goalRad+pivotGoalRad, 0));
 
         wrist.resetPID();
 
-        // SmartDashboard.putNumber("MoveWrist started", 1);
+        SmartDashboard.putBoolean("MovingWrist", true);
 
         wrist.atGoal = false;
     }
@@ -72,15 +78,15 @@ public class MoveWrist extends CommandBase {
     public void execute() {
         State setpoint = profile.calculate(timer.get());
 
-        double output = wrist.calculateControl(setpoint, getAdjustedAngle(), false);
+        double output = wrist.calculateControl(setpoint, wrist.getPositionRad(), false);
 
-        // SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
-        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        SmartDashboard.putNumber("Wrist Setpoint", setpoint.position);
+        SmartDashboard.putNumber("Wrist real pos", wrist.getPositionRad());
 
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
 
-        if (Math.abs(getAdjustedAngle()-goalState.position) > Units.degreesToRadians(3)) {
+        if (Math.abs(wrist.getPositionRad()-goalState.position) > Units.degreesToRadians(3)) {
             finishedTimer.reset();
         }
     }
@@ -101,6 +107,6 @@ public class MoveWrist extends CommandBase {
 
         wrist.atGoal = true;
 
-        // SmartDashboard.putNumber("MoveWrist started", 0);
+        SmartDashboard.putBoolean("MovingWrist", false);
     }
 }

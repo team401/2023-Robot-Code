@@ -10,6 +10,8 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.math.filter.MedianFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
@@ -26,6 +28,9 @@ public class Camera {
     
     private volatile DoubleSupplier rotation;
     private volatile boolean cameraOn = true;
+
+    private final MedianFilter filterX = new MedianFilter(5);
+    private final MedianFilter filterY = new MedianFilter(5);
 
     private volatile boolean hasNewPose = false;
     private volatile Pose2d calculatedPose;
@@ -66,6 +71,8 @@ public class Camera {
     }
 
     public void recordVisionObservation() {
+        double x = filterX.calculate(calculatedPose.getX());
+        double y = filterX.calculate(calculatedPose.getX());
         RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
         hasNewPose = false;
         SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());

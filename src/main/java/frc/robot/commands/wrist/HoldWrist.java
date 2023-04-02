@@ -1,6 +1,7 @@
 package frc.robot.commands.wrist;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.WristSubsystem;
@@ -30,6 +31,9 @@ public class HoldWrist extends CommandBase {
 
         wrist.setVolts(output);
         wrist.setSimPosRad(goalState.position - pivot.getPositionRad());
+
+        SmartDashboard.putNumber("Wrist Setpoint", goalState.position);
+        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
     }
 
     private double getAdjustedAngle() {

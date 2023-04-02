@@ -156,12 +156,10 @@ public final class Constants {
 
         public static final double gearRatio = 8.0 / 78;
 
-        public static final double kP = 10;
+        public static final double kP = 14;
         public static final double kI = 3;
-        public static final double kPCone = 40;
-        public static final double kICone = 0;
-        public static final double kPConeHold = 15;
-        public static final double kIConeHold = 0;
+        public static final double kPHold = 8;
+        public static final double kIHold = 3;
         public static final double kV = 0.273;
         public static final double kA = 0.01; // estimate
         public static final double kG = 0.34;
@@ -262,8 +260,8 @@ public final class Constants {
             add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.52, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.34, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.68, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.41, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
             add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
 
             // 1.61 from 8 to 7, 
@@ -292,16 +290,16 @@ public final class Constants {
         public static final double kMaxVelocityMetersPerSecond = 3;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
 
-        public static final double autoTranslationXKp = 15;
+        public static final double autoTranslationXKp = 10;
         public static final double autoTranslationXKi = 0;
         public static final double autoTranslationXKd = 0;
 
-        public static final double autoTranslationYKp = 15;
+        public static final double autoTranslationYKp = 7;
         public static final double autoTranslationYKi = 0;
         public static final double autoTranslationYKd = 0;
 
-        public static final double autoRotationKp = 1.5;
-        public static final double autoRotationKi = 0;
+        public static final double autoRotationKp = 4;
+        public static final double autoRotationKi = 0.1;
         public static final double autoRotationKd = 0;
 
         public static final double autoBalanceKp = 0.3;

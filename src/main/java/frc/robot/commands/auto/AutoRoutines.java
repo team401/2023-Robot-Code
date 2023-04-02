@@ -247,7 +247,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new ParallelRaceGroup(
             new MovePivot(pivot, position[0]).andThen(new HoldPivot(pivot, telescope)),
             new MoveTelescope(telescope, pivot, position[1], position[0]).andThen(new HoldTelescope(telescope, pivot)),
-            new MoveWrist(wrist, pivot, position[2], wristIgnoreValidation).andThen(new HoldWrist(wrist, pivot)),
+            // new MoveWrist(wrist, pivot, position[2], wristIgnoreValidation).andThen(new HoldWrist(wrist, pivot)),
             new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
         );
     }
@@ -257,19 +257,19 @@ public class AutoRoutines extends SequentialCommandGroup {
             new ParallelRaceGroup(
                 new HoldPivot(pivot, telescope),
                 new MoveTelescope(telescope, pivot, 0.05, position[0], true),
-                new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
+                // new MoveWrist(wrist, pivot, Math.PI / 2, false).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> telescope.getPositionM() < 0.1)
             ),
             new ParallelRaceGroup(
                 new MovePivot(pivot, position[0], true).andThen(new HoldPivot(pivot, telescope)),
                 new HoldTelescope(telescope, pivot),
-                new MoveWrist(wrist, pivot, position[2], true).andThen(new HoldWrist(wrist, pivot)),
+                // new MoveWrist(wrist, pivot, position[2], true).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (pivot.atGoal && wrist.atGoal))
             ),
             new ParallelRaceGroup(
                 new MovePivot(pivot, position[0], false).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, position[1], position[0], false).andThen(new HoldTelescope(telescope, pivot)),
-                new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
+                // new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
             )
         );

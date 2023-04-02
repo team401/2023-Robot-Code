@@ -108,7 +108,7 @@ public class RobotState {
 
     public void recordVisionObservations(Pose2d pose, double distance, double timestamp) {
         
-        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(distance / 2, distance / 2, 100));
+        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(distance, distance, 10000));
         field.setRobotPose(poseEstimator.getEstimatedPosition());
 
     }

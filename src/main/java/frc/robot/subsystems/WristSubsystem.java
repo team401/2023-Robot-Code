@@ -38,11 +38,10 @@ public class WristSubsystem extends SubsystemBase {
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the pivot subsytem.
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
-        Units.degreesToRadians(1080),
-        Units.degreesToRadians(1080));
+        Units.degreesToRadians(960),
+        Units.degreesToRadians(800));
     private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
-    private final PIDController controllerCone = new PIDController(WristConstants.kPCone, WristConstants.kICone, 0);
-    private final PIDController controllerConeHold = new PIDController(WristConstants.kPConeHold, WristConstants.kIConeHold, 0);
+    private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
         WristConstants.kG,
@@ -74,7 +73,7 @@ public class WristSubsystem extends SubsystemBase {
             new StatorCurrentLimitConfiguration(true, 50, 60, 0.5));
 
         controller.setTolerance(0.05);
-        controllerCone.setTolerance(0.05);
+        controllerHold.setTolerance(0.05);
     }
 
     public double getPositionRad() {
@@ -132,9 +131,7 @@ public class WristSubsystem extends SubsystemBase {
      */
     public double calculateControl(TrapezoidProfile.State setpointRad, double angleRad, boolean holding) {
 
-        boolean cone = RobotState.getInstance().hasIntaked() && !RobotState.getInstance().getMode().equals(GamePieceMode.Cube);
-
-        double fb = controller.calculate(angleRad, setpointRad.position);
+        double fb = holding ? controllerHold.calculate(angleRad, setpointRad.position) : controller.calculate(angleRad, setpointRad.position);
         // if (cone && holding)
         //     fb = controllerConeHold.calculate(angleRad, setpointRad.position);
         // else if (cone)
@@ -155,8 +152,7 @@ public class WristSubsystem extends SubsystemBase {
      */
     public void resetPID() {
         controller.reset();
-        controllerCone.reset();
-        controllerConeHold.reset();
+        controllerHold.reset();
     }
 
     /**
