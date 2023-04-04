@@ -218,15 +218,19 @@ public class LEDManager extends SubsystemBase {
             for (int i = 0; i < LEDConstants.armLedCount; i++) {
                 setArmLED(i, i/10%2 == 0 ? yellow : black);
             }
+            for (int i = 0; i < LEDConstants.baseLedCount/4; i++) {
+                setBaseLED(i, i/6%2 == 0 ? yellow : black);
+            }
+            for (int i = 3*LEDConstants.baseLedCount/4; i < LEDConstants.baseLedCount; i++) {
+                setBaseLED(i, i/6%2 == 0 ? yellow : black);
+            }
         }
-
-
 
     }
 
     private void flashOnWhistle() {
 
-        if (DriverStation.isTeleopEnabled() && Math.abs(DriverStation.getMatchTime()-30) < 2.5) {
+        if (DriverStation.isTeleopEnabled() && Math.abs(DriverStation.getMatchTime()-30) < 1.5) {
             Color color = (flashTimer.get()*10%10)%5 < 2.5 ? Color.kBlack : LEDConstants.whistleFlashColor;
             for (int i = 0; i < LEDConstants.baseLedCount; i++) {
                 setBaseLED(i, color);

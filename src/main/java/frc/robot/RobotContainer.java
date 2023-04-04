@@ -1,3 +1,4 @@
+// <https://www.youtube.com/watch?v=mXlsbBgrKKY>
 // Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
@@ -95,9 +96,6 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-
-
-
     }
 
     private void configureCompBindings() {
@@ -310,3 +308,4 @@ public class RobotContainer {
     }
 
 }
+// </https://www.youtube.com/watch?v=mXlsbBgrKKY>
