@@ -186,15 +186,15 @@ public final class Constants {
         
         public static final double[] intakeConeDownGround = new double[] {-0.02, 0.059, -1.1};
         public static final double[] intakeConeDownExtendedGround = new double[] {-0.02, 0.70, -1.1};
-        public static final double[] intakeConeDownShelf = new double[] {0.714, 0.64, -0.87};
+        public static final double[] intakeConeDownShelf = new double[] {0.81, 0.2, -0.28};
         public static final double[] placeConeDownHigh = new double[] {0.59, 0.71, 0.8};
         public static final double[] placeConeDownMid = new double[] {0.58, 0.22, 0.8};
         
-        public static final double[] intakeConeUpBackGround = new double[] {-0.42, 0.09, -0.04};
-        public static final double[] intakeConeUpFrontGround = new double[] {-0.42, 0.09, -0.2};
-        public static final double[] intakeConeUpShelf = new double[] {0.81, 0.03, -0.0};
+        public static final double[] intakeConeUpFrontGround = new double[] {0.095, 0.05, -1.15};
+        public static final double[] intakeConeUpBackGround = new double[] {0.095, 0.05, -0.85};
+        public static final double[] intakeConeUpShelf = new double[] {0.81, 0.2, -0.28};
         public static final double[] placeConeUpHigh = new double[] {0.69, 0.78, -0.379};
-        public static final double[] placeConeUpMid = new double[] {0.7, 0.21, -0.5};
+        public static final double[] placeConeUpMid = new double[] {0.7, 0.25, -0.3};
         
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
         
@@ -273,14 +273,15 @@ public final class Constants {
             add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
             add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
 
-            // 1.61 from 8 to 7, 
-            // 1.66 from 6 to 7
-
-            //0.65
         }};
 
         public static final double fieldLength = 16.542;
         public static final double fieldWidth = 8.014;
+
+        public static final double singleTagAmbiguityCutoff = 0.05;
+        public static final double minimumStdDev = 0.5;
+        public static final double stdDevEulerMultiplier = 0.3;
+        public static final double stdDevDistanceMultiplier = 0.4;
 
     }
 

@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.MatBuilder;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -9,6 +10,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -106,9 +109,9 @@ public class RobotState {
         driveOdometry.update(rotation, modulePositions);
     }
 
-    public void recordVisionObservations(Pose2d pose, double distance, double timestamp) {
+    public void recordVisionObservations(Pose2d pose, Matrix<N3, N1> stdDevs, double timestamp) {
         
-        poseEstimator.addVisionMeasurement(pose, timestamp, VecBuilder.fill(distance / 2, distance / 2, 100));
+        poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
         field.setRobotPose(poseEstimator.getEstimatedPosition());
 
     }

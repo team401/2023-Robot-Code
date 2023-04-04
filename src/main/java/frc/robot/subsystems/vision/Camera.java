@@ -8,13 +8,16 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.filter.LinearFilter;
-import edu.wpi.first.math.filter.MedianFilter;
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.VisionConstants;
@@ -25,20 +28,17 @@ public class Camera {
 
     private final PhotonCamera camera;
     private final PhotonPoseEstimator poseEstimator;
-    
-    private volatile DoubleSupplier rotation;
-    private volatile boolean cameraOn = true;
 
     private volatile boolean hasNewPose = false;
     private volatile Pose2d calculatedPose = new Pose2d();
-    private volatile double distance = 1;
+    private volatile Matrix<N3, N1> stdDevs = VecBuilder.fill(1000, 1000, 1000);
     private volatile double timestamp = 1;
 
-    public Camera(String cameraName, Transform3d vehicleToCamera, DoubleSupplier rotationSupplier) {
+    public Camera(String cameraName, Transform3d vehicleToCamera) {
         
         camera = new PhotonCamera(cameraName);
         poseEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, camera, vehicleToCamera);
-        rotation = rotationSupplier;
+        poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
     }
 
@@ -46,20 +46,25 @@ public class Camera {
 
         if (!camera.isConnected()) return;
 
-        // boolean on = (Math.abs(rotation.getAsDouble()) > Math.PI / 2) ^ (poseEstimator.getRobotToCameraTransform().getX() > 0);
-        // if (on != cameraOn)
-        //     camera.setDriverMode(!on);
-        // cameraOn = on;
-
         PhotonPipelineResult result = camera.getLatestResult(); 
         Optional<EstimatedRobotPose> estimatedPose = poseEstimator.update(result);
-        
-        if (estimatedPose.isPresent() && estimatedPose.get().timestampSeconds != timestamp) {
-            hasNewPose = true;
-            calculatedPose = estimatedPose.get().estimatedPose.toPose2d();
-            distance = getDistance(estimatedPose.get().estimatedPose.toPose2d(), result.getBestTarget().getFiducialId());
-            timestamp = estimatedPose.get().timestampSeconds;
+        if (estimatedPose.isEmpty()) return;
+        EstimatedRobotPose estimation = estimatedPose.get();
+        if (estimation.timestampSeconds == timestamp) return;
+        if (estimation.targetsUsed.size() == 1 && 
+            (estimation.targetsUsed.get(0).getPoseAmbiguity() > VisionConstants.singleTagAmbiguityCutoff || estimation.targetsUsed.get(0).getPoseAmbiguity() != -1))
+            return;
+
+        double distance = 0;
+        for (PhotonTrackedTarget target : estimation.targetsUsed) {
+            distance += target.getBestCameraToTarget().getTranslation().getDistance(new Translation3d());
         }
+        distance /= estimation.targetsUsed.size();
+        stdDevs = computeStdDevs(distance);
+
+        calculatedPose = estimation.estimatedPose.toPose2d();
+        timestamp = estimation.timestampSeconds;
+        hasNewPose = true;
 
     }
 
@@ -68,20 +73,19 @@ public class Camera {
     }
 
     public void recordVisionObservation() {
-        // RobotState.getInstance().recordVisionObservations(calculatedPose, distance, timestamp);
+        RobotState.getInstance().recordVisionObservations(calculatedPose, stdDevs, timestamp);
         hasNewPose = false;
         SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());
         SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getY());
         SmartDashboard.putNumber(camera.getName()+"Theta", calculatedPose.getRotation().getRadians());
     }
 
-    private double getDistance(Pose2d pose, int id) {
-        Optional<Pose3d> tagPose3d = tagLayout.getTagPose(id);
-        if (tagPose3d.isEmpty()) {
-            return 100;
-        }
-        Pose2d tagPose = tagPose3d.get().toPose2d();
-        return tagPose.getTranslation().getDistance(pose.getTranslation());
+    private Matrix<N3, N1> computeStdDevs(double distance) {
+        double stdDev = Math.max(
+            VisionConstants.minimumStdDev, 
+            VisionConstants.stdDevEulerMultiplier * Math.exp(distance * VisionConstants.stdDevDistanceMultiplier)
+        );
+        return VecBuilder.fill(stdDev, stdDev, 1000);
     }
     
 }

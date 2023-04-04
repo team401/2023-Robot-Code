@@ -13,15 +13,13 @@ public class Vision extends SubsystemBase {
 
     private final Notifier notifier;
 
-    private volatile DoubleSupplier rotation = () -> RobotState.getInstance().getFieldToVehicle().getRotation().getRadians();
-
     public Vision() {
 
         cameras = new Camera[] {
-            new Camera(VisionConstants.cameraNames[0], VisionConstants.vehicleToCameras[0], rotation),
-            // new Camera(VisionConstants.cameraNames[1], VisionConstants.vehicleToCameras[1], rotation),
-            new Camera(VisionConstants.cameraNames[2], VisionConstants.vehicleToCameras[2], rotation),
-            new Camera(VisionConstants.cameraNames[3], VisionConstants.vehicleToCameras[3], rotation)
+            new Camera(VisionConstants.cameraNames[0], VisionConstants.vehicleToCameras[0]),
+            // new Camera(VisionConstants.cameraNames[1], VisionConstants.vehicleToCameras[1]),
+            new Camera(VisionConstants.cameraNames[2], VisionConstants.vehicleToCameras[2]),
+            new Camera(VisionConstants.cameraNames[3], VisionConstants.vehicleToCameras[3])
         };
 
         notifier = new Notifier(() -> {
@@ -35,6 +33,8 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        RobotState.getInstance().getFieldToVehicle();
 
         for (int i = 0; i < 3; i++) {
             if (cameras[i].hasNewObservation()) {
