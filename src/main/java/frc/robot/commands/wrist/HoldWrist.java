@@ -32,8 +32,8 @@ public class HoldWrist extends CommandBase {
         wrist.setVolts(output);
         wrist.setSimPosRad(goalState.position - pivot.getPositionRad());
 
-        SmartDashboard.putNumber("Wrist Setpoint", goalState.position);
-        SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        // SmartDashboard.putNumber("Wrist Setpoint", goalState.position);
+        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
     }
 
     private double getAdjustedAngle() {

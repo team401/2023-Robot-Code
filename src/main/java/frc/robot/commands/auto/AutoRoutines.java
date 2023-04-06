@@ -6,11 +6,8 @@ import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
-import com.pathplanner.lib.commands.PPSwerveControllerCommand;
 
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -25,7 +22,6 @@ import frc.robot.Constants.GamePieceMode;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
 import frc.robot.commands.telescope.HoldTelescope;
-import frc.robot.commands.telescope.HomeTelescope;
 import frc.robot.commands.telescope.MoveTelescope;
 import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.MoveWrist;
@@ -113,12 +109,8 @@ public class AutoRoutines extends SequentialCommandGroup {
         if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
             addCommands(
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(2), false),
-                    pickupCone().andThen(hold())
-                ),
-                new ParallelRaceGroup(
-                    drive(pathGroup.get(3), true).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
-                    invert().andThen(stow()).andThen(hold())
+                    drive(pathGroup.get(2), true).andThen(new InstantCommand(drive::resetHeading)).andThen(balance()),
+                    stow().andThen(hold())
                 )
             );
         }
@@ -235,7 +227,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command moveArm(double[] position, boolean wristIgnoreValidation) {
         return new ParallelRaceGroup(
             new MovePivot(pivot, position[0]).andThen(new HoldPivot(pivot, telescope)),
-            new MoveTelescope(telescope, pivot, position[1], position[0]).andThen(new HoldTelescope(telescope, pivot)),
+            new MoveTelescope(telescope, pivot, position[1]).andThen(new HoldTelescope(telescope, pivot)),
             new MoveWrist(wrist, pivot, position[2], wristIgnoreValidation).andThen(new HoldWrist(wrist, pivot)),
             new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
         );
@@ -245,7 +237,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new ParallelRaceGroup(
                 new HoldPivot(pivot, telescope),
-                new MoveTelescope(telescope, pivot, 0.05, position[0], true),
+                new MoveTelescope(telescope, pivot, 0.05, true),
                 new HoldWrist(wrist, pivot),
                 new WaitUntilCommand(() -> telescope.getPositionM() < 0.1)
             ),
@@ -257,7 +249,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             ),
             new ParallelRaceGroup(
                 new MovePivot(pivot, position[0], false).andThen(new HoldPivot(pivot, telescope)),
-                new MoveTelescope(telescope, pivot, position[1], position[0], false).andThen(new HoldTelescope(telescope, pivot)),
+                new MoveTelescope(telescope, pivot, position[1], false).andThen(new HoldTelescope(telescope, pivot)),
                 new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
             )
@@ -268,7 +260,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new ParallelRaceGroup(
                 new HoldPivot(pivot, telescope),
-                new MoveTelescope(telescope, pivot, 0.05, position[0], true),
+                new MoveTelescope(telescope, pivot, 0.05, true),
                 new MoveWrist(wrist, pivot, Math.PI / 2, true).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> telescope.getPositionM() < 0.1 && wrist.atGoal)
             ),
@@ -280,7 +272,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             ),
             new ParallelRaceGroup(
                 new MovePivot(pivot, position[0], false).andThen(new HoldPivot(pivot, telescope)),
-                new MoveTelescope(telescope, pivot, position[1], position[0], false).andThen(new HoldTelescope(telescope, pivot)),
+                new MoveTelescope(telescope, pivot, position[1], false).andThen(new HoldTelescope(telescope, pivot)),
                 new MoveWrist(wrist, pivot, position[2], false).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
             )

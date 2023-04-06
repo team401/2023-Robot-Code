@@ -75,9 +75,9 @@ public class Camera {
     public void recordVisionObservation() {
         RobotState.getInstance().recordVisionObservations(calculatedPose, stdDevs, timestamp);
         hasNewPose = false;
-        SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());
-        SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getY());
-        SmartDashboard.putNumber(camera.getName()+"Theta", calculatedPose.getRotation().getRadians());
+        // SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());
+        // SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getY());
+        // SmartDashboard.putNumber(camera.getName()+"Theta", calculatedPose.getRotation().getRadians());
     }
 
     private Matrix<N3, N1> computeStdDevs(double distance) {

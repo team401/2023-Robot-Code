@@ -122,12 +122,12 @@ public class FollowTrajectory extends CommandBase {
         //     adjustedSpeeds.omegaRadiansPerSecond
         // );
 
-        SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
-        SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
-        SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
-        SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
-        SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
-        SmartDashboard.putNumber("ActualOmega", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
+        // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
+        // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
+        // SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
+        // SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
+        // SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
+        // SmartDashboard.putNumber("ActualOmega", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
 
         // SmartDashboard.putNumber("DesiredSpeedX", adjustedSpeeds.vxMetersPerSecond);
         // SmartDashboard.putNumber("ActualSpeedX", drive.getVelocity().vxMetersPerSecond);
@@ -155,7 +155,7 @@ public class FollowTrajectory extends CommandBase {
         if (DriverStation.getAlliance() == Alliance.Blue) {
             if (currentPose.getX() > 8)
                 return left ? new Pose2d(15.5, 7.35, rotation) : new Pose2d(15.5, 6, rotation);
-            double x = 1.9;
+            double x = 1.95;
             double yCenter = currentPose.getY() > 3.58 ? 4.43 : currentPose.getY() > 1.91 ? 2.75 : 1.07;
             if (cube) return new Pose2d(x, yCenter, rotation);
             if (left) return new Pose2d(x, yCenter+0.56, rotation);
@@ -164,7 +164,7 @@ public class FollowTrajectory extends CommandBase {
         if (DriverStation.getAlliance() == Alliance.Red) {
             if (currentPose.getX() < 8)
                 return left ? new Pose2d(1, 6.13, rotation) : new Pose2d(1, 7.47, rotation);
-            double x = 14.65;   
+            double x = 14.6;   
             double yCenter = currentPose.getY() > 3.58 ? 4.43 : currentPose.getY() > 1.91 ? 2.75 : 1.07;
             if (cube) return new Pose2d(x, yCenter, rotation);
             if (left) return new Pose2d(x, yCenter-0.56, rotation);

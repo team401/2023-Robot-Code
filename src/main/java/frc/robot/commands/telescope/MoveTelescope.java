@@ -13,11 +13,9 @@ public class MoveTelescope extends CommandBase {
     private TelescopeSubsystem telescope;
     private PivotSubsystem pivot;
 
-    private TelescopeHelper helper;
+    private TrapezoidProfile profile;
 
     private double goalM;
-
-    private double pivotGoalRad;
 
     private Timer timer = new Timer();
 
@@ -29,11 +27,9 @@ public class MoveTelescope extends CommandBase {
         TelescopeSubsystem telescope,
         PivotSubsystem pivot,
         double goalM,
-        double pivotGoalRad,
         boolean ignoreValidation) {
         
         this.goalM = goalM;
-        this.pivotGoalRad = pivotGoalRad;
         this.telescope = telescope;
         this.pivot = pivot;
         this.ignoreValidation = ignoreValidation;
@@ -43,9 +39,8 @@ public class MoveTelescope extends CommandBase {
 
     public MoveTelescope(TelescopeSubsystem telescope,
         PivotSubsystem pivot,
-        double goalM,
-        double pivotGoalRad) {
-        this(telescope, pivot, goalM, pivotGoalRad, false);
+        double goalM) {
+        this(telescope, pivot, goalM, false);
     }   
 
     @Override
@@ -56,29 +51,9 @@ public class MoveTelescope extends CommandBase {
         finishedTimer.reset();
         finishedTimer.start();
 
-        State goalState = new State(goalM, 0);
-        State pivotGoalState = new State(pivotGoalRad, 0);
-        State holdState = new State(ArmPositions.stow[2], 0);
-        if (RobotState.getInstance().atBack())
-            pivotGoalState.position = Math.PI - pivotGoalState.position;
+        profile = new TrapezoidProfile(telescope.getConstraints(), new State(goalM, 0), new State(telescope.getPositionM(), telescope.getVel()));
 
-            State currentState = new State(telescope.getPositionM(), telescope.getVel());
-        
-        TrapezoidProfile pivotProfile = new TrapezoidProfile(
-            pivot.getConstraintsRad(),
-            pivotGoalState,
-            new State(pivot.getPositionRad(), pivot.getVelRadS())
-        );
-
-        helper = new TelescopeHelper(
-            currentState,
-            holdState,
-            goalState,
-            telescope.getConstraints(),
-            pivotProfile.totalTime()
-        );
-
-        telescope.setDesiredSetpoint(goalState);
+        telescope.setDesiredSetpoint(new State(goalM, 0));
         telescope.resetPID();
 
         telescope.atGoal = false;
@@ -88,7 +63,7 @@ public class MoveTelescope extends CommandBase {
     @Override
     public void execute() {
 
-        State setpoint = helper.calculate(timer.get());
+        State setpoint = profile.calculate(timer.get());
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
@@ -105,7 +80,7 @@ public class MoveTelescope extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return finishedTimer.hasElapsed(0.2) || (ignoreValidation && helper.isFinished(timer.get()));
+        return finishedTimer.hasElapsed(0.2) || (ignoreValidation && profile.isFinished(timer.get()));
     }
 
     @Override

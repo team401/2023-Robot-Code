@@ -28,6 +28,7 @@ import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.AutoRoutines;
+import frc.robot.commands.auto.Balance;
 import frc.robot.commands.auto.FollowTrajectory;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
@@ -109,6 +110,9 @@ public class RobotContainer {
                 drive.resetHeading(); 
                 drive.setFieldToVehicle(new Pose2d(RobotState.getInstance().getFieldToVehicle().getTranslation(), new Rotation2d(0)));
             }));
+
+        new JoystickButton(leftStick, 2)
+            .onTrue(new Balance(drive));
 
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
@@ -201,12 +205,15 @@ public class RobotContainer {
     private void configureAutos() {
         // Select path
         autoChooser.addOption("0-0", "0-0");
-        for (int start = 1; start <= 3; start++) {
-            for (int path = 1; path <= 2; path++) {
-                autoChooser.addOption("B-"+start+"-"+path, "B-"+start+"-"+path);
-                autoChooser.addOption("R-"+start+"-"+path, "R-"+start+"-"+path);
-            }
-        }
+        autoChooser.addOption("B-1-1", "B-1-1");
+        autoChooser.addOption("B-1-2", "B-1-2");
+        autoChooser.addOption("B-3-1", "B-3-1");
+        autoChooser.addOption("B-3-2", "B-3-2");
+        autoChooser.addOption("R-1-1", "R-1-1");
+        autoChooser.addOption("R-1-2", "R-1-2");
+        autoChooser.addOption("R-3-1", "R-3-1");
+        autoChooser.addOption("R-3-2", "R-3-2");
+        
         autoChooser.setDefaultOption("default", "B-1-1");
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
@@ -241,7 +248,9 @@ public class RobotContainer {
 
         if (DriverStation.isTeleop()) {
             new HomeTelescope(telescope).schedule();
-            new HomeWrist(wrist).schedule();
+            if (!RobotState.getInstance().hasIntaked()) {
+                new HomeWrist(wrist).schedule();
+            }
         }
 
         pivot.setDesiredSetpointRad(new State(Math.PI / 2, 0));
@@ -273,7 +282,7 @@ public class RobotContainer {
                 new SequentialCommandGroup(
                     new ParallelRaceGroup(
                     new HoldPivot(pivot, telescope),
-                    new MoveTelescope(telescope, pivot, 0.05, positions[0], true),
+                    new MoveTelescope(telescope, pivot, 0.05, true),
                     new MoveWrist(wrist, pivot, positions[2], false).andThen(new HoldWrist(wrist, pivot)),
                     new WaitUntilCommand(() -> telescope.getPositionM() < 0.1)
                 ),
@@ -285,7 +294,7 @@ public class RobotContainer {
                 ),
                 new ParallelRaceGroup(
                     new MovePivot(pivot, positions[0], false).andThen(new HoldPivot(pivot, telescope)),
-                    new MoveTelescope(telescope, pivot, positions[1], positions[0], false).andThen(new HoldTelescope(telescope, pivot)),
+                    new MoveTelescope(telescope, pivot, positions[1], false).andThen(new HoldTelescope(telescope, pivot)),
                     new MoveWrist(wrist, pivot, positions[2], false).andThen(new HoldWrist(wrist, pivot)),
                     new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
                 )
@@ -294,11 +303,11 @@ public class RobotContainer {
             else {
                 // move
                 new MovePivot(pivot, positions[0]).schedule();
-                new MoveTelescope(telescope, pivot, positions[1], positions[0]).schedule();
+                new MoveTelescope(telescope, pivot, positions[1]).schedule();
                 new MoveWrist(wrist, pivot, positions[2]).schedule();
             }
 
-            SmartDashboard.putNumber("MoveInitTime", timer.get()*1000);
+            // SmartDashboard.putNumber("MoveInitTime", timer.get()*1000);
             
         }});
     }

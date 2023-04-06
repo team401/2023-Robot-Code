@@ -47,9 +47,11 @@ public final class PositionHelper {
     }
 
     private static double[] getShelf(GamePieceMode mode) {
-        if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeShelf;
-        if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownShelf;
-        if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpShelf;
-        return null;
+        // if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeShelf;
+        // if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownShelf;
+        // if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpShelf;
+        RobotState.getInstance().setMode(GamePieceMode.ConeUp);
+        return ArmPositions.intakeConeUpShelf;
+        // return null;
     }
 }
