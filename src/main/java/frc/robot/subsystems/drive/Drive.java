@@ -63,7 +63,7 @@ public class Drive extends SubsystemBase {
         driveModules[1] = new DriveModule(CANDevices.frontRightDriveMotorID, CANDevices.frontRightRotationMotorID,
             CANDevices.frontRightRotationEncoderID, DriveConstants.frontRightAngleOffset, true);
         driveModules[2] = new DriveModule(CANDevices.backLeftDriveMotorID, CANDevices.backLeftRotationMotorID,
-            CANDevices.backLeftRotationEncoderID, DriveConstants.backLeftAngleOffset, true);
+            CANDevices.backLeftRotationEncoderID, DriveConstants.backLeftAngleOffset, false);
         driveModules[3] = new DriveModule(CANDevices.backRightDriveMotorID, CANDevices.backRightRotationMotorID,
             CANDevices.backRightRotationEncoderID, DriveConstants.backRightAngleOffset, true);
 
@@ -104,13 +104,19 @@ public class Drive extends SubsystemBase {
             // Set module speed
             double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
             double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
+            // SmartDashboard.putNumber("DesiredSpeed"+i, speedSetpointMPerS);
+            // SmartDashboard.putNumber("ActualSpeed"+i, driveModules[i].getDriveVelocityMPerS());
             // SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
+            
             driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
+
             // SmartDashboard.putNumber("DRiveOutputVolts"+i, driveModules[i].getDriveVoltageApplied());
 
             // Set module rotation
             double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
             driveModules[i].setRotationVoltage(rotationVoltage);
+
+            // SmartDashboard.putNumber("DesiredDriveAngle"+i, rotationSetpointRadians);
         }
 
         // Pose estimation
@@ -158,6 +164,10 @@ public class Drive extends SubsystemBase {
             };
         }
         setGoalModuleStates(goalModuleStates);
+    }
+
+    public void toggleKillFrontRight() {
+        driveModules[1].toggleKill();
     }
 
 

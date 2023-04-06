@@ -81,7 +81,7 @@ public class MoveWrist extends CommandBase {
         wrist.setVolts(output);
         wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
 
-        if (Math.abs(getAdjustedAngle()-goalState.position) > Units.degreesToRadians(3)) {
+        if (Math.abs(getAdjustedAngle()-goalState.position) > Units.degreesToRadians(4)) {
             finishedTimer.reset();
         }
     }

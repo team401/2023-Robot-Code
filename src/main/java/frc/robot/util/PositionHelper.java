@@ -24,7 +24,10 @@ public final class PositionHelper {
 
     private static double[] getGround(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeGround;
-        if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownGround;
+        if (mode == GamePieceMode.ConeDown) {
+            if (RobotState.getInstance().atBack()) return ArmPositions.intakeConeDownBackGround;
+            return ArmPositions.intakeConeDownFrontGround;
+        }
         if (mode == GamePieceMode.ConeUp)  {
             if (RobotState.getInstance().atBack()) return ArmPositions.intakeConeUpBackGround;
             return ArmPositions.intakeConeUpFrontGround;

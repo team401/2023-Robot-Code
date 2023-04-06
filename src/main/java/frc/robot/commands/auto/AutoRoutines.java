@@ -172,14 +172,14 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command preparePlaceCone() {
-        return moveArmRetract(ArmPositions.placeConeUpHigh);
+        return moveArmRetract(ArmPositions.placeConeDownHigh);
     }
 
     private Command pickupCone() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
+            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeDown)),
             new InstantCommand(intake::toggleIntake),
-            moveArmRetract(ArmPositions.intakeConeUpFrontGround)
+            moveArmRetract(ArmPositions.intakeConeDownFrontGround)
         );
     }
 

@@ -74,10 +74,10 @@ public final class Constants {
         public static final double driveWheelGearReduction = 6.86;
         public static final double rotationWheelGearReduction = 12.8;
 
-        public static final double frontLeftAngleOffset = 2.93-3.14;
-        public static final double frontRightAngleOffset = 1.33-3.14;
-        public static final double backLeftAngleOffset = 1.68-3.14;
-        public static final double backRightAngleOffset = 1.06;
+        public static final double frontLeftAngleOffset = 2.922;//2.93-3.14;
+        public static final double frontRightAngleOffset = -1.805;//1.33-3.14;
+        public static final double backLeftAngleOffset = 1.681;//1.68-3.14;
+        public static final double backRightAngleOffset = 1.039;//1.06;
 
         public static final double driveKp = 0.2;
         public static final double driveKd = 2.0;
@@ -105,7 +105,7 @@ public final class Constants {
         public static final double driveMaxJerk = 200.0;
 
         public static final double poseMoveTranslationkP = 2.5;
-        public static final double poseMoveTranslationMaxVel = 1.5;
+        public static final double poseMoveTranslationMaxVel = 3;
         public static final double poseMoveTranslationMaxAccel = 3;
 
         public static final double poseMoveRotationkP = 4;
@@ -184,8 +184,8 @@ public final class Constants {
         public static final double[] placeCubeHigh = new double[] {0.590, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.555, 0.276, 1.5};
         
-        public static final double[] intakeConeDownGround = new double[] {-0.02, 0.059, -1.1};
-        public static final double[] intakeConeDownExtendedGround = new double[] {-0.02, 0.70, -1.1};
+        public static final double[] intakeConeDownFrontGround = new double[] {-0.05, 0.059, -1.1};
+        public static final double[] intakeConeDownBackGround = new double[] {-0.02, 0.059, -1.1};
         public static final double[] intakeConeDownShelf = new double[] {0.81, 0.2, -0.28};
         public static final double[] placeConeDownHigh = new double[] {0.59, 0.71, 0.8};
         public static final double[] placeConeDownMid = new double[] {0.58, 0.22, 0.8};
@@ -264,15 +264,14 @@ public final class Constants {
         };
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
-            add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.08, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(2, new Pose3d(new Translation3d(15.51, 2.76, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
-            add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.52, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
-            add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.75, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
-            add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.41, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.75, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.45, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.76, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.76, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.45, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.76, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
             add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-
         }};
 
         public static final double fieldLength = 16.542;
@@ -312,7 +311,7 @@ public final class Constants {
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.3;
+        public static final double autoBalanceKp = 0.25;
         public static final double autoBalanceKi = 0.05;
         public static final double autoBalanceKd = 0.0;
 

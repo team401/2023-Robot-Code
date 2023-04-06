@@ -85,7 +85,7 @@ public class MovePivot extends CommandBase{
         pivot.setVolts(pivotOut);
         pivot.setSimPos(setpoint.position);
 
-        if (Math.abs(pivot.getPositionRad()-goalState.position) > Units.degreesToRadians(2)) {
+        if (Math.abs(pivot.getPositionRad()-goalState.position) > Units.degreesToRadians(4)) {
             finishedTimer.reset();
         }
     }

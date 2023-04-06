@@ -151,10 +151,13 @@ public class RobotContainer {
         new JoystickButton(leftStick, 5)
             .onTrue(new InstantCommand(wrist::toggleKill, wrist));
 
-        new JoystickButton(leftStick, 10)
+        new JoystickButton(leftStick, 8)
             .onTrue(new InstantCommand(pivot::toggleKill))
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
+
+        new JoystickButton(leftStick, 14)
+            .onTrue(new InstantCommand(drive::toggleKillFrontRight));
              
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
@@ -248,9 +251,9 @@ public class RobotContainer {
 
         if (DriverStation.isTeleop()) {
             new HomeTelescope(telescope).schedule();
-            if (!RobotState.getInstance().hasIntaked()) {
-                new HomeWrist(wrist).schedule();
-            }
+            // if (!RobotState.getInstance().hasIntaked()) {
+            new HomeWrist(wrist).schedule();
+            // }
         }
 
         pivot.setDesiredSetpointRad(new State(Math.PI / 2, 0));
@@ -310,10 +313,6 @@ public class RobotContainer {
             // SmartDashboard.putNumber("MoveInitTime", timer.get()*1000);
             
         }});
-    }
-
-    public Command getMoveToPoseCommand(boolean left) {
-        return new FollowTrajectory(drive, left);
     }
 
 }

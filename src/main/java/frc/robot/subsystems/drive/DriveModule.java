@@ -24,6 +24,8 @@ public class DriveModule {
     private final CANCoder rotationEncoder;
     private final double initialOffsetRadians;
 
+    private boolean killed = false;
+
     private static void setFramePeriods(TalonFX talon, boolean needMotorSensor) {
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 1000);
         if (!needMotorSensor) {
@@ -56,7 +58,7 @@ public class DriveModule {
         driveMotor.setNeutralMode(NeutralMode.Brake);
         rotationMotor.setNeutralMode(NeutralMode.Brake);
 
-        driveMotor.setInverted(true);
+        driveMotor.setInverted(driveInverted);
         rotationMotor.setInverted(true);
         
         driveMotor.configVoltageCompSaturation(12, 1000);
@@ -104,17 +106,20 @@ public class DriveModule {
     }
 
     public void setRotationVoltage(double volts) {
-        rotationMotor.set(ControlMode.PercentOutput, volts/12);
+        if (!killed)
+            rotationMotor.set(ControlMode.PercentOutput, volts/12);
     }
 
     public void setDriveVoltage(double volts) {
-        driveMotor.set(ControlMode.PercentOutput, volts/12);
+        if (!killed)
+            driveMotor.set(ControlMode.PercentOutput, volts/12);
     }
 
     public void setDriveVelocity(double velocityRadPerS, double ffVolts) {
         double velocityTicksPer100ms = velocityRadPerS * 2048.0 / 10.0 / 2.0 / Math.PI * DriveConstants.driveWheelGearReduction;
 
-        driveMotor.set(ControlMode.Velocity, velocityTicksPer100ms, DemandType.ArbitraryFeedForward, ffVolts / 12.0);
+        if (!killed)
+            driveMotor.set(ControlMode.Velocity, velocityTicksPer100ms, DemandType.ArbitraryFeedForward, ffVolts / 12.0);
     }
 
     public void setDrivePD(double p, double d) {
@@ -133,6 +138,20 @@ public class DriveModule {
     public void setBrake(boolean braked) {
         driveMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
         rotationMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    public void toggleKill() {
+        killed = !killed;
+        if (killed) {
+            driveMotor.set(ControlMode.PercentOutput, 0);
+            rotationMotor.set(ControlMode.PercentOutput, 0);
+            driveMotor.setNeutralMode(NeutralMode.Coast);
+            rotationMotor.setNeutralMode(NeutralMode.Coast);
+        }
+        else {
+            driveMotor.setNeutralMode(NeutralMode.Brake);
+            rotationMotor.setNeutralMode(NeutralMode.Brake);
+        }
     }
     
 }

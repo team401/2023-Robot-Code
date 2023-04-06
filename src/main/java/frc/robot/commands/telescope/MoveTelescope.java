@@ -73,7 +73,7 @@ public class MoveTelescope extends CommandBase {
 
         telescope.setSimPos(setpoint.position);
 
-        if (Math.abs(telescope.getPositionM()-goalM) > 0.01) {
+        if (Math.abs(telescope.getPositionM()-goalM) > 0.02) {
             finishedTimer.reset();
         }
     }
