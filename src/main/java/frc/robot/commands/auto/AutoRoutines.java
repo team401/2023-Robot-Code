@@ -100,10 +100,8 @@ public class AutoRoutines extends SequentialCommandGroup {
                     drive(pathGroup.get(2), false),
                     pickupCone().andThen(hold())
                 ),
-                new ParallelRaceGroup(
-                    drive(pathGroup.get(3), true),
-                    invert().andThen(stow()).andThen(hold())
-                )
+                stow(),
+                hold()
             );
         }
         if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
@@ -173,6 +171,10 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command preparePlaceCone() {
         return moveArmRetract(ArmPositions.placeConeDownHigh);
+    }
+
+    public Command waitForCube() {
+        return new WaitUntilCommand(() -> RobotState.getInstance().hasIntaked());
     }
 
     private Command pickupCone() {

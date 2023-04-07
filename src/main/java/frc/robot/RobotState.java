@@ -165,7 +165,6 @@ public class RobotState {
 
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
-
         // SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 

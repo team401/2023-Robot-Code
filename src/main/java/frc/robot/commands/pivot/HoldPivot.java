@@ -50,7 +50,7 @@ public class HoldPivot extends CommandBase {
         // SmartDashboard.putNumber("Hold Setpoint", setpoint.velocity);
 
         // Calculate output from feedforward & PID
-        double pivotOut = MathUtil.clamp(pivot.calculateControl(setpoint, telescope.getPositionM()), -2, 2);
+        double pivotOut = MathUtil.clamp(pivot.calculateControl(setpoint, telescope.getPositionM()), -4, 4);
 
         pivot.setVolts(pivotOut);
         pivot.setSimPos(goalState.position);
