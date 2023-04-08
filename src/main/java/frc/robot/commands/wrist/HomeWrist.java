@@ -33,7 +33,7 @@ public class HomeWrist extends CommandBase {
 
         otherTimerStarted = false;
 
-        wrist.setCurrentLimit(70, 80, 0.5);
+        // wrist.setCurrentLimit(70, 80, 0.5);
     }
 
     public void execute() {
@@ -60,7 +60,7 @@ public class HomeWrist extends CommandBase {
             wrist.homed = true;
         }
 
-        wrist.setCurrentLimit(50, 60, 0.5);
+        // wrist.setCurrentLimit(70, 80, 0.5);
     
         // wrist.updateDesiredSetpointRad(
         //     new TrapezoidProfile.State(

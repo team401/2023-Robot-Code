@@ -70,7 +70,7 @@ public class WristSubsystem extends SubsystemBase {
         motor.configNeutralDeadband(0.004);
         
         motor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(true, 50, 60, 0.5));
+            new StatorCurrentLimitConfiguration(true, 70, 80, 0.5));
 
         controller.setTolerance(0.05);
         controllerHold.setTolerance(0.05);
@@ -146,6 +146,16 @@ public class WristSubsystem extends SubsystemBase {
         //     feedforward.calculate(setpointRad.position, setpointRad.velocity);
 
         double ff = feedforward.calculate(setpointRad.position, setpointRad.velocity);
+
+        return fb + ff;
+        
+    }
+
+    public double calculateControl(TrapezoidProfile.State setpointRad, double angleRad, boolean holding, double pivotVel) {
+
+        double fb = holding ? controllerHold.calculate(angleRad, setpointRad.position) : controller.calculate(angleRad, setpointRad.position);
+
+        double ff = feedforward.calculate(setpointRad.position, setpointRad.velocity + pivotVel);
 
         return fb + ff;
         

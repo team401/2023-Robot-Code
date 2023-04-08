@@ -194,7 +194,7 @@ public final class Constants {
         public static final double[] intakeConeUpBackGround = new double[] {0.095, 0.05, -0.85};
         public static final double[] intakeConeUpShelf = new double[] {0.81, 0.2, -0.28};
         public static final double[] placeConeUpHigh = new double[] {0.69, 0.78, -0.379};
-        public static final double[] placeConeUpMid = new double[] {0.7, 0.25, -0.3};
+        public static final double[] placeConeUpMid = new double[] {0.7, 0.24, -0.3};
         
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
         
@@ -296,8 +296,8 @@ public final class Constants {
             3-2: 2 + balance
         */
         
-        public static final double kMaxVelocityMetersPerSecond = 2.5;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
+        public static final double kMaxVelocityMetersPerSecond = 2;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
 
         public static final double autoTranslationXKp = 13;
         public static final double autoTranslationXKi = 0;

@@ -158,7 +158,7 @@ public class RobotContainer {
 
         new JoystickButton(leftStick, 14)
             .onTrue(new InstantCommand(drive::toggleKillFrontRight));
-             
+
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
