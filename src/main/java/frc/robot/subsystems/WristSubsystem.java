@@ -116,6 +116,7 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void toggleKill() {
+        motor.set(ControlMode.PercentOutput, 0);
         dead = !dead;
     }
 

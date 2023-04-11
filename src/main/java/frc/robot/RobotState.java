@@ -1,9 +1,6 @@
 package frc.robot;
 
-import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
-import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -13,9 +10,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -23,22 +17,10 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.PivotConstants;
-import frc.robot.Constants.Position;
 import frc.robot.Constants.WristConstants;
-import frc.robot.commands.pivot.HoldPivot;
-import frc.robot.commands.pivot.MovePivot;
-import frc.robot.commands.telescope.MoveTelescope;
-import frc.robot.commands.wrist.MoveWrist;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
-import frc.robot.subsystems.WristSubsystem;
-import frc.robot.util.PositionHelper;
 
 public class RobotState {
 
@@ -52,9 +34,7 @@ public class RobotState {
     
     private SwerveDrivePoseEstimator poseEstimator;
 
-    /**Whether the arm is supposed to be in the front or the back*/
     private boolean atBack = false;
-    private boolean autoBackOverridden = false;
 
     private boolean atStow = true;
 
@@ -99,7 +79,7 @@ public class RobotState {
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d());
         field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
-        // SmartDashboard.putData(field);
+        SmartDashboard.putData(field);
         driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
     }
 
@@ -120,39 +100,23 @@ public class RobotState {
         driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
-    public Pose2d simPose = new Pose2d();
     public void setSimPose(Pose2d pose) {
-        simPose = pose;
-        // field.setRobotPose(simPose);
-    }
-    public void updateSimPose(ChassisSpeeds speeds) {
-        simPose = new Pose2d(
-            simPose.getX() + speeds.vxMetersPerSecond * 0.02,
-            simPose.getY() + speeds.vyMetersPerSecond * 0.02,
-            simPose.getRotation().plus(Rotation2d.fromRadians(speeds.omegaRadiansPerSecond).times(0.02)));
-        // field.setRobotPose(simPose);
+        // field.setRobotPose(pose);
     }
 
     public Pose2d getFieldToVehicle() {
         // SmartDashboard.putNumber("OdometryX", driveOdometry.getPoseMeters().getX());    
         // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
         // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
+
         field.setRobotPose(poseEstimator.getEstimatedPosition());
-        // field.setRobotPose(driveOdometry.getPoseMeters());
+        
         return poseEstimator.getEstimatedPosition();    
     }
 
     public Pose2d getOdometryFieldToVehicle() {
         return driveOdometry.getPoseMeters();
     }
-
-    // public boolean getBackOverride() {
-    //     return autoBackOverridden;
-    // }
-
-    // public void setBackOverride(boolean override) {
-    //     autoBackOverridden = override;
-    // }
 
     public void invertBack() {
         atBack = !atBack;
@@ -165,17 +129,17 @@ public class RobotState {
 
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void setStow(boolean stowed) {

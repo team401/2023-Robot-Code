@@ -25,15 +25,6 @@ public class MoveWrist extends CommandBase {
 
     private final boolean ignoreValidation;
 
-    public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad) {
-        this.wrist = wrist;
-        this.pivot = pivot;
-        this.goalRad = goalRad;
-        this.ignoreValidation = false;
-
-        addRequirements(this.wrist);
-    }
-
     public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad, boolean ignoreValidation) {
         this.wrist = wrist;
         this.pivot = pivot;
@@ -41,6 +32,10 @@ public class MoveWrist extends CommandBase {
         this.ignoreValidation = ignoreValidation;
 
         addRequirements(wrist);
+    }
+
+        public MoveWrist(WristSubsystem wrist, PivotSubsystem pivot, double goalRad) {
+        this(wrist, pivot, goalRad, false);
     }
 
     @Override

@@ -42,7 +42,7 @@ public class HomeWrist extends CommandBase {
         if (Math.abs(wrist.getAmps()) < 60) {
             timer.reset();
         }
-        if (timer.hasElapsed(0.4) && !otherTimerStarted) {
+        if (timer.hasElapsed(0.2) && !otherTimerStarted) {
             otherTimer.reset();
             otherTimer.start();
             otherTimerStarted = true;
@@ -51,7 +51,7 @@ public class HomeWrist extends CommandBase {
     }
 
     public boolean isFinished() {
-        return otherTimer.hasElapsed(0.4);
+        return otherTimer.hasElapsed(0.2);
     }
 
     public void end(boolean interrupted) {

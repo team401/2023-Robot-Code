@@ -12,7 +12,9 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -106,6 +108,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void toggleKill() {
+        rightMotor.set(ControlMode.PercentOutput, 0);
         dead = !dead;
     }
 
@@ -239,8 +242,13 @@ public class PivotSubsystem extends SubsystemBase {
 
 
 
+    private Timer autoTimer = new Timer();
+
     @Override
     public void periodic() {
+
+        SmartDashboard.putNumber("AutoTimer", autoTimer.get());
+
         // SmartDashboard.putNumber("Pivot Position", getPositionRad());
         // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
         // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
@@ -256,6 +264,15 @@ public class PivotSubsystem extends SubsystemBase {
         findVel();
 
         //if (DriverStation.isEnabled()) checkIfDead();
+    }
+
+    public void startAutoTimer() {
+        autoTimer.reset();
+        autoTimer.start();
+    }
+
+    public void stopAutoTimer() {
+        autoTimer.stop();
     }
 
     private void checkIfDead() {

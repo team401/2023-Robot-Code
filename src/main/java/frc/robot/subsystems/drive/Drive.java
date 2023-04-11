@@ -72,13 +72,14 @@ public class Drive extends SubsystemBase {
             modulePositions[i] = new SwerveModulePosition();
             goalModuleStates[i] = new SwerveModuleState();
 
-            rotationPIDs[i] = new PIDController(DriveConstants.rotationKp, 0, DriveConstants.rotationKd);
+            rotationPIDs[i] = new PIDController(DriveConstants.rotationKps[i], 0, DriveConstants.rotationKds[i]);
             rotationPIDs[i].enableContinuousInput(-Math.PI, Math.PI);
-            driveModules[i].setDrivePD(DriveConstants.driveKp, DriveConstants.driveKd);
+            driveModules[i].setDrivePD(DriveConstants.driveKps[i], DriveConstants.driveKds[i]);
 
             modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
             modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
         }
+        // driveModules[1].setDrivePD(DriveConstants.frontRightDriveKp, DriveConstants.frontRightDriveKp);
 
         setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
 
@@ -104,17 +105,18 @@ public class Drive extends SubsystemBase {
             // Set module speed
             double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
             double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
-            // SmartDashboard.putNumber("DesiredSpeed"+i, speedSetpointMPerS);
-            // SmartDashboard.putNumber("ActualSpeed"+i, driveModules[i].getDriveVelocityMPerS());
+            SmartDashboard.putNumber("DesiredSpeed"+i, speedSetpointMPerS);
+            SmartDashboard.putNumber("ActualSpeed"+i, driveModules[i].getDriveVelocityMPerS());
             // SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
-            
             driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
-
-            // SmartDashboard.putNumber("DRiveOutputVolts"+i, driveModules[i].getDriveVoltageApplied());
+            // SmartDashboard.putNumber("DriveVelError"+i, speedSetpointMPerS-driveModules[i].getDriveVelocityMPerS());
 
             // Set module rotation
             double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
             driveModules[i].setRotationVoltage(rotationVoltage);
+            SmartDashboard.putNumber("DesiredRot"+i, rotationSetpointRadians);
+            SmartDashboard.putNumber("ActualRot"+i, moduleRotation.getRadians());
+            // SmartDashboard.putNumber("DriveRotError"+i, MathUtil.angleModulus(rotationSetpointRadians-moduleRotation.getRadians()));
 
             // SmartDashboard.putNumber("DesiredDriveAngle"+i, rotationSetpointRadians);
         }

@@ -79,10 +79,11 @@ public final class Constants {
         public static final double backLeftAngleOffset = 1.681;//1.68-3.14;
         public static final double backRightAngleOffset = 1.039;//1.06;
 
-        public static final double driveKp = 0.2;
-        public static final double driveKd = 2.0;
-        public static final double rotationKp = 4.7;
-        public static final double rotationKd = 0.1;
+        public static final double[] driveKps = {0.55, 0.55, 0.55, 0.55};
+        public static final double[] driveKds = {2, 4, 4, 2};
+
+        public static final double[] rotationKps = {7, 7, 7, 7};
+        public static final double[] rotationKds = {0.0, 0.0, 0.0, 0.0};
 
         public static final double driveSnapKp = 1.5;
         public static final double driveSnapKi = 0;
@@ -179,10 +180,10 @@ public final class Constants {
 
     public static final class ArmPositions {
         public static final double[] intakeCubeShelf = new double[] {0.63, 0.55, 0.15};
-        public static final double[] intakeCubeGround = new double[] {-0.31, 0.09, 0.25};
-        public static final double[] intakeCubeExtendedGround = new double[] {-0.2, 0.65, 0.4};
+        public static final double[] intakeCubeGround = new double[] {-0.36, 0.09, 0.38};
         public static final double[] placeCubeHigh = new double[] {0.590, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.555, 0.276, 1.5};
+        public static final double[] placeCubeLow = new double[] {0, 0.1, 1.4};
         
         public static final double[] intakeConeDownFrontGround = new double[] {-0.05, 0.059, -1.1};
         public static final double[] intakeConeDownBackGround = new double[] {-0.02, 0.059, -1.1};
@@ -199,11 +200,9 @@ public final class Constants {
         public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
         
         public static final double wristConePlace = -0.88;
-        public static final double[] placeConeDownHighAuto = new double[] {0.585, 0.70, 0.8};
-        public static final double[] wristConePlaceHighAuto = new double[] {0.585, 0.70, -1.5};
-        
-        public static final double[] intakeCubeGroundAuto = new double[] {-0.31, 0.09, 0.25+0.31};
-        public static final double[] intakeConeUpFrontGroundAuto = new double[] {-0.42, 0.09, -0.2+0.42};
+
+        public static final double[] preFlingCube = new double[] {0.78, 0.1, 0.78};
+        public static final double[] postFlingCube = new double[] {Math.PI / 1.5, 0.1, Math.PI / 2};
     }
 
     public static enum GamePieceMode {
@@ -285,25 +284,15 @@ public final class Constants {
     }
 
     public static final class AutoConstants {
-
-        /*
-            0-0: nothing
-            1-1: 2.5
-            1-2: 2 + balance
-            2-1: 1
-            2-2: 1 + balance
-            3-1: 2.5
-            3-2: 2 + balance
-        */
         
-        public static final double kMaxVelocityMetersPerSecond = 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+        public static final double kMaxVelocityMetersPerSecond = 3;
+        public static final double kMaxAccelerationMetersPerSecondSquared = 2.5;
 
-        public static final double autoTranslationXKp = 13;
+        public static final double autoTranslationXKp = 11;
         public static final double autoTranslationXKi = 0;
         public static final double autoTranslationXKd = 0;
 
-        public static final double autoTranslationYKp = 13;
+        public static final double autoTranslationYKp = 8;
         public static final double autoTranslationYKi = 0;
         public static final double autoTranslationYKd = 0;
 

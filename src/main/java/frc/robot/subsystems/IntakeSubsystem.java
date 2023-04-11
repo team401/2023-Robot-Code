@@ -66,6 +66,30 @@ public class IntakeSubsystem extends SubsystemBase {
         }
     }
 
+    public void setIntake(boolean intake) {
+        intakeMode = intake ? IntakeMode.Intake : IntakeMode.None;
+        exceededCurrentDraw = false;
+        RobotState.getInstance().setIntaked(false);
+        RobotState.getInstance().setIntaking(intakeMode == IntakeMode.Intake);
+        intakeTimer.reset();
+        intakeTimer.start();
+
+        if (intakeMode == IntakeMode.Intake) {
+            if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+                leftMotor.set(-1);
+                rightMotor.set(-1);
+            }
+            else  {
+                leftMotor.set(1);
+                rightMotor.set(1);
+            }
+        }
+        else {
+            leftMotor.stopMotor();
+            rightMotor.stopMotor();
+        }
+    }
+
     public void place() {
         intakeMode = IntakeMode.Place;
         RobotState.getInstance().setIntaked(false);

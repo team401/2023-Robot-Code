@@ -13,6 +13,8 @@ public class Balance extends CommandBase {
 
     private final Drive drive;
 
+    private final int forwards;
+
     private final PIDController rollController = new PIDController(AutoConstants.autoBalanceKp, AutoConstants.autoBalanceKi, AutoConstants.autoBalanceKd);
 
     private final PIDController yawController = new PIDController(DriveConstants.driveSnapKp, DriveConstants.driveSnapKi, DriveConstants.driveSnapKd);
@@ -21,8 +23,9 @@ public class Balance extends CommandBase {
     private final Timer errorChecker = new Timer();
     private boolean onStationTimerStarted = false;
 
-    public Balance(Drive drive) {
+    public Balance(Drive drive, boolean forwards) {
         this.drive = drive;
+        this.forwards = forwards ? 1 : -1;
 
         yawController.enableContinuousInput(-Math.PI, Math.PI);
 
@@ -68,14 +71,14 @@ public class Balance extends CommandBase {
             omegaRadPerS = 0;
         }
 
-        ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, 0, omegaRadPerS, drive.getRotation());
+        ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwards * xMPerS, 0, omegaRadPerS, drive.getRotation());
         drive.setGoalChassisSpeeds(targetSpeeds);
         
     }
 
     @Override
     public boolean isFinished() {
-        return errorChecker.hasElapsed(3);
+        return false;//errorChecker.hasElapsed(3)
     }
 
     @Override
