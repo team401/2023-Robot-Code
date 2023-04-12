@@ -47,7 +47,7 @@ public class FollowTrajectory extends CommandBase {
         thetaController = 
             new ProfiledPIDController(
                 AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd,
-                new TrapezoidProfile.Constraints(Math.PI / 4, Math.PI / 4)
+                new TrapezoidProfile.Constraints(Math.PI, Math.PI)
             );
         
         thetaController.enableContinuousInput(-Math.PI, Math.PI);

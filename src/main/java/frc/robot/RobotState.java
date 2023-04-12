@@ -101,7 +101,7 @@ public class RobotState {
     }
 
     public void setSimPose(Pose2d pose) {
-        // field.setRobotPose(pose);
+        field.setRobotPose(pose);
     }
 
     public Pose2d getFieldToVehicle() {
@@ -109,7 +109,7 @@ public class RobotState {
         // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
         // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
 
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
+        // field.setRobotPose(poseEstimator.getEstimatedPosition());
         
         return poseEstimator.getEstimatedPosition();    
     }
@@ -129,17 +129,17 @@ public class RobotState {
 
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void setStow(boolean stowed) {

@@ -4,6 +4,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -53,6 +54,12 @@ public class Align extends CommandBase {
     public void execute() {
 
         ChassisSpeeds speeds = holonomicDrive.calculate(RobotState.getInstance().getFieldToVehicle(), targetPose.getPose2d());
+
+        Transform2d distance = RobotState.getInstance().getFieldToVehicle().minus(targetPose.getPose2d());
+        if (Math.abs(distance.getX()) < 0.01) speeds.vxMetersPerSecond = 0;
+        if (Math.abs(distance.getY()) < 0.01) speeds.vyMetersPerSecond = 0;
+        if (Math.abs(distance.getRotation().getRadians()) < 0.07) speeds.omegaRadiansPerSecond = 0;
+        
         drive.setGoalChassisSpeeds(speeds);
 
     }

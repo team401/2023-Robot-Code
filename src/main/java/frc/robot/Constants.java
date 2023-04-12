@@ -285,8 +285,11 @@ public final class Constants {
 
     public static final class AutoConstants {
         
-        public static final double kMaxVelocityMetersPerSecond = 3;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 3;
+        public static final double maxVel = 3;
+        public static final double maxAccel = 3;
+
+        public static final double maxVelFast = 3.5;
+        public static final double maxAccelFast = 4.25;
 
         public static final double autoTranslationXKp = 11;
         public static final double autoTranslationXKi = 0;

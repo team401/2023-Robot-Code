@@ -52,9 +52,9 @@ public class DriveWithJoysticks extends CommandBase {
 
         drive.setGoalChassisSpeeds(targetSpeeds);
 
-        SmartDashboard.putNumber("VelXError", xMPerS-drive.getVelocity().vxMetersPerSecond);
-        SmartDashboard.putNumber("VelYError", xMPerS-drive.getVelocity().vxMetersPerSecond);
-        SmartDashboard.putNumber("VelOmegaError", omegaRadPerS-drive.getVelocity().omegaRadiansPerSecond);
+        // SmartDashboard.putNumber("VelXError", xMPerS-drive.getVelocity().vxMetersPerSecond);
+        // SmartDashboard.putNumber("VelYError", xMPerS-drive.getVelocity().vxMetersPerSecond);
+        // SmartDashboard.putNumber("VelOmegaError", omegaRadPerS-drive.getVelocity().omegaRadiansPerSecond);
 
     }
 
