@@ -1,7 +1,6 @@
 package frc.robot.subsystems.vision;
 
 import java.util.Optional;
-import java.util.function.DoubleSupplier;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -18,7 +17,6 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.VisionConstants;
 
@@ -52,7 +50,7 @@ public class Camera {
         EstimatedRobotPose estimation = estimatedPose.get();
         if (estimation.timestampSeconds == timestamp) return;
         if (estimation.targetsUsed.size() == 1 && 
-            (estimation.targetsUsed.get(0).getPoseAmbiguity() > VisionConstants.singleTagAmbiguityCutoff || estimation.targetsUsed.get(0).getPoseAmbiguity() != -1))
+            (estimation.targetsUsed.get(0).getPoseAmbiguity() > VisionConstants.singleTagAmbiguityCutoff || estimation.targetsUsed.get(0).getPoseAmbiguity() == -1))
             return;
 
         double distance = 0;

@@ -27,6 +27,7 @@ import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
 import frc.robot.commands.auto.FollowTrajectory;
@@ -116,9 +117,9 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         new JoystickButton(leftStick, 3)
-            .whileTrue(new FollowTrajectory(drive, true));
+            .whileTrue(new Align(drive, true));
         new JoystickButton(leftStick, 4)
-            .whileTrue(new FollowTrajectory(drive, false));
+            .whileTrue(new Align(drive, false));
 
         // Overrides
         new JoystickButton(rightStick, 12)
@@ -204,8 +205,8 @@ public class RobotContainer {
 
     private void configureAutos() {
         // autoChooser.addOption("0-0", "0-0");
-        // autoChooser.addOption("B-1-1", "B-1-1");
-        // autoChooser.addOption("B-1-2", "B-1-2");
+        autoChooser.addOption("B-1-1", "B-1-1");
+        autoChooser.addOption("B-1-2", "B-1-2");
         // autoChooser.addOption("B-3-1", "B-3-1");
         // autoChooser.addOption("B-3-2", "B-3-2");
         // autoChooser.addOption("R-1-1", "R-1-1");

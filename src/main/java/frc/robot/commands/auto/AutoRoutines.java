@@ -127,7 +127,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command resetOdometry(List<PathPlannerTrajectory> pathGroup) {
         return new InstantCommand( () -> {
             PathPlannerState initialState = pathGroup.get(0).getInitialState();
-            drive.setHeading(initialState.holonomicRotation.getRadians());
+            drive.setHeading(0);//initialState.holonomicRotation.getRadians()
             drive.setFieldToVehicle(new Pose2d(initialState.poseMeters.getTranslation(), initialState.holonomicRotation));
         });
     }
@@ -278,7 +278,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command balance(boolean forwards) {
-        return new InstantCommand(drive::resetHeading).andThen(new Balance(drive, forwards));
+        return new Balance(drive, forwards);//new InstantCommand(drive::resetHeading).andThen(
     }
 
 }
