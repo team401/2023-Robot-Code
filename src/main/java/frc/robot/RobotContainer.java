@@ -26,6 +26,7 @@ import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
+import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
@@ -70,8 +71,6 @@ public class RobotContainer {
     private DigitalInput brakeSwitch = new DigitalInput(DIOPorts.switch1);
     private DigitalInput ledsSwitch = new DigitalInput(DIOPorts.switch2);
 
-    // private double volts = 0;
-
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
 
@@ -93,12 +92,32 @@ public class RobotContainer {
 
         pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
         telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
+        // wrist.setDefaultCommand(new CharacterizeMechanism(wrist, masher.getGamepad(), (v) -> wrist.overrideVolts(v), 0.3));
+        // telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamepad(), (p) -> telescope.setP(p), 5));
         wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
     private void configureTestBindings() {
-    }
+
+        masher.high().onTrue(new MoveWrist(wrist, pivot, 1.56));
+        masher.ground().onTrue(new MoveWrist(wrist, pivot, 0));
+
+        new JoystickButton(leftStick, 7)
+        .onTrue(new InstantCommand(pivot::toggleKill, pivot));
+
+        new JoystickButton(leftStick, 6)
+            .onTrue(new InstantCommand(telescope::toggleKill, telescope));
+
+        new JoystickButton(leftStick, 5)
+            .onTrue(new InstantCommand(wrist::toggleKill, wrist));
+
+        new JoystickButton(leftStick, 8)
+            .onTrue(new InstantCommand(pivot::toggleKill))
+            .onTrue(new InstantCommand(telescope::toggleKill))
+            .onTrue(new InstantCommand(wrist::toggleKill));
+
+    }   
 
     private void configureCompBindings() {
         

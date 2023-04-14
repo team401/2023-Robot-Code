@@ -31,7 +31,7 @@ public class IntakeSubsystem extends SubsystemBase {
         leftMotor.setSmartCurrentLimit(40);
         rightMotor.setSmartCurrentLimit(40);
 
-        leftMotor.setInverted(false);
+        leftMotor.setInverted(true);
         rightMotor.setInverted(true);
         
         leftMotor.burnFlash();

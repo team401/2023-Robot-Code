@@ -8,7 +8,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -131,7 +130,6 @@ public class AutoRoutines extends SequentialCommandGroup {
                 resetOdometry(pathGroup),
                 fakeHome(),
                 spitCone(),
-                // tmp(),
                 new ParallelRaceGroup(
                     drive(pathGroup.get(0)),
                     intakeCube()
@@ -342,14 +340,6 @@ public class AutoRoutines extends SequentialCommandGroup {
                 )
             )
         );
-    }
-
-    private Command tmp() {
-        return new ParallelCommandGroup(
-            new MovePivot(pivot, ArmPositions.stow[0], false).andThen(new HoldPivot(pivot, telescope)),
-            new MoveTelescope(telescope, pivot, ArmPositions.stow[1], false).andThen(new HoldTelescope(telescope, pivot)),
-            new MoveWrist(wrist, pivot, ArmPositions.stow[2], false).andThen(new HoldWrist(wrist, pivot))
-        ).withTimeout(1);
     }
 
     private Command balance(boolean forwards) {

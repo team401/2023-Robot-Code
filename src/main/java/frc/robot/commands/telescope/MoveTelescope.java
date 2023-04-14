@@ -3,9 +3,8 @@ package frc.robot.commands.telescope;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotState;
-import frc.robot.Constants.ArmPositions;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 
@@ -67,6 +66,7 @@ public class MoveTelescope extends CommandBase {
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
+        // SmartDashboard.putNumber("Telescope Position", telescope.getPositionM());
         // SmartDashboard.putNumber("Telescope Setpoint", setpoint.position);
 
         telescope.setVolts(output);

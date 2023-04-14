@@ -106,8 +106,8 @@ public final class Constants {
         public static final double driveMaxJerk = 200.0;
 
         public static final double poseMoveTranslationkP = 1;
-        public static final double poseMoveTranslationMaxVel = 1.5;
-        public static final double poseMoveTranslationMaxAccel = 1.5;
+        public static final double poseMoveTranslationMaxVel = 3;
+        public static final double poseMoveTranslationMaxAccel = 3;
 
         public static final double poseMoveRotationkP = 0.05;
         public static final double poseMoveRotationMaxVel = Math.PI;
@@ -149,10 +149,10 @@ public final class Constants {
         public static final double conversionM = 0.00865;
 
         public static final double kP = 100;
-        public static final double kV = 4.38;
+        public static final double kV = 4.47;
         public static final double kA = 0.09; // estimate
-        public static final double kG = 0.31; 
-        public static final double kS = 0.42;
+        public static final double kG = 0.32; 
+        public static final double kS = 0.25;
     }
 
     public static final class WristConstants {
@@ -166,21 +166,17 @@ public final class Constants {
 
         public static final double kP = 14;
         public static final double kI = 3;
-        public static final double kPHold = 8;
+        public static final double kPHold = 12;
         public static final double kIHold = 3;
-        public static final double kV = 0.273;
+        public static final double kV = 0.275;
         public static final double kA = 0.01; // estimate
-        public static final double kG = 0.34;
-        public static final double kS = 0.36;
-        public static final double kVCone = 0.662;
-        public static final double kACone = 0.01;
-        public static final double kGCone = 0.55;
-        public static final double kSCone = 0.45;
+        public static final double kG = 0.35;
+        public static final double kS = 0.35;
     }
 
     public static final class ArmPositions {
         public static final double[] intakeCubeShelf = new double[] {0.63, 0.55, 0.15};
-        public static final double[] intakeCubeGround = new double[] {-0.36, 0.09, 0.38};
+        public static final double[] intakeCubeGround = new double[] {-0.36, 0.09, 0.5};
         public static final double[] placeCubeHigh = new double[] {0.590, 0.781, 1.5};
         public static final double[] placeCubeMid = new double[] {0.555, 0.276, 1.5};
         public static final double[] placeCubeLow = new double[] {0, 0.1, 1.4};

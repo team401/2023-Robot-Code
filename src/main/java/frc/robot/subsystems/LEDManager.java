@@ -124,7 +124,8 @@ public class LEDManager extends SubsystemBase {
         }
         
         if (LEDConstants.dynamicRainbow) {
-            rainbowFirstPixelHue = (rainbowFirstPixelHue+LEDConstants.dynamicRainbowSpeed)%180;
+            int speed = DriverStation.isFMSAttached() ? LEDConstants.dynamicRainbowSpeed : LEDConstants.dynamicRainbowSpeed*3;
+            rainbowFirstPixelHue = (rainbowFirstPixelHue+speed)%180;
         }
 
     }

@@ -41,8 +41,8 @@ public class TelescopeSubsystem extends SubsystemBase{
         TelescopeConstants.kV);
     private final TrapezoidProfile.Constraints constraints = 
         new TrapezoidProfile.Constraints(3, 3);
-        private final PIDController controller = 
-            new PIDController(TelescopeConstants.kP, 0, 0);
+    private final PIDController controller = 
+        new PIDController(TelescopeConstants.kP, 0, 0);
         
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
@@ -191,6 +191,11 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     public void resetOffset() {
         motor.setSelectedSensorPosition(0);
+    }
+
+    public void setP(double p) {
+        controller.setP(p);
+        controller.reset();
     }
 
     @Override
