@@ -175,30 +175,30 @@ public final class Constants {
     }
 
     public static final class ArmPositions {
-        public static final double[] intakeCubeShelf = new double[] {0.63, 0.55, 0.15};
-        public static final double[] intakeCubeGround = new double[] {-0.36, 0.09, 0.5};
-        public static final double[] placeCubeHigh = new double[] {0.590, 0.781, 1.5};
-        public static final double[] placeCubeMid = new double[] {0.555, 0.276, 1.5};
-        public static final double[] placeCubeLow = new double[] {0, 0.1, 1.4};
+        public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15};
+        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.5};
+        public static final double[] placeCubeHigh = {0.590, 0.781, 1.5};
+        public static final double[] placeCubeMid = {0.555, 0.276, 1.5};
+        public static final double[] placeCubeLow = {0, 0.1, 1.4};
         
-        public static final double[] intakeConeDownFrontGround = new double[] {-0.05, 0.059, -1.1};
-        public static final double[] intakeConeDownBackGround = new double[] {-0.02, 0.059, -1.1};
-        public static final double[] intakeConeDownShelf = new double[] {0.81, 0.2, -0.28};
-        public static final double[] placeConeDownHigh = new double[] {0.59, 0.71, 0.8};
-        public static final double[] placeConeDownMid = new double[] {0.58, 0.22, 0.8};
+        public static final double[] intakeConeDownFrontGround = {-0.05, 0.059, -1.1};
+        public static final double[] intakeConeDownBackGround = {-0.02, 0.059, -1.1};
+        public static final double[] intakeConeDownShelf = {0.81, 0.2, -0.28};
+        public static final double[] placeConeDownHigh = {0.59, 0.71, 0.8};
+        public static final double[] placeConeDownMid = {0.58, 0.22, 0.8};
         
-        public static final double[] intakeConeUpFrontGround = new double[] {0.095, 0.05, -1.15};
-        public static final double[] intakeConeUpBackGround = new double[] {0.095, 0.05, -0.85};
-        public static final double[] intakeConeUpShelf = new double[] {0.81, 0.2, -0.28};
-        public static final double[] placeConeUpHigh = new double[] {0.69, 0.78, -0.379};
-        public static final double[] placeConeUpMid = new double[] {0.7, 0.37, -0.6};
+        public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15};
+        public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85};
+        public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.28};
+        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379};
+        public static final double[] placeConeUpMid = {0.7, 0.37, -0.6};
         
-        public static final double[] stow = new double[] {Math.PI / 2, 0.1, Math.PI / 2};
+        public static final double[] stow = {Math.PI / 2, 0.1, Math.PI / 2};
         
         public static final double wristConePlace = -0.88;
 
-        public static final double[] preFlingCube = new double[] {0.78, 0.1, 0.78};
-        public static final double[] postFlingCube = new double[] {Math.PI / 1.5, 0.1, Math.PI / 2};
+        public static final double[] preFlingCube = {0.78, 0.1, 0.78};
+        public static final double[] postFlingCube = {Math.PI / 1.5, 0.1, Math.PI / 2};
     }
 
     public static enum GamePieceMode {
@@ -264,9 +264,9 @@ public final class Constants {
             add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.45, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.76, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.76, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.41, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.76, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.07, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.43, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.78, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.09, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
         }};
 
         public static final double fieldLength = 16.542;
@@ -286,6 +286,9 @@ public final class Constants {
 
         public static final double maxVelFast = 4;
         public static final double maxAccelFast = 4.5;
+
+        public static final double maxVelSlow = 1.5;
+        public static final double maxAccelSlow = 1.5;
 
         public static final double autoTranslationXKp = 11;
         public static final double autoTranslationXKi = 0;
