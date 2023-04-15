@@ -107,11 +107,12 @@ public class Drive extends SubsystemBase {
             double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
             // SmartDashboard.putNumber("DesiredSpeed"+i, speedSetpointMPerS);
             // SmartDashboard.putNumber("ActualSpeed"+i, driveModules[i].getDriveVelocityMPerS());
+            // SmartDashboard.putNumber("ErrorSpeed"+i, Math.abs(driveModules[i].getDriveVelocityMPerS()-speedSetpointMPerS));
             // SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
             driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
-            // SmartDashboard.putNumber("DriveVelError"+i, speedSetpointMPerS-driveModules[i].getDriveVelocityMPerS());
 
             // Set module rotation
+            // rotationSetpointRadians = 0;
             double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
             driveModules[i].setRotationVoltage(rotationVoltage);
             // SmartDashboard.putNumber("DesiredRot"+i, rotationSetpointRadians);
@@ -131,7 +132,7 @@ public class Drive extends SubsystemBase {
         }
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
-        // SmartDashboard.putNumber("DriveVelocity", getVelocity());
+        SmartDashboard.putNumber("DriveVelocity", getChassisSpeeds().vxMetersPerSecond);
 
         // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 
@@ -167,11 +168,6 @@ public class Drive extends SubsystemBase {
         }
         setGoalModuleStates(goalModuleStates);
     }
-
-    public void toggleKillFrontRight() {
-        driveModules[1].toggleKill();
-    }
-
 
     /**
      * @return the rotation of the robot in radians from the gyro
@@ -228,7 +224,7 @@ public class Drive extends SubsystemBase {
         return states;
     }
 
-    public ChassisSpeeds getVelocity() {
+    public ChassisSpeeds getChassisSpeeds() {
         return DriveConstants.kinematics.toChassisSpeeds(getModuleStates());
     }
 

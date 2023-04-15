@@ -14,10 +14,10 @@ Use X/B buttons to change value by 0.1
 Use right bumper to run value
 
 To help characterize the telescope, you could use:
-telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamepad(), (v) -> telescope.overrideVolts(v), 0.3));
+telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamepad(), (v) -> telescope.overrideVolts(v), 0));
 
 If you wanted to tune the proportional of the telescope controller:
-telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamepad(), (p) -> telescope.setP(p), 5));
+telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamepad(), (p) -> telescope.setP(p), 0));
 */
 
 public class CharacterizeMechanism extends CommandBase {

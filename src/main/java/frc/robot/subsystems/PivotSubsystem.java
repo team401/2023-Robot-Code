@@ -12,7 +12,6 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -31,11 +30,9 @@ public class PivotSubsystem extends SubsystemBase {
     private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
     private TalonFX leftMotor = new TalonFX(CANDevices.leftPivotMotorID, CANDevices.canivoreName);
 
-    
     private double lastEncoderPos;
     private double velocityRadS;
     
-    // For safety; detect when encoder stops sending new data
     private boolean dead = false;
 
     public boolean atGoal = false;
@@ -131,12 +128,6 @@ public class PivotSubsystem extends SubsystemBase {
      * @return
      */
     public double calculateControl(TrapezoidProfile.State setpointRad, double telescopePosM) {
-        // SmartDashboard.putNumber(
-        //     "Pivot PID", 
-        //     controller.calculate(getPositionRad(), setpointRad.position));
-        // SmartDashboard.putNumber(
-        //     "Pivot Feedforward",
-        //     feedforward.calculate(setpointRad.position, setpointRad.velocity));
 
         return controller.calculate(getPositionRad(), setpointRad.position)
             + feedforward.calculate(setpointRad.position, setpointRad.velocity)
@@ -246,10 +237,10 @@ public class PivotSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-//.95, .05
+
         SmartDashboard.putNumber("AutoTimer", autoTimer.get());
 
-        SmartDashboard.putNumber("Pivot Position", getPositionRad());
+        // SmartDashboard.putNumber("Pivot Position", getPositionRad());
         // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
         // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
         // SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
@@ -273,23 +264,6 @@ public class PivotSubsystem extends SubsystemBase {
 
     public void stopAutoTimer() {
         autoTimer.stop();
-    }
-
-    private void checkIfDead() {
-        if (!encoder.isConnected()) {
-            die();
-        }
-
-        // if (lastEncoderPos == encoder.getAbsolutePosition()) {
-        //     cycleCount++;
-        //     if (cycleCount > 25) {
-        //         die();
-        //         return;
-        //     }
-        // } else {
-        //     cycleCount = 0;
-        // }
-        // lastEncoderPos = encoder.getAbsolutePosition();
     }
 
     private boolean withinSoftLimits(double input) {

@@ -12,8 +12,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotState;
@@ -25,8 +23,6 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     public boolean homed = false;
 
-    // For safety; detect when encoder stops sending new data
-    private double lastEncoderPos;
     private boolean dead = false;
 
     public boolean atGoal = false;
@@ -149,13 +145,6 @@ public class TelescopeSubsystem extends SubsystemBase{
         simPos = pos;
     }
 
-    /**
-     * @return a new InstantCommand that stops the motor and requires this subsystem
-     */
-    public Command killCommand() {
-        return new InstantCommand(this::die, this);
-    }
-
     public void setVolts(double input) {
         if (!dead)
             motor.set(ControlMode.PercentOutput, input / 12);
@@ -169,24 +158,8 @@ public class TelescopeSubsystem extends SubsystemBase{
         motor.set(ControlMode.PercentOutput, 0);
     }
 
-    /**
-     * 'Kills' the subsystem. The motor will be stopped and no loger respond to input
-     */
-    public void die() {
-        setVolts(0);
-        dead = true;
-    }
-
     public void setBrakeMode(boolean braked) {
         motor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
-    }
-
-    /**
-     * 'Revives' the subsytem. If it is dead, the motor will start responding.<p>
-     * DO NOT have regular code call this method. Only a human button should do this.
-     */
-    public void revive() {
-        dead = false;
     }
 
     public void resetOffset() {

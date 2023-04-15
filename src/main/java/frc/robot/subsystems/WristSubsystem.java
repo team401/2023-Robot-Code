@@ -11,14 +11,10 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
-import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.WristConstants;
 
 public class WristSubsystem extends SubsystemBase {
@@ -26,12 +22,8 @@ public class WristSubsystem extends SubsystemBase {
 
     public boolean homed = false;
 
-    private double offset = 0.0;
-
     public boolean atGoal = false;
 
-    // For safety; detect when encoder stops sending new data
-    private double lastEncoderPos;
     private boolean dead = false;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
@@ -131,15 +123,6 @@ public class WristSubsystem extends SubsystemBase {
     public double calculateControl(TrapezoidProfile.State setpointRad, double angleRad, boolean holding) {
 
         double fb = holding ? controllerHold.calculate(angleRad, setpointRad.position) : controller.calculate(angleRad, setpointRad.position);
-        // if (cone && holding)
-        //     fb = controllerConeHold.calculate(angleRad, setpointRad.position);
-        // else if (cone)
-        //     fb = controllerCone.calculate(angleRad, setpointRad.position);
-        
-        // double ff = cone ? 
-        //     feedforwardCone.calculate(setpointRad.position, setpointRad.velocity) : 
-        //     feedforward.calculate(setpointRad.position, setpointRad.velocity);
-
         double ff = feedforward.calculate(setpointRad.position, setpointRad.velocity);
 
         return fb + ff;
@@ -149,7 +132,6 @@ public class WristSubsystem extends SubsystemBase {
     public double calculateControl(TrapezoidProfile.State setpointRad, double angleRad, boolean holding, double pivotVel) {
 
         double fb = holding ? controllerHold.calculate(angleRad, setpointRad.position) : controller.calculate(angleRad, setpointRad.position);
-
         double ff = feedforward.calculate(setpointRad.position, setpointRad.velocity + pivotVel);
 
         return fb + ff;
@@ -180,8 +162,6 @@ public class WristSubsystem extends SubsystemBase {
      * For homing. Resets the encoder offset to the position of 141 degrees,
      * the position the wrist should be at when it goes all the way to the arm.
      */
-
-     //2.79
     public void resetOffset() {
         motor.setSelectedSensorPosition(2.81 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
     }
@@ -192,9 +172,6 @@ public class WristSubsystem extends SubsystemBase {
 
     public void setVolts(double input) {
         if (!dead) {
-            // if (getPositionRad() > WristConstants.positiveLimitRad && input > 0 && homed) return;
-            // if (getPositionRad() < WristConstants.negativeLimitRad && input < 0 && homed) return;
-
             motor.set(ControlMode.PercentOutput, input / 12);
             return;
         }
@@ -210,29 +187,6 @@ public class WristSubsystem extends SubsystemBase {
         motor.set(ControlMode.PercentOutput, 0);
     }
 
-    /**
-     * 'Kills' the subsystem. The motor will be stopped and no loger respond to input
-     */
-    public void die() {
-        setVolts(0);
-        dead = true;
-    }
-
-    /**
-     * 'Revives' the subsytem. If it is dead, the motor will start responding.<p>
-     * DO NOT have regular code call this method. Only a human button should do this.
-     */
-    public void revive() {
-        dead = false;
-    }
-
-    /**
-     * @return a new InstantCommand that stops the motor and requires this subsystem
-     */
-    public Command killCommand() {
-        return new InstantCommand(this::die, this);
-    }
-
     public void periodic() {
 
         // SmartDashboard.putNumber("Wrist Position", getPositionRad());
@@ -246,19 +200,5 @@ public class WristSubsystem extends SubsystemBase {
 
         RobotState.getInstance().putWristDisplay(getPositionRad());
 
-        // checkIfDead();
-    }
-
-    private void checkIfDead() {
-        // if (lastEncoderPos == wrist.getSelectedSensorPosition()) {
-        //     cycleCounter++;
-        //     if (cycleCounter > 25) {
-        //         die();
-        //         return;
-        //     }
-        // } else {
-        //     cycleCounter = 0;
-        // }
-        lastEncoderPos = motor.getSelectedSensorPosition();
     }
 }

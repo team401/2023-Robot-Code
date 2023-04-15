@@ -30,8 +30,6 @@ import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
-import frc.robot.commands.auto.Balance;
-import frc.robot.commands.auto.FollowTrajectory;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -92,30 +90,11 @@ public class RobotContainer {
 
         pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
         telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        // wrist.setDefaultCommand(new CharacterizeMechanism(wrist, masher.getGamepad(), (v) -> wrist.overrideVolts(v), 0.3));
-        // telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamepad(), (p) -> telescope.setP(p), 5));
         wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
     private void configureTestBindings() {
-
-        masher.high().onTrue(new MoveWrist(wrist, pivot, 1.56));
-        masher.ground().onTrue(new MoveWrist(wrist, pivot, 0));
-
-        new JoystickButton(leftStick, 7)
-        .onTrue(new InstantCommand(pivot::toggleKill, pivot));
-
-        new JoystickButton(leftStick, 6)
-            .onTrue(new InstantCommand(telescope::toggleKill, telescope));
-
-        new JoystickButton(leftStick, 5)
-            .onTrue(new InstantCommand(wrist::toggleKill, wrist));
-
-        new JoystickButton(leftStick, 8)
-            .onTrue(new InstantCommand(pivot::toggleKill))
-            .onTrue(new InstantCommand(telescope::toggleKill))
-            .onTrue(new InstantCommand(wrist::toggleKill));
 
     }   
 
@@ -173,9 +152,6 @@ public class RobotContainer {
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
 
-        new JoystickButton(leftStick, 14)
-            .onTrue(new InstantCommand(drive::toggleKillFrontRight));
-
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
@@ -231,7 +207,8 @@ public class RobotContainer {
         autoChooser.addOption("B-1-3", "B-1-3");
 
         autoChooser.addOption("B-2-1", "B-2-1");
-
+        
+        autoChooser.addOption("R-1-2", "R-1-2");
         // autoChooser.addOption("B-3-1", "B-3-1");
         // autoChooser.addOption("B-3-2", "B-3-2");
         // autoChooser.addOption("R-1-1", "R-1-1");
@@ -278,9 +255,9 @@ public class RobotContainer {
             }
         }
 
-        pivot.setDesiredSetpointRad(new State(Math.PI / 2, 0));
-        wrist.updateDesiredSetpointRad(new State(Math.PI / 2, 0));
-        telescope.setDesiredSetpoint(new State(0.1, 0));
+        pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));
+        telescope.setDesiredSetpoint(new State(ArmPositions.stow[1], 0));
+        wrist.updateDesiredSetpointRad(new State(ArmPositions.stow[2], 0));
     }
 
     private Command getMoveArmCommand(Position position) {
@@ -302,7 +279,7 @@ public class RobotContainer {
             timer.reset();
             timer.start();
 
-            if (telescope.getPositionM() > 0.15) {
+            if (telescope.getPositionM() > 0.15 || positions[1] > 0.15) {
                 // move telescope to 0.05, then move pivot and wrist, then move telescope to goal
                 new SequentialCommandGroup(
                     new ParallelRaceGroup(

@@ -1,7 +1,5 @@
 package frc.robot.subsystems.vision;
 
-import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;

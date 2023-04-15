@@ -4,7 +4,6 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
@@ -20,17 +19,8 @@ public class LEDManager extends SubsystemBase {
     // Rainbow
     private int rainbowFirstPixelHue = 0;
 
-    // Pre-Match Climb Pattern
-    private final boolean[] armClimbLedStates;
-    private final boolean[] baseClimbLedStates;
-    private int armSpawnTime = 0;
-    private int baseSpawnTime = 0;
-    private int updateTime = 0;
-
     // Other
-    private Color allianceColor = Color.kWhite;
     private final Timer flashTimer = new Timer();
-
     private boolean off = false;
 
     public LEDManager() {
@@ -41,9 +31,6 @@ public class LEDManager extends SubsystemBase {
         led.setData(ledBuffer);
         led.start();
 
-        armClimbLedStates = new boolean[LEDConstants.armLedCount];
-        baseClimbLedStates = new boolean[LEDConstants.baseLedCount/2];
-
         flashTimer.reset();
         flashTimer.start();
 
@@ -52,26 +39,19 @@ public class LEDManager extends SubsystemBase {
     @Override
     public void periodic() {
 
-        allianceColor = DriverStation.getAlliance() == DriverStation.Alliance.Red ? new Color(127, 0, 0) : new Color(0, 0, 127);
-
+        clear();
+        
         if (!off) {
-            if (!DriverStation.isDSAttached()) {
-                // preMatchClimbPattern();
-            }
             if (DriverStation.isDisabled()){
                 rainbow();
             }
             else {
-                clear();
                 setSideIndicator();
                 setIntakeModeIndicator();
                 flashOnWhistle();
                 flashActiveSide();
                 flashOnIntake();
             }
-        }
-        else {
-            clear();
         }
 
         led.setData(ledBuffer);
@@ -126,47 +106,6 @@ public class LEDManager extends SubsystemBase {
         if (LEDConstants.dynamicRainbow) {
             int speed = DriverStation.isFMSAttached() ? LEDConstants.dynamicRainbowSpeed : LEDConstants.dynamicRainbowSpeed*3;
             rainbowFirstPixelHue = (rainbowFirstPixelHue+speed)%180;
-        }
-
-    }
-
-    private void preMatchClimbPattern() {
-
-        // Spawn
-        armSpawnTime--;
-        if (armSpawnTime <= 0) {
-            int length = (int)(Math.random()*(LEDConstants.climbMaxLength-LEDConstants.climbMinLength)+LEDConstants.climbMinLength);
-            armSpawnTime = (int)(Math.random()*(LEDConstants.climbMaxDelay-LEDConstants.climbMinDelay)+LEDConstants.climbMinDelay) + length*2;
-            for (int i = 0; i < length && i < armClimbLedStates.length; i++)
-                armClimbLedStates[i] = true;
-        }
-        baseSpawnTime--;
-        if (baseSpawnTime <= 0) {
-            int length = (int)(Math.random()*(LEDConstants.climbMaxLength-LEDConstants.climbMinLength)+LEDConstants.climbMinLength);
-            baseSpawnTime = (int)(Math.random()*(LEDConstants.climbMaxDelay-LEDConstants.climbMinDelay)+LEDConstants.climbMinDelay) + length*2;
-            for (int i = 0; i < length && i < baseClimbLedStates.length; i++)
-                baseClimbLedStates[i] = true;
-        }
-
-        // Update
-        updateTime--;
-        if (updateTime <= 0) {
-            updateTime = LEDConstants.climbSpeed;
-            for (int i = armClimbLedStates.length-2; i > 0; i--)
-                armClimbLedStates[i] = armClimbLedStates[i-1];
-            armClimbLedStates[0] = false;
-            for (int i = baseClimbLedStates.length-2; i > 0; i--)
-                baseClimbLedStates[i] = baseClimbLedStates[i-1];
-            baseClimbLedStates[0] = false;
-        }
-
-        // Buffer
-        for (int i = 0; i < LEDConstants.armLedCount; i++) {
-            setArmLED(i, armClimbLedStates[i] ? allianceColor : Color.kBlack);
-        }
-        for (int i = 0; i < LEDConstants.baseLedCount/2; i++) {
-            setBaseLED(i, armClimbLedStates[i] ? allianceColor : Color.kBlack);
-            setBaseLED(LEDConstants.baseLedCount-1-i, armClimbLedStates[i] ? allianceColor : Color.kBlack);
         }
 
     }

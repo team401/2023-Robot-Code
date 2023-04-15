@@ -69,21 +69,21 @@ public final class Constants {
 
         public static final double trackWidth = Units.inchesToMeters(17.75); // distance between the left and right wheels
         public static final double wheelBase = Units.inchesToMeters(23.75); // distance between the front and rear wheels
-        public static final double wheelRadiusM = Units.inchesToMeters(2.02125);
+        public static final double wheelRadiusM = Units.inchesToMeters(2.02);
 
         public static final double driveWheelGearReduction = 6.86;
         public static final double rotationWheelGearReduction = 12.8;
 
-        public static final double frontLeftAngleOffset = 2.922;//2.93-3.14;
-        public static final double frontRightAngleOffset = -1.805;//1.33-3.14;
-        public static final double backLeftAngleOffset = 1.681;//1.68-3.14;
-        public static final double backRightAngleOffset = 1.039;//1.06;
+        public static final double frontLeftAngleOffset =  2.922;
+        public static final double frontRightAngleOffset = -1.80;
+        public static final double backLeftAngleOffset = 1.681;
+        public static final double backRightAngleOffset =  1.039;
 
-        public static final double[] driveKps = {0.55, 0.55, 0.55, 0.55};
-        public static final double[] driveKds = {2, 4, 4, 2};
+        public static final double[] driveKps = {0.7, 0.4, 0.7, 0.7};
+        public static final double[] driveKds = {3.5, 2.5, 3.7, 3.5};
 
         public static final double[] rotationKps = {7, 7, 7, 7};
-        public static final double[] rotationKds = {0.0, 0.0, 0.0, 0.0};
+        public static final double[] rotationKds = {0, 0, 0, 0};
 
         public static final double driveSnapKp = 1.5;
         public static final double driveSnapKi = 0;
@@ -97,7 +97,7 @@ public final class Constants {
                 new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0) //rear right
         );
 
-        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.22, 2.151);
+        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.23, 2.185);
 
         public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;
@@ -175,25 +175,25 @@ public final class Constants {
     }
 
     public static final class ArmPositions {
-        public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15};
-        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.5};
-        public static final double[] placeCubeHigh = {0.590, 0.781, 1.5};
-        public static final double[] placeCubeMid = {0.555, 0.276, 1.5};
-        public static final double[] placeCubeLow = {0, 0.1, 1.4};
+        public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15,};
+        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.5,};
+        public static final double[] placeCubeHigh = {0.590, 0.781, 1.5,};
+        public static final double[] placeCubeMid = {0.555, 0.276, 1.5,};
+        public static final double[] placeCubeLow = {0, 0.1, 1.4,};
         
-        public static final double[] intakeConeDownFrontGround = {-0.05, 0.059, -1.1};
-        public static final double[] intakeConeDownBackGround = {-0.02, 0.059, -1.1};
-        public static final double[] intakeConeDownShelf = {0.81, 0.2, -0.28};
-        public static final double[] placeConeDownHigh = {0.59, 0.71, 0.8};
-        public static final double[] placeConeDownMid = {0.58, 0.22, 0.8};
+        public static final double[] intakeConeDownFrontGround = {-0.05, 0.059, -1.1,};
+        public static final double[] intakeConeDownBackGround = {-0.02, 0.059, -1.1,};
+        public static final double[] intakeConeDownShelf = {0.81, 0.2, -0.28,};
+        public static final double[] placeConeDownHigh = {0.59, 0.71, 0.8,};
+        public static final double[] placeConeDownMid = {0.58, 0.22, 0.8,};
         
-        public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15};
-        public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85};
-        public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.28};
-        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379};
-        public static final double[] placeConeUpMid = {0.7, 0.37, -0.6};
+        public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15,};
+        public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85,};
+        public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.13,};
+        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379,};
+        public static final double[] placeConeUpMid = {0.7, 0.37, -0.6,};
         
-        public static final double[] stow = {Math.PI / 2, 0.1, Math.PI / 2};
+        public static final double[] stow = {1.5, 0.1, Math.PI / 2};
         
         public static final double wristConePlace = -0.88;
 
@@ -204,7 +204,7 @@ public final class Constants {
     public static enum GamePieceMode {
         Cube,
         ConeUp,
-        ConeDown
+        ConeDown,
     }
 
     public static enum Position {
@@ -212,7 +212,7 @@ public final class Constants {
         Mid,
         High,
         Shelf,
-        Stow
+        Stow,
     }
 
     public static final class LEDConstants {

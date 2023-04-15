@@ -231,7 +231,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             new ParallelCommandGroup(
                 new MovePivot(pivot, ArmPositions.intakeCubeGround[0], false).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.intakeCubeGround[1], false).andThen(new HoldTelescope(telescope, pivot)),
-                new MoveWrist(wrist, pivot, ArmPositions.intakeCubeGround[2], false).andThen(new HoldWrist(wrist, pivot))
+                new MoveWristAbsolute(wrist, pivot, ArmPositions.intakeCubeGround[2], ArmPositions.intakeCubeGround[0], false).andThen(new HoldWrist(wrist, pivot))
             )
         );
     }
