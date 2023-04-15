@@ -84,7 +84,7 @@ public class Align extends CommandBase {
 
         if (DriverStation.getAlliance() == Alliance.Blue) {
             if (currentPose.getX() > 8)
-                return left ? new Pose2d(15.5, 7.35, rotation) : new Pose2d(15.5, 6, rotation);
+                return left ? new Pose2d(15.5, 7.55, rotation) : new Pose2d(15.5, 5.95, rotation);
             double x = 1.95;
             double yCenter = currentPose.getY() > 3.58 ? 4.43 : currentPose.getY() > 1.91 ? 2.75 : 1.07;
             if (cube) return new Pose2d(x, yCenter, rotation);
@@ -93,7 +93,7 @@ public class Align extends CommandBase {
         }
         if (DriverStation.getAlliance() == Alliance.Red) {
             if (currentPose.getX() < 8)
-                return left ? new Pose2d(1, 6.13, rotation) : new Pose2d(1, 7.47, rotation);
+                return left ? new Pose2d(1, 5.95, rotation) : new Pose2d(1, 7.55, rotation);
             double x = 14.6;   
             double yCenter = currentPose.getY() > 3.58 ? 4.43 : currentPose.getY() > 1.91 ? 2.75 : 1.07;
             if (cube) return new Pose2d(x, yCenter, rotation);

@@ -83,4 +83,8 @@ public interface ButtonMasher {
     public default Trigger jogWristDown() {
         return new Trigger(() -> false);
     }
+
+    public default Trigger homeWrist() {
+        return new Trigger(() -> false);
+    }
 }

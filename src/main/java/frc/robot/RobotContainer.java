@@ -220,12 +220,18 @@ public class RobotContainer {
         masher.place()
             .onTrue(new InstantCommand(intake::place)) // start place
             .onFalse(new InstantCommand(intake::stop)); // stop place
+
+        masher.homeWrist()
+            .onTrue(new HomeWrist(wrist));
         }
 
     private void configureAutos() {
         autoChooser.addOption("B-1-1", "B-1-1");
         autoChooser.addOption("B-1-2", "B-1-2");
         autoChooser.addOption("B-1-3", "B-1-3");
+
+        autoChooser.addOption("B-2-1", "B-2-1");
+
         // autoChooser.addOption("B-3-1", "B-3-1");
         // autoChooser.addOption("B-3-2", "B-3-2");
         // autoChooser.addOption("R-1-1", "R-1-1");
@@ -233,7 +239,7 @@ public class RobotContainer {
         // autoChooser.addOption("R-3-1", "R-3-1");
         // autoChooser.addOption("R-3-2", "R-3-2");
         
-        autoChooser.setDefaultOption("default", "B-1-3");
+        autoChooser.setDefaultOption("default", "B-1-1");
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
@@ -296,7 +302,7 @@ public class RobotContainer {
             timer.reset();
             timer.start();
 
-            if (telescope.getPositionM() > 0.15 || positions[1] > 0.15) {
+            if (telescope.getPositionM() > 0.15) {
                 // move telescope to 0.05, then move pivot and wrist, then move telescope to goal
                 new SequentialCommandGroup(
                     new ParallelRaceGroup(

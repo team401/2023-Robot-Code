@@ -135,4 +135,9 @@ public class XboxMasher implements ButtonMasher{
     public Trigger jogWristDown() {
         return new Trigger(() -> controller.getRightY() < -0.3);
     }
+
+    @Override
+    public Trigger homeWrist() {
+        return new Trigger(() -> controller.getStartButton());
+    }
 }

@@ -63,9 +63,13 @@ public class AutoRoutines extends SequentialCommandGroup {
         // To transfrom blue path to red path on the x-axis do 16.53-x
         // To rotate blue path to red path adjust rotation 180 and set the heading to (180-abs(heading))*sign(heading)
         // Load path group
-        PathConstraints constraints = pathName.endsWith("1-3") ? 
-            new PathConstraints(AutoConstants.maxVelFast, AutoConstants.maxAccelFast) : 
-            new PathConstraints(AutoConstants.maxVel, AutoConstants.maxAccel);
+        PathConstraints constraints = new PathConstraints(AutoConstants.maxVel, AutoConstants.maxAccel);
+        if (pathName.endsWith("1-3")) {
+            constraints = new PathConstraints(AutoConstants.maxVelFast, AutoConstants.maxAccelFast);
+        }
+        else if (pathName.contains("-2-")) {
+            constraints = new PathConstraints(AutoConstants.maxVelSlow, AutoConstants.maxAccelSlow);
+        }
         List<PathPlannerTrajectory> pathGroup = PathPlanner.loadPathGroup(pathName, constraints);
 
         if (!pathName.endsWith("1-3")) {
@@ -284,10 +288,10 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command placeCube() {
-        return new ParallelRaceGroup(
+        return new ParallelRaceGroup(   
             hold(),
             new SequentialCommandGroup(
-                new InstantCommand(intake::place),
+                new InstantCommand(intake::shoot),
                 new WaitCommand(0.1),
                 new InstantCommand(intake::stop)
             )
@@ -314,7 +318,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 new SequentialCommandGroup(
                     new WaitUntilCommand(() -> Math.abs(wrist.getPositionRad()-Math.PI/2) < 0.1),
                     new InstantCommand(intake::place),
-                    new WaitCommand(0.2),
+                    new WaitCommand(0.4),
                     new InstantCommand(intake::stop)
                 )
             )
@@ -349,7 +353,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command spitCone() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
-            new InstantCommand(intake::place),
+            new InstantCommand(intake::shoot),
             new WaitCommand(0.1),
             new InstantCommand(intake::stop)
         );
