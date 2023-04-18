@@ -101,7 +101,7 @@ public class RobotState {
     }
 
     public void setSimPose(Pose2d pose) {
-        field.setRobotPose(pose);
+        // field.setRobotPose(pose);
     }
 
     public Pose2d getFieldToVehicle() {

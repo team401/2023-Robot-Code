@@ -175,30 +175,30 @@ public final class Constants {
     }
 
     public static final class ArmPositions {
-        public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15,};
-        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.5,};
-        public static final double[] placeCubeHigh = {0.590, 0.781, 1.5,};
-        public static final double[] placeCubeMid = {0.555, 0.276, 1.5,};
-        public static final double[] placeCubeLow = {0, 0.1, 1.4,};
+        public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15};
+        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.35};
+        public static final double[] placeCubeHigh = {0.590, 0.781, 1.5};
+        public static final double[] placeCubeMid = {0.555, 0.276, 1.5};
+        public static final double[] placeCubeLow = {0, 0.1, 1.4};
         
-        public static final double[] intakeConeDownFrontGround = {-0.05, 0.059, -1.1,};
-        public static final double[] intakeConeDownBackGround = {-0.02, 0.059, -1.1,};
-        public static final double[] intakeConeDownShelf = {0.81, 0.2, -0.28,};
-        public static final double[] placeConeDownHigh = {0.59, 0.71, 0.8,};
-        public static final double[] placeConeDownMid = {0.58, 0.22, 0.8,};
+        public static final double[] intakeConeDownFrontGround = {-0.05, 0.059, -1.1};
+        public static final double[] intakeConeDownBackGround = {-0.02, 0.059, -1.1};
+        public static final double[] intakeConeDownShelf = {0.81, 0.2, -0.28};
+        public static final double[] placeConeDownHigh = {0.59, 0.71, 0.8};
+        public static final double[] placeConeDownMid = {0.58, 0.22, 0.8};
         
-        public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15,};
-        public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85,};
-        public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.13,};
-        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379,};
+        public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15};
+        public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85};
+        public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.13};
+        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379};
         public static final double[] placeConeUpMid = {0.7, 0.37, -0.6,};
         
         public static final double[] stow = {1.5, 0.1, Math.PI / 2};
         
         public static final double wristConePlace = -0.88;
 
-        public static final double[] preFlingCube = {0.78, 0.1, 0.78};
-        public static final double[] postFlingCube = {Math.PI / 1.5, 0.1, Math.PI / 2};
+        public static final double[] preFlingCube = {0.4, 0.1, 0.78};
+        public static final double[] postFlingCube = {Math.PI / 1.5, 0.1, 1.8};
     }
 
     public static enum GamePieceMode {
@@ -282,12 +282,12 @@ public final class Constants {
     public static final class AutoConstants {
         
         public static final double maxVel = 3;
-        public static final double maxAccel = 3;
+        public static final double maxAccel = 2.75;
 
         public static final double maxVelFast = 4;
         public static final double maxAccelFast = 4.5;
 
-        public static final double maxVelSlow = 1.5;
+        public static final double maxVelSlow = 0.75;
         public static final double maxAccelSlow = 1.5;
 
         public static final double autoTranslationXKp = 11;
@@ -297,6 +297,14 @@ public final class Constants {
         public static final double autoTranslationYKp = 8;
         public static final double autoTranslationYKi = 0;
         public static final double autoTranslationYKd = 0;
+
+        public static final double autoTranslationSlowXKp = 8;
+        public static final double autoTranslationSlowXKi = 0;
+        public static final double autoTranslationSlowXKd = 0;
+
+        public static final double autoTranslationSlowYKp = 6;
+        public static final double autoTranslationSlowYKi = 0;
+        public static final double autoTranslationSlowYKd = 0;
 
         public static final double autoRotationKp = 8;
         public static final double autoRotationKi = 0;

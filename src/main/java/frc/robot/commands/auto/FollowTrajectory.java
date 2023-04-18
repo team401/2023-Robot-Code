@@ -24,14 +24,17 @@ public class FollowTrajectory extends CommandBase {
     private PIDController yController;
     private ProfiledPIDController thetaController;
 
+    private boolean slow;
+
     private HolonomicDriveController controller;
 
     private final Timer timer = new Timer();
 
-    public FollowTrajectory(Drive drive, PathPlannerTrajectory trajectory) {
+    public FollowTrajectory(Drive drive, PathPlannerTrajectory trajectory, boolean slow) {
         
         this.drive = drive;
         this.trajectory = trajectory;
+        this.slow = slow;
 
         addRequirements(drive);
 
@@ -42,8 +45,14 @@ public class FollowTrajectory extends CommandBase {
         timer.reset();
         timer.start();
         
-        xController = new PIDController(AutoConstants.autoTranslationXKp, AutoConstants.autoTranslationXKi, AutoConstants.autoTranslationXKd);
-        yController = new PIDController(AutoConstants.autoTranslationYKp, AutoConstants.autoTranslationYKi, AutoConstants.autoTranslationYKd);
+        if (!slow) {
+            xController = new PIDController(AutoConstants.autoTranslationXKp, AutoConstants.autoTranslationXKi, AutoConstants.autoTranslationXKd);
+            yController = new PIDController(AutoConstants.autoTranslationYKp, AutoConstants.autoTranslationYKi, AutoConstants.autoTranslationYKd);
+        }
+        else {
+            xController = new PIDController(AutoConstants.autoTranslationSlowXKp, AutoConstants.autoTranslationSlowXKi, AutoConstants.autoTranslationSlowXKd);
+            yController = new PIDController(AutoConstants.autoTranslationSlowYKp, AutoConstants.autoTranslationSlowYKi, AutoConstants.autoTranslationSlowYKd);
+        }
         thetaController = 
             new ProfiledPIDController(
                 AutoConstants.autoRotationKp, AutoConstants.autoRotationKi, AutoConstants.autoRotationKd,

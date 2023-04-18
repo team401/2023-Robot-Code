@@ -83,12 +83,16 @@ public class AutoRoutines extends SequentialCommandGroup {
         if (pathName.contains("-2-")) {
             addCommands(
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(0)),
-                    holdStow().withTimeout(2).andThen(intakeCube())
+                    drive(pathGroup.get(0), true),
+                    holdStow()
+                ),
+                new ParallelRaceGroup(
+                    new WaitCommand(1).andThen(drive(pathGroup.get(1), true)),
+                    intakeCube()
                 ),
                 new ParallelCommandGroup(
                     balance(false),
-                    flingCube().andThen(holdStow())
+                    holdStow()
                 )
             );
         }
@@ -176,7 +180,11 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command drive(PathPlannerTrajectory trajectory) {
-        return new FollowTrajectory(drive, trajectory);
+        return new FollowTrajectory(drive, trajectory, false);
+    }
+
+    private Command drive(PathPlannerTrajectory trajectory, boolean slow) {
+        return new FollowTrajectory(drive, trajectory, slow);
     }
 
     private Command fakeHome() {
@@ -231,7 +239,7 @@ public class AutoRoutines extends SequentialCommandGroup {
             new ParallelCommandGroup(
                 new MovePivot(pivot, ArmPositions.intakeCubeGround[0], false).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.intakeCubeGround[1], false).andThen(new HoldTelescope(telescope, pivot)),
-                new MoveWristAbsolute(wrist, pivot, ArmPositions.intakeCubeGround[2], ArmPositions.intakeCubeGround[0], false).andThen(new HoldWrist(wrist, pivot))
+                new MoveWrist(wrist, pivot, ArmPositions.intakeCubeGround[2], false).andThen(new HoldWrist(wrist, pivot))
             )
         );
     }
@@ -300,6 +308,10 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command flingCube() {
         return new SequentialCommandGroup(
+            new ParallelRaceGroup(
+                new WaitCommand(3),
+                holdStow()
+            ),
             new InstantCommand(() -> RobotState.getInstance().setBack(false)),
             new ParallelRaceGroup(
                 new MovePivot(pivot, ArmPositions.preFlingCube[0], true).andThen(new HoldPivot(pivot, telescope)),
@@ -307,17 +319,16 @@ public class AutoRoutines extends SequentialCommandGroup {
                 new MoveWrist(wrist, pivot, ArmPositions.preFlingCube[2], true).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal))
             ),
-            new WaitCommand(1),
-            new ParallelRaceGroup(
-                new ParallelRaceGroup(
+            new ParallelCommandGroup(
+                new ParallelCommandGroup(
                     new MovePivot(pivot, ArmPositions.postFlingCube[0], false).andThen(new HoldPivot(pivot, telescope)),
                     new MoveTelescope(telescope, pivot, ArmPositions.postFlingCube[1], false).andThen(new HoldTelescope(telescope, pivot)),
                     new MoveWristAbsolute(wrist, pivot, ArmPositions.postFlingCube[2], ArmPositions.postFlingCube[0], false).andThen(new HoldWrist(wrist, pivot)),
                     new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal))
                 ),
                 new SequentialCommandGroup(
-                    new WaitUntilCommand(() -> Math.abs(wrist.getPositionRad()-Math.PI/2) < 0.1),
-                    new InstantCommand(intake::place),
+                    new WaitCommand(0.4),
+                    new InstantCommand(intake::shootBackwards),
                     new WaitCommand(0.4),
                     new InstantCommand(intake::stop)
                 )

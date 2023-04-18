@@ -132,7 +132,7 @@ public class Drive extends SubsystemBase {
         }
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
-        SmartDashboard.putNumber("DriveVelocity", getChassisSpeeds().vxMetersPerSecond);
+        // SmartDashboard.putNumber("DriveVelocity", getChassisSpeeds().vxMetersPerSecond);
 
         // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
 
