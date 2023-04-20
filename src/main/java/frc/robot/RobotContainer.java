@@ -32,6 +32,7 @@ import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
+import frc.robot.commands.auto.Balance;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -155,6 +156,9 @@ public class RobotContainer {
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
 
+        new JoystickButton(leftStick,14)
+            .onTrue(new InstantCommand(drive::toggleKillBackLeftRot));
+
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
@@ -261,6 +265,7 @@ public class RobotContainer {
             if (!RobotState.getInstance().hasIntaked()) {
                 new HomeWrist(wrist).schedule();
             }
+            pivot.normalConstrain();
         }
 
         pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));

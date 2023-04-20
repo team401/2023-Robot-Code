@@ -62,7 +62,6 @@ public final class Constants {
 
         public static final int switch1 = 1;
         public static final int switch2 = 2;
-    
     }
     
     public static final class DriveConstants {
@@ -74,7 +73,7 @@ public final class Constants {
         public static final double driveWheelGearReduction = 6.86;
         public static final double rotationWheelGearReduction = 12.8;
 
-        public static final double frontLeftAngleOffset =  2.922;
+        public static final double frontLeftAngleOffset = 2.922;
         public static final double frontRightAngleOffset = -1.80;
         public static final double backLeftAngleOffset = 1.681;
         public static final double backRightAngleOffset =  1.039;
@@ -196,9 +195,12 @@ public final class Constants {
         public static final double[] stow = {1.5, 0.1, Math.PI / 2};
         
         public static final double wristConePlace = -0.88;
-
+        
         public static final double[] preFlingCube = {0.4, 0.1, 0.78};
         public static final double[] postFlingCube = {Math.PI / 1.5, 0.1, 1.8};
+        public static final double[] placeConeUpHighPrepare = {0.8, 0.74, -0.43};
+        public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.45};
+
     }
 
     public static enum GamePieceMode {
@@ -259,13 +261,13 @@ public final class Constants {
         };
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
-            add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.07, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
-            add(new AprilTag(2, new Pose3d(new Translation3d(15.51, 2.76, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(1, new Pose3d(new Translation3d(15.51, 1.08, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
+            add(new AprilTag(2, new Pose3d(new Translation3d(15.51, 2.77, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(3, new Pose3d(new Translation3d(15.51, 4.45, 0.46), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
             add(new AprilTag(4, new Pose3d(new Translation3d(16.18, 6.76, 0.70), new Rotation3d(new Quaternion(0, 0, 0, 1)))));
-            add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.76, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.43, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
-            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.78, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(5, new Pose3d(new Translation3d(0.36, 6.75, 0.70), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(6, new Pose3d(new Translation3d(1.03, 4.45, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
+            add(new AprilTag(7, new Pose3d(new Translation3d(1.03, 2.77, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
             add(new AprilTag(8, new Pose3d(new Translation3d(1.03, 1.09, 0.46), new Rotation3d(new Quaternion(1, 0, 0, 0)))));
         }};
 
@@ -282,7 +284,7 @@ public final class Constants {
     public static final class AutoConstants {
         
         public static final double maxVel = 3;
-        public static final double maxAccel = 2.75;
+        public static final double maxAccel = 3;
 
         public static final double maxVelFast = 4;
         public static final double maxAccelFast = 4.5;
@@ -310,7 +312,7 @@ public final class Constants {
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 
-        public static final double autoBalanceKp = 0.25;
+        public static final double autoBalanceKp = 0.4;
         public static final double autoBalanceKi = 0.05;
         public static final double autoBalanceKd = 0.0;
 

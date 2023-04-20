@@ -42,7 +42,7 @@ public class PivotSubsystem extends SubsystemBase {
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the telescope subsytem.
-    private final TrapezoidProfile.Constraints constraintsRad = 
+    private TrapezoidProfile.Constraints constraintsRad = 
         new TrapezoidProfile.Constraints(
             Units.degreesToRadians(360),
             Units.degreesToRadians(600));
@@ -107,6 +107,24 @@ public class PivotSubsystem extends SubsystemBase {
     public void toggleKill() {
         rightMotor.set(ControlMode.PercentOutput, 0);
         dead = !dead;
+    }
+
+    public void autoConstrain() {
+        constraintsRad = 
+            new TrapezoidProfile.Constraints(
+                Units.degreesToRadians(360),
+                Units.degreesToRadians(450));
+    }
+
+    public void printAutoTimer() {
+        SmartDashboard.putNumber("autoTmp", autoTimer.get());
+    }
+
+    public void normalConstrain() {
+        constraintsRad = 
+            new TrapezoidProfile.Constraints(
+                Units.degreesToRadians(360),
+                Units.degreesToRadians(600));
     }
 
     /**

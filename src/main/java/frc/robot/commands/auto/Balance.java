@@ -66,7 +66,7 @@ public class Balance extends CommandBase {
             }
         }
         else {
-            double output = rollController.calculate(drive.getRoll(), 0);
+            double output = -rollController.calculate(drive.getRoll(), 0);
             xMPerS = MathUtil.clamp(output, -1, 1);
             omegaRadPerS = 0;
         }

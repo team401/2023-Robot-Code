@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
@@ -104,8 +105,19 @@ public class LEDManager extends SubsystemBase {
         }
         
         if (LEDConstants.dynamicRainbow) {
-            int speed = DriverStation.isFMSAttached() ? LEDConstants.dynamicRainbowSpeed : LEDConstants.dynamicRainbowSpeed*3;
-            rainbowFirstPixelHue = (rainbowFirstPixelHue+speed)%180;
+            rainbowFirstPixelHue = (rainbowFirstPixelHue+LEDConstants.dynamicRainbowSpeed)%180;
+        }
+
+    }
+
+    private void epilepsy() {
+
+        for (int i = 0; i < LEDConstants.armLedCount; i++) {
+            setArmRGB(i, (int) (Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255)); 
+        }
+
+        for (int i = 0; i < LEDConstants.baseLedCount; i++) {
+            setBaseRGB(i, (int)(Math.random()*255), (int)(Math.random()*255), (int)(Math.random()*255)); 
         }
 
     }
