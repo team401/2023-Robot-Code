@@ -79,7 +79,6 @@ public class Drive extends SubsystemBase {
             modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
             modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
         }
-        // driveModules[1].setDrivePD(DriveConstants.frontRightDriveKp, DriveConstants.frontRightDriveKp);
 
         setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
 
@@ -94,6 +93,9 @@ public class Drive extends SubsystemBase {
 
         // Driving
         for (int i = 0; i < 4; i++) {
+
+            SmartDashboard.putBoolean("DriveStatus"+i, driveModules[i].getDeadBoolean());
+
             // Get encoder value
             Rotation2d moduleRotation = new Rotation2d(driveModules[i].getRotationPosition());
 
@@ -234,8 +236,8 @@ public class Drive extends SubsystemBase {
         }
     }
 
-    public void toggleKillBackLeftRot() {
-        driveModules[2].toggleKill();
+    public void toggleKill(int i) {
+        driveModules[i].toggleKill();
     }
 
 }

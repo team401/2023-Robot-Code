@@ -156,8 +156,14 @@ public class RobotContainer {
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
 
+        new JoystickButton(leftStick,12)
+            .onTrue(new InstantCommand(() -> drive.toggleKill(0)));
+        new JoystickButton(leftStick,13)
+            .onTrue(new InstantCommand(() -> drive.toggleKill(1)));
+        new JoystickButton(leftStick,15)
+            .onTrue(new InstantCommand(() -> drive.toggleKill(2)));
         new JoystickButton(leftStick,14)
-            .onTrue(new InstantCommand(drive::toggleKillBackLeftRot));
+            .onTrue(new InstantCommand(() -> drive.toggleKill(3)));
 
         // Set game piece mode
         masher.cubeMode().onTrue(new InstantCommand(() ->

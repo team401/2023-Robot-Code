@@ -166,6 +166,10 @@ public class WristSubsystem extends SubsystemBase {
         motor.setSelectedSensorPosition(2.81 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
     }
 
+    public void resetOffsetCube() {
+        motor.setSelectedSensorPosition(1.5 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
+    }
+
     public void zeroOffset() {
         motor.setSelectedSensorPosition(0);
     }

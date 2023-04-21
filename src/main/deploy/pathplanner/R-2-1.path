@@ -2,13 +2,13 @@
   "waypoints": [
     {
       "anchorPoint": {
-        "x": 14.619846765048496,
-        "y": 3.2845511532808067
+        "x": 14.62600239486193,
+        "y": 2.75
       },
       "prevControl": null,
       "nextControl": {
-        "x": 14.362854710640137,
-        "y": 3.3534119667207443
+        "x": 14.892060147345557,
+        "y": 2.75
       },
       "holonomicAngle": 180.0,
       "isReversal": false,
@@ -24,62 +24,12 @@
     },
     {
       "anchorPoint": {
-        "x": 11.010092527284444,
-        "y": 3.325201538841213
+        "x": 10.5749301498603,
+        "y": 2.75
       },
       "prevControl": {
-        "x": 13.918514292372183,
-        "y": 3.325201538841213
-      },
-      "nextControl": {
-        "x": 10.909600923993152,
-        "y": 3.325201538841213
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": true,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 9.676759880903129,
-        "y": 3.569103852203649
-      },
-      "prevControl": {
-        "x": 10.109046589939087,
-        "y": 3.569103852203649
-      },
-      "nextControl": {
-        "x": 9.450039777242155,
-        "y": 3.569103852203649
-      },
-      "holonomicAngle": 180.0,
-      "isReversal": false,
-      "velOverride": null,
-      "isLocked": false,
-      "isStopPoint": false,
-      "stopEvent": {
-        "names": [],
-        "executionBehavior": "parallel",
-        "waitBehavior": "none",
-        "waitTime": 0
-      }
-    },
-    {
-      "anchorPoint": {
-        "x": 9.945052425601807,
-        "y": 2.8536570663405034
-      },
-      "prevControl": {
-        "x": 9.558866178640269,
-        "y": 3.1777058037316683
+        "x": 10.070799808036831,
+        "y": 2.75
       },
       "nextControl": null,
       "holonomicAngle": 180.0,

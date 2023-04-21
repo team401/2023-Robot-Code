@@ -13,6 +13,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.DriveConstants;
 
@@ -24,6 +25,8 @@ public class DriveModule {
     private final double initialOffsetRadians;
 
     private boolean killed = false;
+    private final Timer deadTimer;
+    private double lastRotationPosition = 0;
 
     private static void setFramePeriods(TalonFX talon, boolean needMotorSensor) {
         talon.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 255, 1000);
@@ -77,6 +80,23 @@ public class DriveModule {
 
         initialOffsetRadians = measuredOffsetsRadians;
 
+        deadTimer = new Timer();
+        deadTimer.reset();
+        deadTimer.start();
+
+    }
+
+    public boolean getDeadBoolean() {
+        if (getRotationPosition() != lastRotationPosition) {
+            deadTimer.reset();
+            deadTimer.start();
+            lastRotationPosition = getRotationPosition();
+        }
+
+        if (deadTimer.hasElapsed(5)) {
+            return true;
+        }
+        return false;
     }
 
     public double getDrivePosition() {

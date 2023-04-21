@@ -175,7 +175,7 @@ public final class Constants {
 
     public static final class ArmPositions {
         public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15};
-        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.35};
+        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.45};
         public static final double[] placeCubeHigh = {0.590, 0.781, 1.5};
         public static final double[] placeCubeMid = {0.555, 0.276, 1.5};
         public static final double[] placeCubeLow = {0, 0.1, 1.4};
@@ -199,7 +199,8 @@ public final class Constants {
         public static final double[] preFlingCube = {0.4, 0.1, 0.78};
         public static final double[] postFlingCube = {Math.PI / 1.5, 0.1, 1.8};
         public static final double[] placeConeUpHighPrepare = {0.8, 0.74, -0.43};
-        public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.45};
+        public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.5};
+        public static final double[] placeCubeAuto = {0.590, 0.781, 1.8};
 
     }
 
