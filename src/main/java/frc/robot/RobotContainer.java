@@ -219,7 +219,6 @@ public class RobotContainer {
         autoChooser.addOption("B-1-3", "B-1-3");
 
         autoChooser.addOption("B-2-1", "B-2-1");
-        autoChooser.addOption("B-2-2", "B-2-2");
 
         autoChooser.addOption("B-3-1", "B-3-1");
         autoChooser.addOption("B-3-2", "B-3-2");
@@ -229,7 +228,6 @@ public class RobotContainer {
         autoChooser.addOption("R-1-3", "R-1-3");
 
         autoChooser.addOption("R-2-1", "R-2-1");
-        autoChooser.addOption("R-2-2", "R-2-2");
 
         autoChooser.addOption("R-3-1", "R-3-1");
         autoChooser.addOption("R-3-2", "R-3-2");
