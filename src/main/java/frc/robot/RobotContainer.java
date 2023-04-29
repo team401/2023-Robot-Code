@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -23,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
@@ -50,7 +53,7 @@ import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.commands.wrist.MoveWristAbsolute;
-import frc.robot.oi.XboxMasher;
+import frc.robot.oi.ButtonMasher;
 
 public class RobotContainer {
     
@@ -64,7 +67,7 @@ public class RobotContainer {
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
-    private final XboxMasher masher = new XboxMasher(new XboxController(2));
+    private final ButtonMasher masher = new ButtonMasher(2);
 
     SendableChooser<String> autoChooser = new SendableChooser<String>();
     private Command activeAutoCommand = null;
@@ -99,7 +102,7 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-
+        
     }   
 
     private void configureCompBindings() {
@@ -166,50 +169,52 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.toggleKill(3)));
 
         // Set game piece mode
-        masher.cubeMode().onTrue(new InstantCommand(() ->
+        masher.leftBumper().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
-        masher.coneDownMode().onTrue(new InstantCommand(() ->
+        masher.rightBumper().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.ConeDown)));
-        masher.coneUpMode().onTrue(new InstantCommand(() ->
+        masher.y().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.ConeUp)));
         
         // Move arm
-        masher.high().onTrue(getMoveArmCommand(Position.High)); // move to high
-        masher.mid().onTrue(getMoveArmCommand(Position.Mid)); // move to mid
-        masher.ground().onTrue(getMoveArmCommand(Position.Ground)); // move to ground
-        masher.stow().onTrue(getMoveArmCommand(Position.Stow)); // move to stow    
-        masher.shelf().onTrue(getMoveArmCommand(Position.Shelf)); // move to shelf
+        masher.pov(0).onTrue(getMoveArmCommand(Position.High)); // move to high
+        masher.pov(90).onTrue(getMoveArmCommand(Position.Mid)); // move to mid
+        masher.pov(180).onTrue(getMoveArmCommand(Position.Ground)); // move to ground
+        masher.pov(270).onTrue(getMoveArmCommand(Position.Stow)); // move to stow    
+        masher.x().onTrue(getMoveArmCommand(Position.Shelf)); // move to shelf
 
-        masher.special().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace));
-        masher.otherSpecial().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeDownHigh[2]));
-        // masher.flipSide().onTrue(
+        masher.a().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace)); // Dunk cone
+        masher.b().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeDownHigh[2])); // Un-dunk cone
+        
+        // TODO: set button
+        // masher.??????().onTrue(
         //     new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
 
         // Manually jog arm
-        masher.jogPivotUp()
+        masher.leftStickLeft()
             .onTrue(new InstantCommand(pivot::jogSetpointForward, pivot)); // jog pivot right
-        masher.jogPivotDown()
+        masher.leftStickRight()
             .onTrue(new InstantCommand(pivot::jogSetpointBack, pivot)); // jog pivot left
 
-        masher.jogTelescopeUp()
+        masher.rightStickRight()
             .onTrue(new InstantCommand(telescope::jogSetpointForward, telescope)); // jog telescope up
-        masher.jogTelescopeDown()
+        masher.rightStickLeft()
             .onTrue(new InstantCommand(telescope::jogSetpointBackward, telescope)); // jog telescope down
 
-        masher.jogWristUp()
+        masher.rightStickUp()
             .onTrue(new InstantCommand(wrist::jogSetpointForward, wrist)); // jog wrist right
-        masher.jogWristDown()
+        masher.rightStickDown()
             .onTrue(new InstantCommand(wrist::jogSetpointBack, wrist)); // jog wrist left
 
         // Intake
-        masher.intake()
+        masher.leftTrigger()
             .onTrue(new InstantCommand(intake::toggleIntake)); // toggle intake
 
-        masher.place()
+        masher.rightTrigger()
             .onTrue(new InstantCommand(intake::place)) // start place
             .onFalse(new InstantCommand(intake::stop)); // stop place
 
-        masher.homeWrist()
+        masher.start()
             .onTrue(new HomeWrist(wrist));
         }
 
@@ -278,56 +283,57 @@ public class RobotContainer {
     }
 
     private Command getMoveArmCommand(Position position) {
-        return new InstantCommand(() -> {{
-            
-            RobotState.getInstance().setStow(position.equals(Position.Stow));
-            double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
-            
-            if (position == Position.High || position == Position.Mid) {
-                boolean atBack = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2;
-                RobotState.getInstance().setBack(atBack);
-            }
-            else if (position == Position.Shelf) {
-                boolean atBack = Math.abs(drive.getRotation().getRadians()) > Math.PI / 2;
-                RobotState.getInstance().setBack(atBack);
-            }
-            
-            Timer timer = new Timer();
-            timer.reset();
-            timer.start();
+        //TODO: agressively refactor arm state machine
 
-            if (telescope.getPositionM() > 0.15 || positions[1] > 0.15) {
-                // move telescope to 0.05, then move pivot and wrist, then move telescope to goal
-                new SequentialCommandGroup(
-                    new ParallelRaceGroup(
-                        new HoldPivot(pivot, telescope),
-                        new MoveTelescope(telescope, pivot, 0.05, true),
-                        new HoldWrist(wrist, pivot)
-                    ),
-                    new ParallelRaceGroup(
-                        new MovePivot(pivot, positions[0], true).andThen(new HoldPivot(pivot, telescope)),
-                        new HoldTelescope(telescope, pivot),
-                        new MoveWrist(wrist, pivot, positions[2], true).andThen(new HoldWrist(wrist, pivot)),
-                        new WaitUntilCommand(() -> (pivot.atGoal && wrist.atGoal))
-                    ),
-                    new ParallelRaceGroup(
-                        new MovePivot(pivot, positions[0], false).andThen(new HoldPivot(pivot, telescope)),
-                        new MoveTelescope(telescope, pivot, positions[1], false).andThen(new HoldTelescope(telescope, pivot)),
-                        new MoveWrist(wrist, pivot, positions[2], false).andThen(new HoldWrist(wrist, pivot)),
-                        new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
-                    )
-                ).schedule();
-            }
-            else {
-                // move
-                new MovePivot(pivot, positions[0]).schedule();
-                new MoveTelescope(telescope, pivot, positions[1]).schedule();
-                new MoveWrist(wrist, pivot, positions[2]).schedule();
-            }
+        RobotState.getInstance().setStow(position == Position.Stow);
+        double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+        
+        // Autoset side
+        if (position == Position.High || position == Position.Mid) {
+            boolean atBack = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2;
+            RobotState.getInstance().setBack(atBack);
+        } else if (position == Position.Shelf) {
+            boolean atBack = Math.abs(drive.getRotation().getRadians()) > Math.PI / 2;
+            RobotState.getInstance().setBack(atBack);
+        }
+        
+        Timer performanceTimer = new Timer();
+        performanceTimer.reset();
+        performanceTimer.start();
 
-            // SmartDashboard.putNumber("MoveInitTime", timer.get()*1000);
-            
-        }});
+        if (telescope.getPositionM() > 0.15 || positions[1] > 0.15) {
+            // move telescope to 0.05, then move pivot and wrist, then move telescope to goal
+            return Commands.sequence(
+                Commands.race(
+                    new HoldPivot(pivot, telescope),
+                    new MoveTelescope(telescope, pivot, 0.05, true), // wait for telescope to finish
+                    new HoldWrist(wrist, pivot)
+                ),
+                // this looks weird, I'll test a simplification in shop
+                Commands.race(
+                    new MovePivot(pivot, positions[0], true).andThen(new HoldPivot(pivot, telescope)),
+                    new HoldTelescope(telescope, pivot),
+                    new MoveWrist(wrist, pivot, positions[2], true).andThen(new HoldWrist(wrist, pivot)),
+                    new WaitUntilCommand(() -> (pivot.atGoal && wrist.atGoal)) // wait for pivot and wrist to finish
+                ),
+                // I have no idea why this is here
+                Commands.race(
+                    new MovePivot(pivot, positions[0], false).andThen(new HoldPivot(pivot, telescope)),
+                    new MoveTelescope(telescope, pivot, positions[1], false).andThen(new HoldTelescope(telescope, pivot)),
+                    new MoveWrist(wrist, pivot, positions[2], false).andThen(new HoldWrist(wrist, pivot)),
+                    new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
+                )
+            );
+        }
+        else {
+            // move
+            return Commands.parallel(
+                new MovePivot(pivot, positions[0]),
+                new MoveTelescope(telescope, pivot, positions[1]),
+                new MoveWrist(wrist, pivot, positions[2]));
+        }
+
+        // SmartDashboard.putNumber("MoveInitTime", timer.get()*1000);        
     }
 
 }

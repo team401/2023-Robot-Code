@@ -17,6 +17,13 @@
       "/SmartDashboard/Arm Mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Mode": "String Chooser",
       "/SmartDashboard/Field": "Field2d"
+    },
+    "windows": {
+      "/SmartDashboard/Arm Mechanism": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
