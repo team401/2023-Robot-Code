@@ -29,11 +29,11 @@ import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.commands.wrist.MoveWristAbsolute;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 
 public class AutoRoutines extends SequentialCommandGroup {
 

@@ -1,41 +1,32 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.intake;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.GamePieceMode;
 
 public class IntakeSubsystem extends SubsystemBase {
+    private final IntakeIO io;
+    private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+
     private static enum IntakeMode {
         None, Intake, Place
     }
-    private CANSparkMax leftMotor = new CANSparkMax(
-        CANDevices.leftIntakeMotorID, MotorType.kBrushed);
-    private CANSparkMax rightMotor = new CANSparkMax(
-        CANDevices.rightIntakeMotorID, MotorType.kBrushed);
 
     private IntakeMode intakeMode = IntakeMode.None;
     private boolean exceededCurrentDraw = false;
 
     private final Timer intakeTimer = new Timer();
     
-    public IntakeSubsystem() {
-        
-        leftMotor.restoreFactoryDefaults();
-        rightMotor.restoreFactoryDefaults();
-        
-        leftMotor.setSmartCurrentLimit(40);
-        rightMotor.setSmartCurrentLimit(40);
-
-        leftMotor.setInverted(true);
-        rightMotor.setInverted(false);
-        
-        leftMotor.burnFlash();
-        rightMotor.burnFlash();
+    public IntakeSubsystem(IntakeIO io) {
+        this.io = io;
 
         intakeTimer.reset();
         intakeTimer.start();
@@ -52,17 +43,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (intakeMode == IntakeMode.Intake) {
             if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-                leftMotor.set(-1);
-                rightMotor.set(-1);
+                io.setWheelVelocitiesVolts(-12, -12);
             }
             else  {
-                leftMotor.set(1);
-                rightMotor.set(1);
+                io.setWheelVelocitiesVolts(12, 12);
             }
         }
         else {
-            leftMotor.stopMotor();
-            rightMotor.stopMotor();
+            io.setWheelVelocitiesVolts(0, 0);
         }
     }
 
@@ -76,17 +64,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (intakeMode == IntakeMode.Intake) {
             if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-                leftMotor.set(-1);
-                rightMotor.set(-1);
+                io.setWheelVelocitiesVolts(-12, -12);
             }
             else  {
-                leftMotor.set(1);
-                rightMotor.set(1);
+                io.setWheelVelocitiesVolts(12, 12);
             }
         }
         else {
-            leftMotor.stopMotor();
-            rightMotor.stopMotor();
+            io.setWheelVelocitiesVolts(0, 0);
         }
     }
 
@@ -97,12 +82,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
             boolean back = RobotState.getInstance().atBack();
-            leftMotor.set(back ? -0.75 : 0.75);
-            rightMotor.set(back ? 0.75 : -0.75);
+            io.setWheelVelocitiesVolts(back ? -9 : 9, back ? 9 : -9);
         }
         else {
-            leftMotor.set(-0.6);
-            rightMotor.set(-0.6);
+            io.setWheelVelocitiesVolts(-7, -7);
         }
     }
 
@@ -113,12 +96,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
             boolean back = RobotState.getInstance().atBack();
-            leftMotor.set(back ? -1 : 1);
-            rightMotor.set(back ? 1 : -1);
+            io.setWheelVelocitiesVolts(back ? -12 : 12, back ? 12 : -12);
         }
         else {
-            leftMotor.set(-0.8);
-            rightMotor.set(-0.8);
+            io.setWheelVelocitiesVolts(-10, -10);
         }
     }
 
@@ -129,12 +110,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
             boolean back = RobotState.getInstance().atBack();
-            leftMotor.set(!back ? -1 : 1);
-            rightMotor.set(!back ? 1 : -1);
+            io.setWheelVelocitiesVolts(back ? -12 : 12, back ? 12 : -12);
         }
         else {
-            leftMotor.set(-0.8);
-            rightMotor.set(-0.8);
+            io.setWheelVelocitiesVolts(-10, -10);
         }
     }
 
@@ -145,12 +124,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
             boolean back = RobotState.getInstance().atBack();
-            leftMotor.set(back ? -0.75 : 0.75);
-            rightMotor.set(back ? 0.75 : -0.75);
+            io.setWheelVelocitiesVolts(back ? -9 : 9, back ? 9 : -9);
         }
         else {
-            leftMotor.set(-0.1);
-            rightMotor.set(-0.1);
+            io.setWheelVelocitiesVolts(-1.2, -1.2);
         }
     }
 
@@ -158,26 +135,26 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeMode = IntakeMode.None;
         RobotState.getInstance().setIntaked(false);
         RobotState.getInstance().setIntaking(false);
-        leftMotor.stopMotor();
-        rightMotor.stopMotor();
+        io.setWheelVelocitiesVolts(0, 0);
     }
 
     @Override
     public void periodic() {
+        io.updateInputs(inputs);
 
-        double currentDraw = Math.max(leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent());
-        // SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
+        Logger.getInstance().processInputs("Intake", inputs);
+
+        double currentDraw = Math.max(inputs.leftCurrentAmps, inputs.rightCurrentAmps);
+        Logger.getInstance().recordOutput("Intake/TopCurrentDraw", currentDraw);
         if (intakeMode == IntakeMode.Intake && !exceededCurrentDraw) {
             if (currentDraw > 20 && intakeTimer.hasElapsed(1)) {
                 exceededCurrentDraw = true;
                 RobotState.getInstance().setIntaked(true);
                 if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-                    leftMotor.set(-0.35);
-                    rightMotor.set(-0.35);
+                    io.setWheelVelocitiesVolts(-4.2, -4.2);
                 }
                 else {
-                    leftMotor.set(0.35);
-                    rightMotor.set(0.35);
+                    io.setWheelVelocitiesVolts(4.2, 4.2);
                 }
             }
         }

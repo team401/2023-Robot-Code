@@ -36,12 +36,15 @@ import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.intake.IntakeIOSparkMax;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PositionHelper;
 import frc.robot.commands.pivot.HoldPivot;
@@ -57,11 +60,11 @@ import frc.robot.oi.ButtonMasher;
 
 public class RobotContainer {
     
-    private final Drive drive = new Drive();
-    private final PivotSubsystem pivot = new PivotSubsystem();
-    private final TelescopeSubsystem telescope = new TelescopeSubsystem();
-    private final WristSubsystem wrist = new WristSubsystem();
-    private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final Drive drive;
+    private final PivotSubsystem pivot;
+    private final TelescopeSubsystem telescope;
+    private final WristSubsystem wrist;
+    private final IntakeSubsystem intake;
     private final Vision vision = new Vision();
     private final LEDManager ledManager = new LEDManager();
 
@@ -78,10 +81,33 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        switch(Constants.mode) {
+            case REAL:
+                drive = new Drive();
+                pivot = new PivotSubsystem();
+                telescope = new TelescopeSubsystem();
+                wrist = new WristSubsystem();
+                intake = new IntakeSubsystem(new IntakeIOSparkMax());
+                break;
+            case SIM:
+                drive = new Drive();
+                pivot = new PivotSubsystem();
+                telescope = new TelescopeSubsystem();
+                wrist = new WristSubsystem();
+                intake = new IntakeSubsystem(new IntakeIOSim());
+                break;
+            default:
+                drive = new Drive();
+                pivot = new PivotSubsystem();
+                telescope = new TelescopeSubsystem();
+                wrist = new WristSubsystem();
+                intake = new IntakeSubsystem(new IntakeIO() {});
+                break;
+        }
 
         configureSubsystems();
-        configureCompBindings();
-        // configureTestBindings();
+        // configureCompBindings();
+        configureTestBindings();
         configureAutos();
     }
 
@@ -102,7 +128,7 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        
+        masher.a().whileTrue(new InstantCommand(() -> intake.setIntake(true)));
     }   
 
     private void configureCompBindings() {

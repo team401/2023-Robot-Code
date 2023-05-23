@@ -121,6 +121,6 @@ tasks.withType(JavaCompile) {
     className    = "BuildConstants"
     dateFormat   = "yyyy-MM-dd HH:mm:ss z"
     timeZone     = "America/New_York" // Use preferred time zone
-    indent       = "  "
+    indent       = "    "
     }
 }

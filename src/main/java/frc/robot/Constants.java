@@ -5,7 +5,6 @@
 package frc.robot;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import edu.wpi.first.apriltag.AprilTag;
@@ -21,6 +20,12 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
+    public static final Mode mode = Mode.SIM;
+
+    public static enum Mode {
+        REAL, SIM, REPLAY
+    }
+
     public static final class CANDevices {
 
         public static final String canivoreName = "Canivore";
