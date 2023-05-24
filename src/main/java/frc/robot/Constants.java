@@ -165,6 +165,8 @@ public final class Constants {
         public static final double negativeLimitRad = Units.degreesToRadians(-160);
 
         public static final double intakeLengthM = Units.inchesToMeters(10);
+        // TODO: Set weight
+        public static final double intakeWeightKg = 4;
 
         public static final double gearRatio = 8.0 / 78;
 

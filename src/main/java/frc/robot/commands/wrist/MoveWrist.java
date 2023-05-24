@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class MoveWrist extends CommandBase {
     private WristSubsystem wrist;
@@ -74,7 +74,6 @@ public class MoveWrist extends CommandBase {
         // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
 
         wrist.setVolts(output);
-        wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
 
         if (Math.abs(getAdjustedAngle()-goalState.position) > Units.degreesToRadians(4)) {
             finishedTimer.reset();

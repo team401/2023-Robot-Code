@@ -31,9 +31,9 @@ import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.commands.wrist.MoveWristAbsolute;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
-import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class AutoRoutines extends SequentialCommandGroup {
 

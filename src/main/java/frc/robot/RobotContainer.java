@@ -39,13 +39,16 @@ import frc.robot.commands.auto.Balance;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
-import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.wrist.WristIO;
+import frc.robot.subsystems.wrist.WristIOSim;
+import frc.robot.subsystems.wrist.WristIOFalcon;
+import frc.robot.subsystems.wrist.WristSubsystem;
 import frc.robot.util.PositionHelper;
 import frc.robot.commands.pivot.HoldPivot;
 import frc.robot.commands.pivot.MovePivot;
@@ -86,21 +89,21 @@ public class RobotContainer {
                 drive = new Drive();
                 pivot = new PivotSubsystem();
                 telescope = new TelescopeSubsystem();
-                wrist = new WristSubsystem();
+                wrist = new WristSubsystem(new WristIOFalcon());
                 intake = new IntakeSubsystem(new IntakeIOSparkMax());
                 break;
             case SIM:
                 drive = new Drive();
                 pivot = new PivotSubsystem();
                 telescope = new TelescopeSubsystem();
-                wrist = new WristSubsystem();
+                wrist = new WristSubsystem(new WristIOSim());
                 intake = new IntakeSubsystem(new IntakeIOSim());
                 break;
             default:
                 drive = new Drive();
                 pivot = new PivotSubsystem();
                 telescope = new TelescopeSubsystem();
-                wrist = new WristSubsystem();
+                wrist = new WristSubsystem(new WristIO() {});
                 intake = new IntakeSubsystem(new IntakeIO() {});
                 break;
         }
@@ -129,6 +132,12 @@ public class RobotContainer {
 
     private void configureTestBindings() {
         masher.a().whileTrue(new InstantCommand(() -> intake.setIntake(true)));
+
+        masher.y().onTrue(new InstantCommand(() -> wrist.setVolts(12)));
+        
+        masher.b().onTrue(new InstantCommand(() -> wrist.jogSetpointForward()));
+
+        masher.x().onTrue(new InstantCommand(() -> wrist.jogSetpointBack()));
     }   
 
     private void configureCompBindings() {

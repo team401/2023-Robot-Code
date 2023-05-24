@@ -1,24 +1,18 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.wrist;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 import frc.robot.RobotState;
-import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
 
 public class WristSubsystem extends SubsystemBase {
-    private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
+    private final WristIO io;
+    private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
     public boolean homed = false;
 
@@ -27,7 +21,7 @@ public class WristSubsystem extends SubsystemBase {
     private boolean dead = false;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
-    // them, but cannot actually set its own motor output, as accurate feedforward calculations
+    // them, but cannot actually set its own io output, as accurate feedforward calculations
     // require information from the pivot subsytem.
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
         Units.degreesToRadians(630),
@@ -43,42 +37,29 @@ public class WristSubsystem extends SubsystemBase {
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
 
-    private double simPos = 0.0;
+    public WristSubsystem(WristIO io) {
+        this.io = io;
 
-    public WristSubsystem() {
-        motor.setInverted(false);
-        motor.setInverted(InvertType.None);
-
-        motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-
-        motor.setNeutralMode(NeutralMode.Brake);
-
-        motor.configNeutralDeadband(0.004);
-        
-        motor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(true, 70, 80, 0.5));
+        io.configurePID(1.0, 0.0, 0.0);
 
         controller.setTolerance(0.05);
         controllerHold.setTolerance(0.05);
     }
 
     public double getPositionRad() {
-        if (Robot.isReal()) {
-            return motor.getSelectedSensorPosition() / 2048 * 2 * Math.PI * WristConstants.gearRatio;
-        }
-        return simPos;
+        return inputs.positionRad;
     }
 
     public double getVelRadS() {
-        return motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10 * WristConstants.gearRatio;
+        return inputs.velocityRadPerSec;
     }
 
     public double getAmps() {
-        return Math.abs(motor.getStatorCurrent());
+        return Math.abs(inputs.currentAmps);
     }
 
     public void setBrakeMode(boolean braked) {
-        motor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+        io.setBrakeMode(braked);
     }
 
     /**
@@ -102,19 +83,18 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public void toggleKill() {
-        motor.set(ControlMode.PercentOutput, 0);
+        io.setVolts(0);
         dead = !dead;
     }
 
     public void setCurrentLimit(double currentLimit, double triggerThresholdCurrent, double triggerThresholdTime) {
-        motor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(true, currentLimit, triggerThresholdCurrent, triggerThresholdTime));
+        io.setCurrentLimit(currentLimit, triggerThresholdCurrent, triggerThresholdTime);
 
     }
 
     /**
      * Does control calculations from its ArmFeedforward and PID controllers.
-     * Does not command any motors.
+     * Does not command any ios.
      * @param setpoint The given setpoint, field-relative
      * @param angleDeg The angle of the wrist, also field-relative. Do not give
      * direct sensor values
@@ -154,41 +134,37 @@ public class WristSubsystem extends SubsystemBase {
         currentSetpointRad = state;
     }
 
-    public void setSimPosRad(double pos) {
-        simPos = pos;
-    }
-
     /**
      * For homing. Resets the encoder offset to the position of 141 degrees,
      * the position the wrist should be at when it goes all the way to the arm.
      */
     public void resetOffset() {
-        motor.setSelectedSensorPosition(2.81 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
+        inputs.positionRad = 2.81 / (2 * Math.PI) * 2048 / WristConstants.gearRatio;
     }
 
     public void resetOffsetCube() {
-        motor.setSelectedSensorPosition(1.5 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
+        inputs.positionRad = 1.5 / (2 * Math.PI) * 2048 / WristConstants.gearRatio;
     }
 
     public void zeroOffset() {
-        motor.setSelectedSensorPosition(0);
+        inputs.positionRad = 0;
     }
 
     public void setVolts(double input) {
         if (!dead) {
-            motor.set(ControlMode.PercentOutput, input / 12);
+            io.setVolts(input);
             return;
         }
-        motor.set(ControlMode.PercentOutput, 0);
+        io.setVolts(0);
     }
 
     public void overrideVolts(double input) {
         System.out.println(input / 12);
-        motor.set(ControlMode.PercentOutput, input / 12);
+        io.setVolts(input);
     }
 
     public void stop() {
-        motor.set(ControlMode.PercentOutput, 0);
+        io.setVolts(0);
     }
 
     public void periodic() {
@@ -197,12 +173,15 @@ public class WristSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("Wrist Desired Position", currentSetpointRad.position);
         // SmartDashboard.putNumber("Wrist Amps", getAmps());
         // SmartDashboard.putBoolean("Wrist Dead", dead);
-        // SmartDashboard.putNumber("Wrist Input Voltage", motor.getmotor)
-        // SmartDashboard.putNumber("Wrist Voltage", motor.getMotorOutputVoltage());
+        // SmartDashboard.putNumber("Wrist Input Voltage", io.getio)
+        // SmartDashboard.putNumber("Wrist Voltage", io.getioOutputVoltage());
         // SmartDashboard.putBoolean("Wrist Homed", homed);
         // SmartDashboard.putNumber("Wrist Velocity", getVelRadS());
 
-        RobotState.getInstance().putWristDisplay(getPositionRad());
+        io.updateInputs(inputs);
 
+        Logger.getInstance().processInputs("Wrist", inputs);
+
+        RobotState.getInstance().putWristDisplay(getPositionRad());
     }
 }

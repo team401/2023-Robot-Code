@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class HoldWrist extends CommandBase {
     private final WristSubsystem wrist;
@@ -38,15 +38,14 @@ public class HoldWrist extends CommandBase {
 
     @Override
     public void execute() {
-        State setpoint = profile.calculate(timer.get());
+        // State setpoint = profile.calculate(timer.get());
 
-        double output = wrist.calculateControl(setpoint, getAdjustedAngle(), true);
+        // double output = wrist.calculateControl(setpoint, getAdjustedAngle(), true);
 
-        wrist.setVolts(output);
-        wrist.setSimPosRad(goalState.position - pivot.getPositionRad());
+        // wrist.setVolts(output);
 
-        // SmartDashboard.putNumber("Wrist Setpoint", goalState.position);
-        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        // // SmartDashboard.putNumber("Wrist Setpoint", goalState.position);
+        // // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
     }
 
     private double getAdjustedAngle() {
