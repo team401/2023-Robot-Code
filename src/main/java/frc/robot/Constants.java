@@ -166,9 +166,9 @@ public final class Constants {
 
         public static final double intakeLengthM = Units.inchesToMeters(10);
         // TODO: Set weight
-        public static final double intakeWeightKg = 4;
+        public static final double intakeWeightKg = 1;
 
-        public static final double gearRatio = 8.0 / 78;
+        public static final double gearRatio = 78.0 / 8;
 
         public static final double kP = 14;
         public static final double kI = 3;

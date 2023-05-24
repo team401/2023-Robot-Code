@@ -13,13 +13,9 @@ public interface WristIO {
 
     public default void updateInputs(WristIOInputs inputs) {}
 
-    public default void setPosition(double positionRad) {}
-
     public default void setVolts(double volts) {}
 
     public default void setBrakeMode(boolean braked) {}
 
     public default void setCurrentLimit(double currentLimit, double triggerThresholdCurrent, double triggerThresholdTime) {}
-
-    public default void configurePID(double kP, double kI, double kD) {}
 }

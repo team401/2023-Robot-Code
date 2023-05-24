@@ -9,22 +9,19 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants.WristConstants;
 
 public class WristIOSim implements WristIO {
-    private SingleJointedArmSim sim = new SingleJointedArmSim(DCMotor.getFalcon500(1), WristConstants.gearRatio, SingleJointedArmSim.estimateMOI(WristConstants.intakeLengthM, WristConstants.intakeWeightKg), WristConstants.intakeLengthM, WristConstants.negativeLimitRad, WristConstants.positiveLimitRad, true);
-    private PIDController pid = new PIDController(0.0, 0.0, 0.0);
-    double volts = 0.0;
+    private SingleJointedArmSim sim = new SingleJointedArmSim(DCMotor.getFalcon500(1),
+                                                            WristConstants.gearRatio,
+                                                            SingleJointedArmSim.estimateMOI(WristConstants.intakeLengthM, WristConstants.intakeWeightKg),
+                                                            WristConstants.intakeLengthM,
+                                                            WristConstants.negativeLimitRad,
+                                                            WristConstants.positiveLimitRad,
+                                                            true);
     double appliedVolts = 0.0;
 
-    Timer time = new Timer();
-
-    public WristIOSim() {
-        time.start();
-    }
+    public WristIOSim() {}
 
     @Override
     public void updateInputs(WristIOInputs inputs) {
-        appliedVolts = MathUtil.clamp(
-            pid.calculate(sim.getVelocityRadPerSec()) + volts, -12.0,
-            12.0);
         sim.setInputVoltage(appliedVolts);
 
         sim.update(0.02);
@@ -37,16 +34,6 @@ public class WristIOSim implements WristIO {
 
     @Override
     public void setVolts(double volts) {
-        this.volts = volts;
-    }
-
-    @Override
-    public void setPosition(double positionRad) {
-        pid.setSetpoint(positionRad);
-    }
-
-    @Override
-    public void configurePID(double kP, double kI, double kD) {
-        pid.setPID(kP, kI, kD);
+        this.appliedVolts = volts;
     }
 }

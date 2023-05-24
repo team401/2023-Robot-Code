@@ -131,13 +131,13 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        masher.a().whileTrue(new InstantCommand(() -> intake.setIntake(true)));
+        // masher.a().onTrue(new InstantCommand(() -> wrist.setVolts(2)));
 
-        masher.y().onTrue(new InstantCommand(() -> wrist.setVolts(12)));
-        
-        masher.b().onTrue(new InstantCommand(() -> wrist.jogSetpointForward()));
+        // masher.y().onTrue(new InstantCommand(() -> wrist.setVolts(0)));
 
-        masher.x().onTrue(new InstantCommand(() -> wrist.jogSetpointBack()));
+        masher.b().onTrue(new InstantCommand(() -> wrist.jogSetpointForward(), wrist));
+
+        masher.x().onTrue(new InstantCommand(() -> wrist.jogSetpointBack(), wrist));
     }   
 
     private void configureCompBindings() {
@@ -304,12 +304,14 @@ public class RobotContainer {
 
         ledManager.setOff(false);
 
-        if (DriverStation.isTeleop()) {
-            new HomeTelescope(telescope).schedule();
-            if (!RobotState.getInstance().hasIntaked()) {
-                new HomeWrist(wrist).schedule();
+        if(Constants.mode == Constants.Mode.REAL) {
+            if (DriverStation.isTeleop()) {
+                new HomeTelescope(telescope).schedule();
+                if (!RobotState.getInstance().hasIntaked()) {
+                    new HomeWrist(wrist).schedule();
+                }
+                pivot.normalConstrain();
             }
-            pivot.normalConstrain();
         }
 
         pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));

@@ -20,9 +20,8 @@ public class IntakeIOSim implements IntakeIO {
         inputs.leftOutputVolts = leftVolts; // motor.getOutputVoltage()
         inputs.rightOutputVolts = rightVolts; 
 
-        // TODO: remove this fun sine current
-        inputs.leftCurrentAmps = Math.sin(time.get());
-        inputs.leftCurrentAmps = Math.cos(time.get());
+        inputs.leftCurrentAmps = 0.0;
+        inputs.leftCurrentAmps = 0.0;
     }
 
     @Override

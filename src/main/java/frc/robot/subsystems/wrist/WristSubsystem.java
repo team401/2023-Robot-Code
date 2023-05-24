@@ -26,8 +26,14 @@ public class WristSubsystem extends SubsystemBase {
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
         Units.degreesToRadians(630),
         Units.degreesToRadians(810));
-    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
-    private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
+
+    // TODO: Put this back
+
+    // private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
+    private final PIDController controller = new PIDController(1, 0, 0);
+    // private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
+    private final PIDController controllerHold = new PIDController(1, 0, 0);
+
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
         WristConstants.kG,
@@ -39,8 +45,6 @@ public class WristSubsystem extends SubsystemBase {
 
     public WristSubsystem(WristIO io) {
         this.io = io;
-
-        io.configurePID(1.0, 0.0, 0.0);
 
         controller.setTolerance(0.05);
         controllerHold.setTolerance(0.05);

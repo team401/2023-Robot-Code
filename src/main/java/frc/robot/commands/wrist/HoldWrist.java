@@ -38,14 +38,14 @@ public class HoldWrist extends CommandBase {
 
     @Override
     public void execute() {
-        // State setpoint = profile.calculate(timer.get());
+        State setpoint = profile.calculate(timer.get());
 
-        // double output = wrist.calculateControl(setpoint, getAdjustedAngle(), true);
+        double output = wrist.calculateControl(setpoint, getAdjustedAngle(), true);
 
-        // wrist.setVolts(output);
+        wrist.setVolts(output);
 
-        // // SmartDashboard.putNumber("Wrist Setpoint", goalState.position);
-        // // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
+        // SmartDashboard.putNumber("Wrist Setpoint", goalState.position);
+        // SmartDashboard.putNumber("Wrist real pos", getAdjustedAngle());
     }
 
     private double getAdjustedAngle() {

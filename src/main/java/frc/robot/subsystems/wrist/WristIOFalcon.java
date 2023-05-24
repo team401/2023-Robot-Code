@@ -53,12 +53,4 @@ public class WristIOFalcon implements WristIO {
             new StatorCurrentLimitConfiguration(true, currentLimit, triggerThresholdCurrent, triggerThresholdTime));
 
     }
-
-    @Override
-    public void configurePID(double kP, double kI, double kD) {
-        motor.config_kP(0, kP);
-        motor.config_kI(0, kI);
-        motor.config_kD(0, kD);
-        motor.config_kF(0, 0.0);
-    }
 }
