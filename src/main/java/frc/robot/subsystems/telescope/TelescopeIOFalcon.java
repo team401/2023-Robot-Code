@@ -1,4 +1,4 @@
-package frc.robot.subsystems.wrist;
+package frc.robot.subsystems.telescope;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
@@ -7,39 +7,32 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
-import edu.wpi.first.math.util.Units;
 import frc.robot.Constants.CANDevices;
-import frc.robot.Constants.WristConstants;
+import frc.robot.Constants.TelescopeConstants;
 
-// TODO: Untested
-public class WristIOFalcon implements WristIO {
-    private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
+public class TelescopeIOFalcon implements TelescopeIO {
 
-    public WristIOFalcon() {
-        motor.setInverted(false);
+    private TalonFX motor = new TalonFX(CANDevices.telescopeMotorID);
+    
+    public TelescopeIOFalcon() {
         motor.setInverted(InvertType.None);
-
-        motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-
         motor.setNeutralMode(NeutralMode.Brake);
+        
+        motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        motor.setSensorPhase(false);
 
         motor.configNeutralDeadband(0.004);
-        
+
         motor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(true, 70, 80, 0.5));
+            new StatorCurrentLimitConfiguration(true, 40, 50, 0.5));
     }
 
     @Override
-    public void updateInputs(WristIOInputs inputs) {
+    public void updateInputs(TelescopeIOInputs inputs) {
         inputs.appliedVolts = motor.getMotorOutputVoltage();
-        inputs.positionRad = motor.getSelectedSensorPosition() / 2048 * 2 * Math.PI * WristConstants.gearRatio;
-        inputs.velocityRadPerSec = motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10 * WristConstants.gearRatio;
-        inputs.currentAmps = motor.getStatorCurrent();
-    }
-
-    @Override
-    public void setVolts(double volts) {
-        motor.set(ControlMode.PercentOutput, volts / 12.0);
+        inputs.positionMeters = motor.getSelectedSensorPosition() / 4096 * 2 * Math.PI  * TelescopeConstants.conversionM;
+        inputs.velocityMetersPerSec = motor.getSelectedSensorVelocity() / 4096 * 2 * Math.PI * TelescopeConstants.conversionM * 10;
+        inputs.currentAmps = Math.abs(motor.getStatorCurrent());
     }
 
     @Override
@@ -50,6 +43,11 @@ public class WristIOFalcon implements WristIO {
     @Override
     public void setOffset(double offset) {
         motor.setSelectedSensorPosition(offset);
+    }
+
+    @Override
+    public void setVolts(double volts) {
+        motor.set(ControlMode.Current, volts);
     }
 
     @Override

@@ -151,7 +151,7 @@ public class PivotSubsystem extends SubsystemBase {
             + feedforward.calculate(setpointRad.position, setpointRad.velocity)
             // Compensates for telescope extention
             // Gravity constant * Telescope Extention (proportion) * Cosine of Angle
-            + PivotConstants.extraKg * telescopePosM / TelescopeConstants.maxPosM
+            + PivotConstants.extraKg * telescopePosM / TelescopeConstants.maxPosMeters
                 * Math.cos(getPositionRad());
     }
 

@@ -6,7 +6,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.telescope.TelescopeSubsystem;
 
 /**
  * Command that holds the pivot at the position of its desiredSetpoint 

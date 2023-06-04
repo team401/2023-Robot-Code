@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.RobotState;
 import frc.robot.Constants.WristConstants;
 
@@ -27,12 +28,8 @@ public class WristSubsystem extends SubsystemBase {
         Units.degreesToRadians(630),
         Units.degreesToRadians(810));
 
-    // TODO: Put this back
-
-    // private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
-    private final PIDController controller = new PIDController(1, 0, 0);
-    // private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
-    private final PIDController controllerHold = new PIDController(1, 0, 0);
+    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
+    private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
 
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
@@ -45,6 +42,9 @@ public class WristSubsystem extends SubsystemBase {
 
     public WristSubsystem(WristIO io) {
         this.io = io;
+
+        if(Constants.mode == Constants.Mode.SIM)
+            homed = true;
 
         controller.setTolerance(0.05);
         controllerHold.setTolerance(0.05);
@@ -143,15 +143,15 @@ public class WristSubsystem extends SubsystemBase {
      * the position the wrist should be at when it goes all the way to the arm.
      */
     public void resetOffset() {
-        inputs.positionRad = 2.81 / (2 * Math.PI) * 2048 / WristConstants.gearRatio;
+        io.setOffset(2.81 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
     }
 
     public void resetOffsetCube() {
-        inputs.positionRad = 1.5 / (2 * Math.PI) * 2048 / WristConstants.gearRatio;
+        io.setOffset(1.5 / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
     }
 
     public void zeroOffset() {
-        inputs.positionRad = 0;
+        io.setOffset(0);
     }
 
     public void setVolts(double input) {

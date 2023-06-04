@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.telescope.TelescopeSubsystem;
 
 public class MoveTelescope extends CommandBase {
     private TelescopeSubsystem telescope;

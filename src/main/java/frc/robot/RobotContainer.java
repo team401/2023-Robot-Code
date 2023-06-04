@@ -38,12 +38,15 @@ import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.telescope.TelescopeIO;
+import frc.robot.subsystems.telescope.TelescopeIOFalcon;
+import frc.robot.subsystems.telescope.TelescopeIOSim;
+import frc.robot.subsystems.telescope.TelescopeSubsystem;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.wrist.WristIO;
 import frc.robot.subsystems.wrist.WristIOSim;
@@ -88,21 +91,21 @@ public class RobotContainer {
             case REAL:
                 drive = new Drive();
                 pivot = new PivotSubsystem();
-                telescope = new TelescopeSubsystem();
+                telescope = new TelescopeSubsystem(new TelescopeIOFalcon());
                 wrist = new WristSubsystem(new WristIOFalcon());
                 intake = new IntakeSubsystem(new IntakeIOSparkMax());
                 break;
             case SIM:
                 drive = new Drive();
                 pivot = new PivotSubsystem();
-                telescope = new TelescopeSubsystem();
+                telescope = new TelescopeSubsystem(new TelescopeIOSim());
                 wrist = new WristSubsystem(new WristIOSim());
                 intake = new IntakeSubsystem(new IntakeIOSim());
                 break;
             default:
                 drive = new Drive();
                 pivot = new PivotSubsystem();
-                telescope = new TelescopeSubsystem();
+                telescope = new TelescopeSubsystem(new TelescopeIO() {});
                 wrist = new WristSubsystem(new WristIO() {});
                 intake = new IntakeSubsystem(new IntakeIO() {});
                 break;

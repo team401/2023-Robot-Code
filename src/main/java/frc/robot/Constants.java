@@ -147,9 +147,11 @@ public final class Constants {
     }
 
     public static final class TelescopeConstants {
-        public static final double maxPosM = 0.8;
-        public static final double minPosM = 0.01;
+        public static final double maxPosMeters = 0.8;
+        public static final double minPosMeters = 0.01;
 
+        // TODO: Set weight and other stuff
+        public static final double weightKg = 5;
         public static final double conversionM = 0.00865;
 
         public static final double kP = 100;
