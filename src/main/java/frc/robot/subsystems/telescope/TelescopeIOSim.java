@@ -1,5 +1,6 @@
 package frc.robot.subsystems.telescope;
 
+import edu.wpi.first.math.Num;
 import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
@@ -13,7 +14,7 @@ public class TelescopeIOSim implements TelescopeIO {
                                             0.05,
                                             TelescopeConstants.minPosMeters,
                                             TelescopeConstants.maxPosMeters,
-                                            true);
+                                            false);
 
     double appliedVolts = 0.0;
 
