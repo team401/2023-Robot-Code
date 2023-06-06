@@ -122,7 +122,7 @@ public final class Constants {
     public static final class PivotConstants {
         public static final double encoderOffsetRad = -Units.rotationsToRadians(0.1775) + 0.01;
 
-        public static final double armToMotorGearRatio = 1 / 90;
+        public static final double armToMotorGearRatio = 90 / 1;
 
         public static final double maxFwdRotationRad = Units.degreesToRadians(-30);
         public static final double maxBackRotationRad = Units.degreesToRadians(210);
