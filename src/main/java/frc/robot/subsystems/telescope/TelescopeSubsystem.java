@@ -31,8 +31,6 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     public boolean atGoal = false;
 
-    private double simPos;
-
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
     // require information from the pivot subsytem.
@@ -133,10 +131,6 @@ public class TelescopeSubsystem extends SubsystemBase{
                     TelescopeConstants.maxPosMeters);
     }
 
-    public void setSimPos(double pos) {
-        simPos = pos;
-    }
-
     public void setVolts(double input) {
         if (!dead)
         io.setVolts(input);
@@ -174,7 +168,7 @@ public class TelescopeSubsystem extends SubsystemBase{
 
         io.updateInputs(inputs);
 
-        Logger.getInstance().processInputs("Wrist", inputs);
+        Logger.getInstance().processInputs("Telescope", inputs);
 
         RobotState.getInstance().putTelescopeDisplay(getPositionM());
     }

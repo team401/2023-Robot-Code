@@ -7,16 +7,13 @@ import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import frc.robot.Constants.TelescopeConstants;
 
 public class TelescopeIOSim implements TelescopeIO {
-    private LinearSystemSim sim = new LinearSystemSim(
-        DCMotor.getFalcon500(1),
-        TelescopeConstants.conversionM,
-        TelescopeConstants.kG,
-        TelescopeConstants.weightKg,
-        LinearSystem.estimateMOI(TelescopeConstants.conversionM, TelescopeConstants.weightKg),
-        TelescopeConstants.kMinHeightM,
-        TelescopeConstants.kMaxHeightM,
-        true
-    );
+    private ElevatorSim sim = new ElevatorSim(DCMotor.getFalcon500(1),
+                                            TelescopeConstants.conversionM,
+                                            TelescopeConstants.weightKg,
+                                            0.05,
+                                            TelescopeConstants.minPosMeters,
+                                            TelescopeConstants.maxPosMeters,
+                                            true);
 
     double appliedVolts = 0.0;
 
@@ -30,7 +27,7 @@ public class TelescopeIOSim implements TelescopeIO {
 
         inputs.appliedVolts = appliedVolts;
         inputs.positionMeters = sim.getPositionMeters();
-        inputs.velocityMetersPerSec = sim.getVelocityRadPerSec();
+        inputs.velocityMetersPerSec = sim.getVelocityMetersPerSecond();
         inputs.currentAmps = sim.getCurrentDrawAmps();
     }
 

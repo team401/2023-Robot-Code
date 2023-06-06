@@ -29,9 +29,9 @@ import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.commands.wrist.MoveWristAbsolute;
-import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.intake.IntakeSubsystem;
+import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.telescope.TelescopeSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 

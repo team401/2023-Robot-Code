@@ -2,7 +2,7 @@ package frc.robot.commands.telescope;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.telescope.TelescopeSubsystem;
 
 public class HoldTelescope extends CommandBase {
@@ -30,6 +30,5 @@ public class HoldTelescope extends CommandBase {
         double output = telescope.calculateControl(goalState, pivot.getPositionRad());
 
         telescope.setVolts(output);
-        telescope.setSimPos(goalState.position);
     }
 }

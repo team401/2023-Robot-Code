@@ -5,7 +5,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.telescope.TelescopeSubsystem;
 
 /**
@@ -53,6 +53,5 @@ public class HoldPivot extends CommandBase {
         double pivotOut = MathUtil.clamp(pivot.calculateControl(setpoint, telescope.getPositionM()), -4, 4);
 
         pivot.setVolts(pivotOut);
-        pivot.setSimPos(goalState.position);
    }
 }
