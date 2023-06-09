@@ -21,9 +21,15 @@ public interface ModuleIO {
 
     public default void setDriveVoltage(double volts) {}
 
+    public default void setDriveVelocity(double velocityRadPerS, double ffVolts) {}
+
+    public default void setDrivePD(double p, double d) {}
+
     public default void setRotationVoltage(double volts) {}
 
     public default void zeroEncoders() {}
     
     public default void toggleKill() {}
+
+    public default void setBrakeMode(boolean brake) {}
 }

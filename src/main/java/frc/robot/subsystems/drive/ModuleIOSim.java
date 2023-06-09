@@ -1,9 +1,11 @@
 package frc.robot.subsystems.drive;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.FlywheelSim;
+import edu.wpi.first.wpilibj2.command.PIDCommand;
 import frc.robot.Constants.DriveConstants;
 
 public class ModuleIOSim implements ModuleIO {
@@ -18,6 +20,9 @@ public class ModuleIOSim implements ModuleIO {
     private double driveAppliedVolts = 0.0;
     private double rotationAppliedVolts = 0.0;
 
+    private PIDController driveController = new PIDController(0, 0, 0);
+
+    // I don't trust the loop time
     private Timer dtTimer = new Timer();
 
     public ModuleIOSim() {
@@ -32,10 +37,8 @@ public class ModuleIOSim implements ModuleIO {
         driveSim.update(loopTime);
         rotationSim.update(loopTime);
 
-        double angleDiffRad =
-            rotationSim.getAngularVelocityRadPerSec() * loopTime;
-        rotationPositionRad += angleDiffRad;
-
+        // `FlywheelSim` does not specify position, so we have to calculate it manually
+        rotationPositionRad += rotationSim.getAngularVelocityRadPerSec() * loopTime;
         drivePositionRad += driveSim.getAngularVelocityRadPerSec() * loopTime;
 
         inputs.drivePositionRad = drivePositionRad;
@@ -51,12 +54,14 @@ public class ModuleIOSim implements ModuleIO {
 
     @Override
     public void setDriveVoltage(double volts) {
+        volts = MathUtil.clamp(volts, -12, 12);
         driveSim.setInputVoltage(volts);
         driveAppliedVolts = volts;
     }
 
     @Override
     public void setRotationVoltage(double volts) {
+        volts = MathUtil.clamp(volts, -12, 12);
         rotationSim.setInputVoltage(volts);
         rotationAppliedVolts = volts;
     }
@@ -66,5 +71,18 @@ public class ModuleIOSim implements ModuleIO {
         rotationPositionRad = 0.0;
         drivePositionRad = 0.0;
     }
+
+    @Override
+    public void setDriveVelocity(double velocityRadPerS, double ffVolts) {
+        setDriveVoltage(driveController.calculate(
+            driveSim.getAngularVelocityRPM(), velocityRadPerS) + ffVolts);
+    }
+
+    @Override
+    public void setDrivePD(double p, double d) {
+        driveController.setP(p);
+        driveController.setD(d);
+    }
+
     // we don't need to implement togglekill()
 }

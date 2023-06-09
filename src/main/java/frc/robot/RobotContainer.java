@@ -11,6 +11,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -40,7 +41,12 @@ import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.drive.AngleIO;
+import frc.robot.subsystems.drive.AngleIOPidgeon2;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOFalcon500;
+import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
@@ -72,6 +78,8 @@ public class RobotContainer {
     private final Joystick rightStick = new Joystick(1);
     private final ButtonMasher masher = new ButtonMasher(2);
 
+    private final PS4Controller controller = new PS4Controller(3);
+
     SendableChooser<String> autoChooser = new SendableChooser<String>();
     private Command activeAutoCommand = null;
     private String activeAutoName = null;
@@ -83,21 +91,37 @@ public class RobotContainer {
     public RobotContainer() {
         switch(Constants.mode) {
             case REAL:
-                drive = new Drive();
+                // BAD
+                drive = new Drive(
+                    new AngleIOPidgeon2(),
+                    new ModuleIOFalcon500(0, 0, 0, 0, false),
+                    new ModuleIOFalcon500(0, 0, 0, 0, false),
+                    new ModuleIOFalcon500(0, 0, 0, 0, false),
+                    new ModuleIOFalcon500(0, 0, 0, 0, false));
                 pivot = new PivotSubsystem();
                 telescope = new TelescopeSubsystem();
                 wrist = new WristSubsystem();
                 intake = new IntakeSubsystem(new IntakeIOSparkMax());
                 break;
             case SIM:
-                drive = new Drive();
+                drive = new Drive(
+                    new AngleIO() {},
+                    new ModuleIOSim(),
+                    new ModuleIOSim(),
+                    new ModuleIOSim(),
+                    new ModuleIOSim());
                 pivot = new PivotSubsystem();
                 telescope = new TelescopeSubsystem();
                 wrist = new WristSubsystem();
                 intake = new IntakeSubsystem(new IntakeIOSim());
                 break;
             default:
-                drive = new Drive();
+                drive = new Drive(
+                    new AngleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {});
                 pivot = new PivotSubsystem();
                 telescope = new TelescopeSubsystem();
                 wrist = new WristSubsystem();
@@ -115,20 +139,20 @@ public class RobotContainer {
 
         drive.setDefaultCommand(new DriveWithJoysticks(
             drive,
-            () -> -leftStick.getRawAxis(1),
-            () -> -leftStick.getRawAxis(0),
-            () -> -rightStick.getRawAxis(0),
-            true
+            () -> -controller.getLeftX(),
+            () -> -controller.getLeftY(),
+            () -> -controller.getRawAxis(3),
+            false
         ));
 
-        pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
-        telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
+        // pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
+        // telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
+        // wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
     private void configureTestBindings() {
-        masher.a().whileTrue(new InstantCommand(() -> intake.setIntake(true)));
+        // masher.a().whileTrue(new InstantCommand(() -> intake.setIntake(true)));
     }   
 
     private void configureCompBindings() {

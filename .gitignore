@@ -4,6 +4,9 @@
 # Build Constants for Advantage Kit
 src/main/java/frc/robot/BuildConstants.java
 
+# Simulator Log Files for Advantage Kit
+logs/
+
 ### C++ ###
 # Prerequisites
 *.d
