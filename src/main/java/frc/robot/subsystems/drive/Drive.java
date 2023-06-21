@@ -1,37 +1,35 @@
 package frc.robot.subsystems.drive;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.Constants.CANDevices;
 
 /**
  * Subsystem that manages all things related to robot driving
  */
 public class Drive extends SubsystemBase {
 
-    /**
-     * Used to set module states and get data for RobotState
-     */
-    private final DriveModule[] driveModules = new DriveModule[4];
+    private final ModuleIO[] driveModules = new ModuleIO[4];
 
-    /**
-     * Used to get the rotation of the robot
-     */
-    private final DriveAngle driveAngle = new DriveAngle();
+    private final ModuleIOInputsAutoLogged[] driveInputs = new ModuleIOInputsAutoLogged[] {
+        new ModuleIOInputsAutoLogged(), new ModuleIOInputsAutoLogged(),
+        new ModuleIOInputsAutoLogged(), new ModuleIOInputsAutoLogged()};
+
+    private final AngleIO driveAngle;
+
+    private final AngleIOInputsAutoLogged driveAngleInputs = new AngleIOInputsAutoLogged();
 
     /**
      * The positions of each module used to update RobotState
@@ -48,96 +46,130 @@ public class Drive extends SubsystemBase {
      */
     private PIDController[] rotationPIDs = new PIDController[4];
 
+    private static SimpleMotorFeedforward driveFF;
+
     /**
      * True if drive should be slow, false if drive should be going at max speed
      */
     private boolean babyMode = false;
+        
 
     /**
      * Initialize all the modules, data arrays, and RobotState
      */
-    public Drive() {
+    public Drive(AngleIO angle, ModuleIO flModule, ModuleIO frModule, ModuleIO blModule, ModuleIO brModule) {
+        driveModules[0] = flModule;
+        driveModules[1] = frModule;
+        driveModules[2] = blModule;
+        driveModules[3] = brModule;
 
-        driveModules[0] = new DriveModule(CANDevices.frontLeftDriveMotorID, CANDevices.frontLeftRotationMotorID,
-            CANDevices.frontLeftRotationEncoderID, DriveConstants.frontLeftAngleOffset, false);
-        driveModules[1] = new DriveModule(CANDevices.frontRightDriveMotorID, CANDevices.frontRightRotationMotorID,
-            CANDevices.frontRightRotationEncoderID, DriveConstants.frontRightAngleOffset, true);
-        driveModules[2] = new DriveModule(CANDevices.backLeftDriveMotorID, CANDevices.backLeftRotationMotorID,
-            CANDevices.backLeftRotationEncoderID, DriveConstants.backLeftAngleOffset, false);
-        driveModules[3] = new DriveModule(CANDevices.backRightDriveMotorID, CANDevices.backRightRotationMotorID,
-            CANDevices.backRightRotationEncoderID, DriveConstants.backRightAngleOffset, true);
+        driveAngle = angle;
+
 
         for (int i = 0; i < 4; i++) {
             driveModules[i].zeroEncoders();
             modulePositions[i] = new SwerveModulePosition();
             goalModuleStates[i] = new SwerveModuleState();
 
-            rotationPIDs[i] = new PIDController(DriveConstants.rotationKps[i], 0, DriveConstants.rotationKds[i]);
+            switch (Constants.mode) {
+                case REAL:
+                    rotationPIDs[i] = new PIDController(7, 0, 0);
+                    driveModules[i].setDrivePD(DriveConstants.driveRealKps[i], DriveConstants.driveRealKds[i]);
+                break;
+                case SIM:
+                    rotationPIDs[i] = new PIDController(8, 0, 0);
+                    // sim sets drive PDs automagically
+                break;
+                default:
+                break;
+            }
             rotationPIDs[i].enableContinuousInput(-Math.PI, Math.PI);
-            driveModules[i].setDrivePD(DriveConstants.driveKps[i], DriveConstants.driveKds[i]);
+                
+            driveModules[i].updateInputs(driveInputs[i]);
+            modulePositions[i].distanceMeters = driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM;
+            modulePositions[i].angle = new Rotation2d(driveInputs[i].rotationPositionRad);
+        }
 
-            modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
-            modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
+        // annoying that this happens twice, but it's fine
+        switch (Constants.mode) {
+            case REAL:
+                driveFF = new SimpleMotorFeedforward(0.23, 2.185);
+            break;
+            case SIM:
+                driveFF = new SimpleMotorFeedforward(0.12, 0.13);
+            break;
+            default:
+                driveFF = new SimpleMotorFeedforward(0, 0);
         }
 
         setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
 
         RobotState.getInstance().initializePoseEstimator(getRotation(), modulePositions);
-
     }
 
     @Override
     public void periodic() {
-
         // SmartDashboard.putNumber("Angle", driveAngle.getHeading());
 
         // Driving
         for (int i = 0; i < 4; i++) {
+            driveModules[i].updateInputs(driveInputs[i]);
+            Logger.getInstance().processInputs("Drive/Module"+i, driveInputs[i]);
 
-            SmartDashboard.putBoolean("DriveStatus"+i, driveModules[i].getDeadBoolean());
+            driveAngle.updateInputs(driveAngleInputs);
+            Logger.getInstance().processInputs("Drive/Angle", driveAngleInputs);
 
             // Get encoder value
-            Rotation2d moduleRotation = new Rotation2d(driveModules[i].getRotationPosition());
+            Rotation2d moduleRotation = new Rotation2d(driveInputs[i].rotationPositionRad);
 
             // Optimize each module state
             SwerveModuleState optimizedState = SwerveModuleState.optimize(goalModuleStates[i], moduleRotation);
-            double rotationSetpointRadians = optimizedState.angle.getRadians();
+            
+            // Set module speed
             double speedSetpointMPerS = optimizedState.speedMetersPerSecond;
 
-            // Set module speed
-            double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
-            double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
-            // SmartDashboard.putNumber("DesiredSpeed"+i, speedSetpointMPerS);
-            // SmartDashboard.putNumber("ActualSpeed"+i, driveModules[i].getDriveVelocityMPerS());
-            // SmartDashboard.putNumber("ErrorSpeed"+i, Math.abs(driveModules[i].getDriveVelocityMPerS()-speedSetpointMPerS));
-            // SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
-            driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
+            Logger.getInstance().recordOutput("Drive/Module"+i+"/DesiredSpeedMeters", speedSetpointMPerS);
+            Logger.getInstance().recordOutput("Drive/Module"+i+"/SpeedError", 
+                Math.abs(speedSetpointMPerS - driveInputs[i].driveVelocityRadPerSec 
+                    * DriveConstants.wheelRadiusM));
+            Logger.getInstance().recordOutput("Drive/Module"+i+"/DriveVelocityMeters",
+                driveInputs[i].driveVelocityRadPerSec * DriveConstants.wheelRadiusM);
+            
+            double speedSetpointRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
+            double ffVolts = driveFF.calculate(speedSetpointRadPerS);
+            driveModules[i].setDriveVelocity(speedSetpointRadPerS, ffVolts);
+            Logger.getInstance().recordOutput("Drive/Module"+i+"/FF", ffVolts);
 
             // Set module rotation
-            // rotationSetpointRadians = 0;
+            double rotationSetpointRadians = optimizedState.angle.getRadians();
+
             double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
             driveModules[i].setRotationVoltage(rotationVoltage);
-            // SmartDashboard.putNumber("DesiredRot"+i, rotationSetpointRadians);
-            // SmartDashboard.putNumber("ActualRot"+i, moduleRotation.getRadians());
-            // SmartDashboard.putNumber("DriveRotError"+i, MathUtil.angleModulus(rotationSetpointRadians-moduleRotation.getRadians()));
-
-            // SmartDashboard.putNumber("DesiredDriveAngle"+i, rotationSetpointRadians);
+            Logger.getInstance().recordOutput("Drive/Module"+i+"/DesiredRotation", rotationSetpointRadians);
+            Logger.getInstance().recordOutput("Drive/Module"+i+"/RotationError",
+                MathUtil.angleModulus(rotationSetpointRadians-moduleRotation.getRadians()));
         }
 
         // Pose estimation
         for (int i = 0; i < 4; i++) {
-            modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
-            modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
-            // SmartDashboard.putNumber("DriveAngle"+i, modulePositions[i].angle.getRadians());
-            // SmartDashboard.putNumber("DriveStator"+i, driveModules[i].getDriveStatorCurrent());
-            // SmartDashboard.putNumber("RotationStator"+i, driveModules[i].getRotationStatorCurrent());
+            modulePositions[i].distanceMeters = driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM;
+            modulePositions[i].angle = new Rotation2d(driveInputs[i].rotationPositionRad);
         }
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
-        // SmartDashboard.putNumber("DriveVelocity", getChassisSpeeds().vxMetersPerSecond);
+        Logger.getInstance().recordOutput("Drive/ModuleStates/Setpoints", goalModuleStates);
 
-        // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
+        //TODO: make less stupid
+        SwerveModuleState[] measuredStates = new SwerveModuleState[4];
+        for (int i = 0; i < 4; i++) {
+            measuredStates[i] = new SwerveModuleState(
+                driveInputs[i].driveVelocityRadPerSec
+                    * DriveConstants.wheelRadiusM,
+                Rotation2d.fromRadians(driveInputs[i].rotationPositionRad));
+        }
+        Logger.getInstance().recordOutput("Drive/ModuleStates/Measured", measuredStates);
 
+        Logger.getInstance().recordOutput("Drive/Velocity", getChassisSpeeds().vxMetersPerSecond);
     }
 
     /**
@@ -145,9 +177,7 @@ public class Drive extends SubsystemBase {
      * @param states an array of SwerveModuleStates representing the desired state for each swerve module [frontLeft, frontRight, backLeft, backRight]
      */
     public void setGoalModuleStates(SwerveModuleState[] states) {
-        // SmartDashboard.putNumber("lol", System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
-            // SmartDashboard.putNumber("lel"+i, states[i].speedMetersPerSecond);
             goalModuleStates[i] = states[i];
         }
     }
@@ -160,6 +190,8 @@ public class Drive extends SubsystemBase {
         speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.1 : 1));
         SwerveModuleState[] goalModuleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(goalModuleStates, DriveConstants.maxDriveSpeed);
+
+        // Don't rotate the wheels if you're not going anywhere
         if (speeds.vxMetersPerSecond == 0 && speeds.vyMetersPerSecond == 0 && speeds.omegaRadiansPerSecond == 0) {
             goalModuleStates = new SwerveModuleState[] {
                 new SwerveModuleState(0, modulePositions[0].angle), 
@@ -175,25 +207,25 @@ public class Drive extends SubsystemBase {
      * @return the rotation of the robot in radians from the gyro
      */
     public Rotation2d getRotation() {
-        return new Rotation2d(MathUtil.angleModulus(driveAngle.getHeading()));
+        return new Rotation2d(MathUtil.angleModulus(driveAngleInputs.yawRad));
     }
 
     /**
      * Sets the heading (apparent rotation) of the robot to zero
      */
     public void resetHeading() {
-        driveAngle.resetHeading();
+        driveAngle.resetYaw();
     }
 
     public void setHeading(double heading) {
-        driveAngle.setHeading(heading);
+        driveAngle.setYaw(heading);
     }
 
     /**
      * @return the roll of the gyro in radians
      */
     public double getRoll() {
-        return driveAngle.getRoll();
+        return driveAngleInputs.rollRad;
     }
 
     /**
@@ -221,7 +253,9 @@ public class Drive extends SubsystemBase {
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (int i = 0; i < 4; i++) {
-            states[i] = driveModules[i].getModuleState();
+            states[i] = new SwerveModuleState(
+                driveInputs[i].driveVelocityRadPerSec,
+                new Rotation2d(driveInputs[i].rotationPositionRad));
         }
         return states;
     }
@@ -232,7 +266,7 @@ public class Drive extends SubsystemBase {
 
     public void setBrakeMode(boolean braked) {
         for (int i = 0; i < 4; i++) {
-            driveModules[i].setBrake(braked);
+            driveModules[i].setBrakeMode(braked);
         }
     }
 

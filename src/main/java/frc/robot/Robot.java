@@ -72,8 +72,7 @@ public void robotInit() {
         logger.addDataReceiver(new NT4Publisher());
         break;
     case SIM:
-        // TODO: Do this later (local logs)
-        // logger.addDataReceiver(new WPILOGWriter(""));
+        logger.addDataReceiver(new WPILOGWriter("logs/"));
         logger.addDataReceiver(new NT4Publisher());
         break;
     case REPLAY:

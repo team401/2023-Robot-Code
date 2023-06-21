@@ -26,6 +26,10 @@ public final class Constants {
         REAL, SIM, REPLAY
     }
 
+    public static enum DriveModulePosition {
+        FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT
+    }
+
     public static final class CANDevices {
 
         public static final String canivoreName = "Canivore";
@@ -83,11 +87,8 @@ public final class Constants {
         public static final double backLeftAngleOffset = 1.681;
         public static final double backRightAngleOffset =  1.039;
 
-        public static final double[] driveKps = {0.7, 0.4, 0.7, 0.7};
-        public static final double[] driveKds = {3.5, 2.5, 3.7, 3.5};
-
-        public static final double[] rotationKps = {7, 7, 7, 7};
-        public static final double[] rotationKds = {0, 0, 0, 0};
+        public static final double[] driveRealKps = {0.7, 0.4, 0.7, 0.7};
+        public static final double[] driveRealKds = {3.5, 2.5, 3.7, 3.5};
 
         public static final double driveSnapKp = 1.5;
         public static final double driveSnapKi = 0;
@@ -100,8 +101,6 @@ public final class Constants {
                 new Translation2d(-trackWidth / 2.0, wheelBase / 2.0), //rear left
                 new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0) //rear right
         );
-
-        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.23, 2.185);
 
         public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;

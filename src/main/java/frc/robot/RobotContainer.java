@@ -11,8 +11,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -29,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
+import frc.robot.Constants.DriveModulePosition;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.CharacterizeMechanism;
@@ -37,7 +40,12 @@ import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
 import frc.robot.subsystems.LEDManager;
+import frc.robot.subsystems.drive.AngleIO;
+import frc.robot.subsystems.drive.AngleIOPidgeon2;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOFalcon500;
+import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.intake.IntakeIOSparkMax;
@@ -92,21 +100,36 @@ public class RobotContainer {
     public RobotContainer() {
         switch(Constants.mode) {
             case REAL:
-                drive = new Drive();
+                drive = new Drive(
+                    new AngleIOPidgeon2(),
+                    new ModuleIOFalcon500(DriveModulePosition.FRONT_LEFT),
+                    new ModuleIOFalcon500(DriveModulePosition.FRONT_RIGHT),
+                    new ModuleIOFalcon500(DriveModulePosition.BACK_LEFT),
+                    new ModuleIOFalcon500(DriveModulePosition.BACK_RIGHT));
                 pivot = new PivotSubsystem(new PivotIOFalcon());
                 telescope = new TelescopeSubsystem(new TelescopeIOFalcon());
                 wrist = new WristSubsystem(new WristIOFalcon());
                 intake = new IntakeSubsystem(new IntakeIOSparkMax());
                 break;
             case SIM:
-                drive = new Drive();
+                drive = new Drive(
+                    new AngleIO() {},
+                    new ModuleIOSim(),
+                    new ModuleIOSim(),
+                    new ModuleIOSim(),
+                    new ModuleIOSim());
                 pivot = new PivotSubsystem(new PivotIOSim());
                 telescope = new TelescopeSubsystem(new TelescopeIOSim());
                 wrist = new WristSubsystem(new WristIOSim());
                 intake = new IntakeSubsystem(new IntakeIOSim());
                 break;
             default:
-                drive = new Drive();
+                drive = new Drive(
+                    new AngleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {},
+                    new ModuleIO() {});
                 pivot = new PivotSubsystem(new PivotIO() {});
                 telescope = new TelescopeSubsystem(new TelescopeIO() {});
                 wrist = new WristSubsystem(new WristIO() {});
