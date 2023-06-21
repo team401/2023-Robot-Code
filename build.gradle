@@ -97,6 +97,14 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
+// Check selected robot when deploying
+task(checkRobot, dependsOn: "classes", type: JavaExec) {
+    mainClass = "frc.robot.Constants"
+    classpath = sourceSets.main.runtimeClasspath
+}
+deployroborio.dependsOn(checkRobot)
+
+
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
 // in order to make them all available at runtime. Also adding the manifest so WPILib
 // knows where to look for our Robot Class.

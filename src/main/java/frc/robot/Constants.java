@@ -19,7 +19,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
-    public static final Mode mode = Mode.SIM;
+    public static final Mode mode = Mode.REAL;
 
     public static enum Mode {
         REAL, SIM, REPLAY
@@ -328,4 +328,18 @@ public final class Constants {
 
     }
 
+    // Not the robot main function. This is called by Gradle when deploying to
+    // make sure nobody deploys sim code. 
+    // Stolen from 6328 ;-)
+    // See build.gradle
+
+    /**
+     * Checks that code is set to right mode when deploying
+     */
+    public static void main(String... args) {
+        if (mode != Mode.REAL) {
+            System.err.println("Cannot deploy. Invalid mode: " + mode);
+            System.exit(1);
+        }
+    }
 }
