@@ -11,6 +11,8 @@ public interface ModuleIO {
         public double driveAppliedVolts = 0.0;
         public double driveCurrentAmps = 0.0;
 
+        public double driveSetpointRadPerS = 0.0;
+
         public double rotationPositionRad = 0.0;
         public double rotationVelocityRadPerSec = 0.0;
         public double rotationAppliedVolts = 0.0;

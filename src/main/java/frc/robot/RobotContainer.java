@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -152,7 +153,13 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        // masher.a().whileTrue(new InstantCommand(() -> intake.setIntake(true)));
+        new JoystickButton(controller, Button.kB.value)
+            .onTrue(new InstantCommand(() -> drive.setVolts(12)))
+            .onFalse(new InstantCommand(() -> drive.setVolts(0)));
+
+        new JoystickButton(controller, Button.kA.value)
+            .onTrue(new InstantCommand(() -> drive.setVolts(-12)))
+            .onFalse(new InstantCommand(() -> drive.setVolts(0)));
     }   
 
     private void configureCompBindings() {

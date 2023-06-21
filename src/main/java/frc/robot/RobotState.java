@@ -100,6 +100,10 @@ public class RobotState {
         driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
+    /**
+     * @deprecated use a real simulator!!
+     * @param pose
+     */
     public void setSimPose(Pose2d pose) {
         field.setRobotPose(pose);
     }
@@ -109,7 +113,7 @@ public class RobotState {
         // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
         // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
 
-        // field.setRobotPose(poseEstimator.getEstimatedPosition());
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
         
         return poseEstimator.getEstimatedPosition();    
     }

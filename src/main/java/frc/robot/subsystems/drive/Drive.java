@@ -4,6 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -11,9 +12,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.drive.AngleIO.AngleIOInputs;
-import frc.robot.subsystems.drive.ModuleIO.ModuleIOInputs;
 import frc.robot.RobotState;
 
 /**
@@ -46,10 +46,13 @@ public class Drive extends SubsystemBase {
      */
     private PIDController[] rotationPIDs = new PIDController[4];
 
+    private static SimpleMotorFeedforward driveFF;
+
     /**
      * True if drive should be slow, false if drive should be going at max speed
      */
     private boolean babyMode = false;
+        
 
     /**
      * Initialize all the modules, data arrays, and RobotState
@@ -68,14 +71,35 @@ public class Drive extends SubsystemBase {
             modulePositions[i] = new SwerveModulePosition();
             goalModuleStates[i] = new SwerveModuleState();
 
-            rotationPIDs[i] = new PIDController(DriveConstants.rotationKps[i], 0, DriveConstants.rotationKds[i]);
+            switch (Constants.mode) {
+                case REAL:
+                    rotationPIDs[i] = new PIDController(7, 0, 0);
+                    driveModules[i].setDrivePD(DriveConstants.driveRealKps[i], DriveConstants.driveRealKds[i]);
+                break;
+                case SIM:
+                    rotationPIDs[i] = new PIDController(8, 0, 0);
+                    // sim sets drive PDs automagically
+                break;
+                default:
+                break;
+            }
             rotationPIDs[i].enableContinuousInput(-Math.PI, Math.PI);
-            driveModules[i].setDrivePD(DriveConstants.driveKps[i], DriveConstants.driveKds[i]);
-
+                
             driveModules[i].updateInputs(driveInputs[i]);
-
             modulePositions[i].distanceMeters = driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM;
             modulePositions[i].angle = new Rotation2d(driveInputs[i].rotationPositionRad);
+        }
+
+        // annoying that this happens twice, but it's fine
+        switch (Constants.mode) {
+            case REAL:
+                driveFF = new SimpleMotorFeedforward(0.23, 2.185);
+            break;
+            case SIM:
+                driveFF = new SimpleMotorFeedforward(0.12, 0.13);
+            break;
+            default:
+                driveFF = new SimpleMotorFeedforward(0, 0);
         }
 
         setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
@@ -107,14 +131,14 @@ public class Drive extends SubsystemBase {
             Logger.getInstance().recordOutput("Drive/Module"+i+"/DesiredSpeedMeters", speedSetpointMPerS);
             Logger.getInstance().recordOutput("Drive/Module"+i+"/SpeedError", 
                 Math.abs(speedSetpointMPerS - driveInputs[i].driveVelocityRadPerSec 
-                    * DriveConstants.wheelRadiusM / DriveConstants.driveWheelGearReduction));
+                    * DriveConstants.wheelRadiusM));
             Logger.getInstance().recordOutput("Drive/Module"+i+"/DriveVelocityMeters",
-                driveInputs[i].driveVelocityRadPerSec 
-                    * DriveConstants.wheelRadiusM / DriveConstants.driveWheelGearReduction);
+                driveInputs[i].driveVelocityRadPerSec * DriveConstants.wheelRadiusM);
             
-            double speedRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
-            double ffVolts = DriveConstants.driveFF.calculate(speedRadPerS);
-            driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
+            double speedSetpointRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
+            double ffVolts = driveFF.calculate(speedSetpointRadPerS);
+            driveModules[i].setDriveVelocity(speedSetpointRadPerS, ffVolts);
+            Logger.getInstance().recordOutput("Drive/Module"+i+"/FF", ffVolts);
 
             // Set module rotation
             double rotationSetpointRadians = optimizedState.angle.getRadians();
@@ -140,7 +164,7 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             measuredStates[i] = new SwerveModuleState(
                 driveInputs[i].driveVelocityRadPerSec
-                    * DriveConstants.wheelRadiusM / DriveConstants.driveWheelGearReduction,
+                    * DriveConstants.wheelRadiusM,
                 Rotation2d.fromRadians(driveInputs[i].rotationPositionRad));
         }
         Logger.getInstance().recordOutput("Drive/ModuleStates/Measured", measuredStates);

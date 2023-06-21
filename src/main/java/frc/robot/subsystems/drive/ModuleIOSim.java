@@ -1,5 +1,7 @@
 package frc.robot.subsystems.drive;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -20,7 +22,9 @@ public class ModuleIOSim implements ModuleIO {
     private double driveAppliedVolts = 0.0;
     private double rotationAppliedVolts = 0.0;
 
-    private PIDController driveController = new PIDController(0, 0, 0);
+    private PIDController driveController = new PIDController(0.9, 0, 0);
+    private double driveSetpointRadPerS = 0;
+    private double driveFFVolts = 0;
 
     // I don't trust the loop time
     private Timer dtTimer = new Timer();
@@ -33,6 +37,7 @@ public class ModuleIOSim implements ModuleIO {
     @Override
     public void updateInputs(ModuleIOInputs inputs) {
         double loopTime = dtTimer.get();
+        dtTimer.reset();
 
         driveSim.update(loopTime);
         rotationSim.update(loopTime);
@@ -50,6 +55,12 @@ public class ModuleIOSim implements ModuleIO {
         inputs.rotationVelocityRadPerSec = rotationSim.getAngularVelocityRadPerSec();
         inputs.rotationAppliedVolts = rotationAppliedVolts;
         inputs.rotationCurrentAmps = rotationSim.getCurrentDrawAmps();
+
+        inputs.driveSetpointRadPerS = driveSetpointRadPerS;
+
+        setDriveVoltage(driveController.calculate(
+            driveSim.getAngularVelocityRadPerSec(), driveSetpointRadPerS) + driveFFVolts);
+        // setDriveVoltage((driveSetpointRadPerS - driveSim.getAngularVelocityRadPerSec()) * 0.5 + driveFFVolts);
     }
 
     @Override
@@ -74,8 +85,8 @@ public class ModuleIOSim implements ModuleIO {
 
     @Override
     public void setDriveVelocity(double velocityRadPerS, double ffVolts) {
-        setDriveVoltage(driveController.calculate(
-            driveSim.getAngularVelocityRPM(), velocityRadPerS) + ffVolts);
+        driveSetpointRadPerS = velocityRadPerS;
+        driveFFVolts = ffVolts;
     }
 
     @Override
