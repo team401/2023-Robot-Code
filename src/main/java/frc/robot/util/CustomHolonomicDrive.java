@@ -28,7 +28,9 @@ import frc.robot.Constants.DriveConstants;
  * are decoupled from translations, users can specify a custom heading that the drivetrain should
  * point toward. This heading reference is profiled for smoothness.
  */
-@SuppressWarnings("MemberName")
+//TODO: refactor all of this.
+//  Where did this even come from?
+@SuppressWarnings("unused")
 public class CustomHolonomicDrive {
   private Pose2d m_poseError = new Pose2d();
   private Pose2d m_poseTolerance = new Pose2d(.05, .05, new Rotation2d());

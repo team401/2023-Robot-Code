@@ -6,7 +6,6 @@ import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.numbers.N1;
@@ -104,13 +103,8 @@ public class RobotState {
         driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
-    /**
-     * @deprecated use a real simulator!!
-     * @param pose
-     */
-    @Deprecated
-    public void setSimPose(Pose2d pose) {
-        field.setRobotPose(pose);
+    public void setSetpointPose(Pose2d pose) {
+        Logger.getInstance().recordOutput("Poses/Setpoint", pose);
     }
 
     public Pose2d getFieldToVehicle() {
@@ -170,7 +164,7 @@ public class RobotState {
     public void setMode(Constants.GamePieceMode mode) {
         gamePieceMode = mode;
 
-        String str = mode == gamePieceMode.ConeUp ? "up" : "normal";
+        // String str = mode == gamePieceMode.ConeUp ? "up" : "normal";
         // SmartDashboard.putString("Mode", str);
     }
 

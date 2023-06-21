@@ -11,34 +11,23 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.DriveModulePosition;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
-import frc.robot.commands.auto.Balance;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.drive.AngleIO;
 import frc.robot.subsystems.drive.AngleIOPidgeon2;
@@ -72,7 +61,6 @@ import frc.robot.commands.telescope.MoveTelescope;
 import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
-import frc.robot.commands.wrist.MoveWristAbsolute;
 import frc.robot.oi.ButtonMasher;
 
 public class RobotContainer {
@@ -82,6 +70,7 @@ public class RobotContainer {
     private final TelescopeSubsystem telescope;
     private final WristSubsystem wrist;
     private final IntakeSubsystem intake;
+    @SuppressWarnings("unused")
     private final Vision vision = new Vision();
     private final LEDManager ledManager = new LEDManager();
 
@@ -159,6 +148,7 @@ public class RobotContainer {
 
     }
 
+    @SuppressWarnings("unused")
     private void configureTestBindings() {
         // masher.a().onTrue(new InstantCommand(() -> wrist.setVolts(2)));
 
@@ -169,6 +159,7 @@ public class RobotContainer {
         masher.x().onTrue(new InstantCommand(() -> wrist.jogSetpointBack(), wrist));
     }   
 
+    @SuppressWarnings("unused")
     private void configureCompBindings() {
         
         // Drive

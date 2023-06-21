@@ -8,7 +8,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -35,6 +34,7 @@ import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.telescope.TelescopeSubsystem;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
+@SuppressWarnings("unused")
 public class AutoRoutines extends SequentialCommandGroup {
 
     private final Drive drive;

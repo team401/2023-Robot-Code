@@ -3,7 +3,6 @@ package frc.robot.commands.telescope;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 import frc.robot.subsystems.telescope.TelescopeSubsystem;

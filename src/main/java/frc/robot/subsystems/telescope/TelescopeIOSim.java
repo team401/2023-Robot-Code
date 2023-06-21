@@ -1,10 +1,7 @@
 package frc.robot.subsystems.telescope;
 
-import edu.wpi.first.math.Num;
-import edu.wpi.first.math.system.LinearSystem;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.ElevatorSim;
-import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
 import frc.robot.Constants.TelescopeConstants;
 
 public class TelescopeIOSim implements TelescopeIO {

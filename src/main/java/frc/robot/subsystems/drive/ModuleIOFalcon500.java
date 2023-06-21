@@ -12,7 +12,6 @@ import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.DriveModulePosition;
@@ -23,10 +22,11 @@ public class ModuleIOFalcon500 implements ModuleIO {
     private final CANCoder rotationEncoder;
     private final double initialOffsetRadians;
 
+    //TODO: re-implement these checks
     //Check to see if encoder stops working
     private boolean killed = false;
-    private final Timer deadTimer;
-    private double lastRotationPosition = 0;
+    // private final Timer deadTimer;
+    // private double lastRotationPosition = 0;
 
     public ModuleIOFalcon500(DriveModulePosition position) {
         switch(position) {
@@ -87,12 +87,6 @@ public class ModuleIOFalcon500 implements ModuleIO {
         rotationEncoder.configFactoryDefault(1000);
         rotationEncoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 20, 1000);
         rotationEncoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 255, 1000);
-
-        
-
-        deadTimer = new Timer();
-        deadTimer.reset();
-        deadTimer.start();
     }
 
     @Override
