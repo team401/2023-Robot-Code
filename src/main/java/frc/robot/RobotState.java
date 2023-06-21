@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -86,6 +88,8 @@ public class RobotState {
     public void recordDriveObservations(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator.update(rotation, modulePositions);
         driveOdometry.update(rotation, modulePositions);
+
+        Logger.getInstance().recordOutput("Poses/Odometry", driveOdometry.getPoseMeters());
     }
 
     public void recordVisionObservations(Pose2d pose, Matrix<N3, N1> stdDevs, double timestamp) {
@@ -104,6 +108,7 @@ public class RobotState {
      * @deprecated use a real simulator!!
      * @param pose
      */
+    @Deprecated
     public void setSimPose(Pose2d pose) {
         field.setRobotPose(pose);
     }

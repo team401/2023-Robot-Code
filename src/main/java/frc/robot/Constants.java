@@ -26,6 +26,10 @@ public final class Constants {
         REAL, SIM, REPLAY
     }
 
+    public static enum DriveModulePosition {
+        FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT
+    }
+
     public static final class CANDevices {
 
         public static final String canivoreName = "Canivore";

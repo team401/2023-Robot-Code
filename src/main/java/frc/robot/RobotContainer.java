@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
+import frc.robot.Constants.DriveModulePosition;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.CharacterizeMechanism;
@@ -79,8 +80,6 @@ public class RobotContainer {
     private final Joystick rightStick = new Joystick(1);
     private final ButtonMasher masher = new ButtonMasher(2);
 
-    private final PS4Controller controller = new PS4Controller(3);
-
     SendableChooser<String> autoChooser = new SendableChooser<String>();
     private Command activeAutoCommand = null;
     private String activeAutoName = null;
@@ -95,10 +94,10 @@ public class RobotContainer {
                 // BAD
                 drive = new Drive(
                     new AngleIOPidgeon2(),
-                    new ModuleIOFalcon500(0, 0, 0, 0, false),
-                    new ModuleIOFalcon500(0, 0, 0, 0, false),
-                    new ModuleIOFalcon500(0, 0, 0, 0, false),
-                    new ModuleIOFalcon500(0, 0, 0, 0, false));
+                    new ModuleIOFalcon500(DriveModulePosition.FRONT_LEFT),
+                    new ModuleIOFalcon500(DriveModulePosition.FRONT_RIGHT),
+                    new ModuleIOFalcon500(DriveModulePosition.BACK_LEFT),
+                    new ModuleIOFalcon500(DriveModulePosition.BACK_RIGHT));
                 pivot = new PivotSubsystem();
                 telescope = new TelescopeSubsystem();
                 wrist = new WristSubsystem();
@@ -140,10 +139,10 @@ public class RobotContainer {
 
         drive.setDefaultCommand(new DriveWithJoysticks(
             drive,
-            () -> -controller.getLeftX(),
-            () -> -controller.getLeftY(),
-            () -> -controller.getRawAxis(3),
-            false
+            () -> -leftStick.getRawAxis(1),
+            () -> -leftStick.getRawAxis(0),
+            () -> -rightStick.getRawAxis(0),
+            true
         ));
 
         // pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
@@ -153,13 +152,7 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        new JoystickButton(controller, Button.kB.value)
-            .onTrue(new InstantCommand(() -> drive.setVolts(12)))
-            .onFalse(new InstantCommand(() -> drive.setVolts(0)));
-
-        new JoystickButton(controller, Button.kA.value)
-            .onTrue(new InstantCommand(() -> drive.setVolts(-12)))
-            .onFalse(new InstantCommand(() -> drive.setVolts(0)));
+        
     }   
 
     private void configureCompBindings() {
