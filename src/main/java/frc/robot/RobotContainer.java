@@ -145,14 +145,14 @@ public class RobotContainer {
             true
         ));
 
-        // pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
-        // telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        // wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
+        pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
+        telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
+        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
 
     }
 
     private void configureTestBindings() {
-        
+        masher.a().whileTrue(new InstantCommand(() -> intake.setIntake(true)));
     }   
 
     private void configureCompBindings() {
