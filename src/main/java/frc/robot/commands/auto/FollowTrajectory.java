@@ -1,5 +1,7 @@
 package frc.robot.commands.auto;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
@@ -66,7 +68,7 @@ public class FollowTrajectory extends CommandBase {
     @Override
     public void execute() {
 
-        latestFieldToVehicle = RobotState.getInstance().getFieldToVehicle();
+        latestFieldToVehicle = drive.getFieldToVehicle();
 
         PathPlannerState desiredState = (PathPlannerState) trajectory.sample(timer.get());
 
@@ -74,7 +76,7 @@ public class FollowTrajectory extends CommandBase {
             adjustedSpeeds = controller.calculate(
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
         
-        RobotState.getInstance().setSetpointPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
+        Logger.getInstance().recordOutput("Poses/AutoSetpoint", desiredState.poseMeters);
 
         // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
         // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());

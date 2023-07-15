@@ -1,5 +1,6 @@
 package frc.robot.subsystems.drive;
 
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.Pigeon2;
 
 import edu.wpi.first.math.util.Units;
@@ -15,6 +16,7 @@ public class AngleIOPidgeon2 implements AngleIO {
 
     @Override
     public void updateInputs(AngleIOInputs inputs) {
+        inputs.isConnnected = pigeon.getLastError().equals(ErrorCode.OK);
         inputs.yawRad = Units.degreesToRadians(pigeon.getYaw()) + yawOffsetRad;
         inputs.pitchRad = Units.degreesToRadians(pigeon.getPitch()) + pitchOffsetRad;
         inputs.rollRad = Units.degreesToRadians(pigeon.getRoll()) + rollOffsetRad;

@@ -77,49 +77,49 @@ public class RobotState {
 
     private boolean isIntaking = false;
 
-    public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
-        poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d());
-        field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
-        SmartDashboard.putData(field);
-        driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
-    }
+    // public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
+    //     poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d());
+    //     field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
+    //     SmartDashboard.putData(field);
+    //     driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
+    // }
 
-    public void recordDriveObservations(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
-        poseEstimator.update(rotation, modulePositions);
-        driveOdometry.update(rotation, modulePositions);
+    // public void recordDriveObservations(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
+    //     poseEstimator.update(rotation, modulePositions);
+    //     driveOdometry.update(rotation, modulePositions);
 
-        Logger.getInstance().recordOutput("Poses/Odometry", driveOdometry.getPoseMeters());
-    }
+    //     Logger.getInstance().recordOutput("Poses/Odometry", driveOdometry.getPoseMeters());
+    // }
 
-    public void recordVisionObservations(Pose2d pose, Matrix<N3, N1> stdDevs, double timestamp) {
+    // public void recordVisionObservations(Pose2d pose, Matrix<N3, N1> stdDevs, double timestamp) {
         
-        poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
+    //     poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
+    //     field.setRobotPose(poseEstimator.getEstimatedPosition());
 
-    }
+    // }
 
-    public void setFieldToVehicle(Rotation2d rotation, SwerveModulePosition[] modulePositions, Pose2d fieldToVehicle) {
-        poseEstimator.resetPosition(rotation, modulePositions, fieldToVehicle);
-        driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
-    }
+    // public void setFieldToVehicle(Rotation2d rotation, SwerveModulePosition[] modulePositions, Pose2d fieldToVehicle) {
+    //     poseEstimator.resetPosition(rotation, modulePositions, fieldToVehicle);
+    //     driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
+    // }
 
-    public void setSetpointPose(Pose2d pose) {
-        Logger.getInstance().recordOutput("Poses/Setpoint", pose);
-    }
+    // public void setSetpointPose(Pose2d pose) {
+    //     Logger.getInstance().recordOutput("Poses/Setpoint", pose);
+    // }
 
-    public Pose2d getFieldToVehicle() {
-        // SmartDashboard.putNumber("OdometryX", driveOdometry.getPoseMeters().getX());    
-        // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
-        // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
+    // public Pose2d getFieldToVehicle() {
+    //     // SmartDashboard.putNumber("OdometryX", driveOdometry.getPoseMeters().getX());    
+    //     // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
+    //     // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
 
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
+    //     field.setRobotPose(poseEstimator.getEstimatedPosition());
         
-        return poseEstimator.getEstimatedPosition();    
-    }
+    //     return poseEstimator.getEstimatedPosition();    
+    // }
 
-    public Pose2d getOdometryFieldToVehicle() {
-        return driveOdometry.getPoseMeters();
-    }
+    // public Pose2d getOdometryFieldToVehicle() {
+    //     return driveOdometry.getPoseMeters();
+    // }
 
     public void invertBack() {
         atBack = !atBack;

@@ -1,6 +1,8 @@
 package frc.robot.subsystems.vision;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -19,6 +21,7 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import frc.robot.RobotState;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 
 public class Camera {
 
@@ -32,8 +35,14 @@ public class Camera {
     private volatile Matrix<N3, N1> stdDevs = VecBuilder.fill(1000, 1000, 1000);
     private volatile double timestamp = 1;
 
-    public Camera(String cameraName, Transform3d vehicleToCamera) {
-        
+    private final Consumer<TimestampedVisionUpdate> recordVisionObservations;
+
+    public Camera(
+        String cameraName,
+        Transform3d vehicleToCamera,
+        Consumer<TimestampedVisionUpdate> observationConsumer)
+    {
+        recordVisionObservations = observationConsumer;
         camera = new PhotonCamera(cameraName);
         poseEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, camera, vehicleToCamera);
         poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
@@ -71,7 +80,7 @@ public class Camera {
     }
 
     public void recordVisionObservation() {
-        RobotState.getInstance().recordVisionObservations(calculatedPose, stdDevs, timestamp);
+        recordVisionObservations.accept(new TimestampedVisionUpdate(timestamp, calculatedPose, stdDevs));
         hasNewPose = false;
         // SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());
         // SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getY());

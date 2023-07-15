@@ -1,20 +1,26 @@
 package frc.robot.subsystems.drive;
 
+import java.util.Arrays;
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.DriveConstants;
-import frc.robot.RobotState;
+import frc.robot.util.PoseEstimator;
+import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 
 /**
  * Subsystem that manages all things related to robot driving
@@ -34,7 +40,11 @@ public class Drive extends SubsystemBase {
     /**
      * The positions of each module used to update RobotState
      */
-    private SwerveModulePosition modulePositions[] = new SwerveModulePosition[4];
+    private SwerveModulePosition lastModulePositions[] = new SwerveModulePosition[4];
+     
+    private Rotation2d lastGyroYaw = new Rotation2d();
+
+    private Pose2d odometryPose = new Pose2d();
 
     /**
      * The desired state for each swerve module
@@ -52,7 +62,8 @@ public class Drive extends SubsystemBase {
      * True if drive should be slow, false if drive should be going at max speed
      */
     private boolean babyMode = false;
-        
+    
+    private PoseEstimator poseEstimator = new PoseEstimator(VecBuilder.fill(0.1, 0.1, 0.1));
 
     /**
      * Initialize all the modules, data arrays, and RobotState
@@ -68,7 +79,7 @@ public class Drive extends SubsystemBase {
 
         for (int i = 0; i < 4; i++) {
             driveModules[i].zeroEncoders();
-            modulePositions[i] = new SwerveModulePosition();
+            lastModulePositions[i] = new SwerveModulePosition();
             goalModuleStates[i] = new SwerveModuleState();
 
             switch (Constants.mode) {
@@ -86,8 +97,8 @@ public class Drive extends SubsystemBase {
             rotationPIDs[i].enableContinuousInput(-Math.PI, Math.PI);
                 
             driveModules[i].updateInputs(driveInputs[i]);
-            modulePositions[i].distanceMeters = driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM;
-            modulePositions[i].angle = new Rotation2d(driveInputs[i].rotationPositionRad);
+            lastModulePositions[i].distanceMeters = driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM;
+            lastModulePositions[i].angle = new Rotation2d(driveInputs[i].rotationPositionRad);
         }
 
         // annoying that this happens twice, but it's fine
@@ -103,8 +114,6 @@ public class Drive extends SubsystemBase {
         }
 
         setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
-
-        RobotState.getInstance().initializePoseEstimator(getRotation(), modulePositions);
     }
 
     @Override
@@ -151,11 +160,34 @@ public class Drive extends SubsystemBase {
         }
 
         // Pose estimation
+        SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
         for (int i = 0; i < 4; i++) {
-            modulePositions[i].distanceMeters = driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM;
-            modulePositions[i].angle = new Rotation2d(driveInputs[i].rotationPositionRad);
+            moduleDeltas[i] = new SwerveModulePosition(
+                driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM 
+                    - lastModulePositions[i].distanceMeters,
+                new Rotation2d(driveInputs[i].rotationPositionRad));
+
+            lastModulePositions[i].distanceMeters = driveInputs[i].drivePositionRad * DriveConstants.wheelRadiusM;
+            lastModulePositions[i].angle = new Rotation2d(driveInputs[i].rotationPositionRad);
         }
-        RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
+
+        Rotation2d gyroDelta = getRotation().minus(lastGyroYaw);
+        lastGyroYaw = getRotation();
+
+        Twist2d twist = DriveConstants.kinematics.toTwist2d(moduleDeltas);
+
+        if (driveAngleInputs.isConnnected) {
+            twist.dtheta = gyroDelta.getRadians();
+        }
+
+        poseEstimator.addDriveData(Timer.getFPGATimestamp(), twist);
+
+        // We want to see the pose derived from just odometry, without
+        // considering vision.
+        odometryPose = odometryPose.exp(twist);
+        Logger.getInstance().recordOutput("Poses/Odometry", odometryPose);
+
+        Logger.getInstance().recordOutput("Poses/Filtered", getFieldToVehicle());
 
         Logger.getInstance().recordOutput("Drive/ModuleStates/Setpoints", goalModuleStates);
 
@@ -194,10 +226,10 @@ public class Drive extends SubsystemBase {
         // Don't rotate the wheels if you're not going anywhere
         if (speeds.vxMetersPerSecond == 0 && speeds.vyMetersPerSecond == 0 && speeds.omegaRadiansPerSecond == 0) {
             goalModuleStates = new SwerveModuleState[] {
-                new SwerveModuleState(0, modulePositions[0].angle), 
-                new SwerveModuleState(0, modulePositions[1].angle),
-                new SwerveModuleState(0, modulePositions[2].angle),
-                new SwerveModuleState(0, modulePositions[3].angle)
+                new SwerveModuleState(0, lastModulePositions[0].angle), 
+                new SwerveModuleState(0, lastModulePositions[1].angle),
+                new SwerveModuleState(0, lastModulePositions[2].angle),
+                new SwerveModuleState(0, lastModulePositions[3].angle)
             };
         }
         setGoalModuleStates(goalModuleStates);
@@ -215,6 +247,7 @@ public class Drive extends SubsystemBase {
      */
     public void resetHeading() {
         driveAngle.resetYaw();
+        setFieldToVehicle(new Pose2d(getFieldToVehicle().getTranslation(), new Rotation2d()));
     }
 
     public void setHeading(double heading) {
@@ -240,7 +273,20 @@ public class Drive extends SubsystemBase {
      * @param fieldToVehicle the current fieldToVehicle pose
      */
     public void setFieldToVehicle(Pose2d fieldToVehicle) {
-        RobotState.getInstance().setFieldToVehicle(getRotation(), modulePositions, fieldToVehicle);
+        poseEstimator.resetPose(fieldToVehicle);
+        odometryPose = fieldToVehicle;
+    }
+
+    public Pose2d getFieldToVehicle() {
+        return poseEstimator.getLatestPose();
+    }
+
+    public Pose2d getOdometryFieldToVehicle() {
+        return odometryPose;
+    }
+
+    public void recordVisionObservations(TimestampedVisionUpdate update) {
+        poseEstimator.addVisionData(Arrays.asList(update));
     }
 
     public void setVolts(double v) {

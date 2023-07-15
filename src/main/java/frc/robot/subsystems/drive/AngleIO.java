@@ -6,6 +6,7 @@ public interface AngleIO {
     
     @AutoLog
     public static class AngleIOInputs {
+        public boolean isConnnected = false;
         public double yawRad = 0.0;
         public double pitchRad = 0.0;
         public double rollRad = 0.0;

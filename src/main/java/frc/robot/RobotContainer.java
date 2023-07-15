@@ -5,12 +5,11 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.PS4Controller;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -71,12 +70,14 @@ public class RobotContainer {
     private final WristSubsystem wrist;
     private final IntakeSubsystem intake;
     @SuppressWarnings("unused")
-    private final Vision vision = new Vision();
+    private final Vision vision;
     private final LEDManager ledManager = new LEDManager();
 
     private final Joystick leftStick = new Joystick(0);
     private final Joystick rightStick = new Joystick(1);
     private final ButtonMasher masher = new ButtonMasher(2);
+
+    private final PS4Controller controller = new PS4Controller(3);
 
     SendableChooser<String> autoChooser = new SendableChooser<String>();
     private Command activeAutoCommand = null;
@@ -126,6 +127,9 @@ public class RobotContainer {
                 break;
         }
 
+        vision = new Vision(drive::recordVisionObservations);
+
+
         configureSubsystems();
         // configureCompBindings();
         configureTestBindings();
@@ -134,13 +138,20 @@ public class RobotContainer {
 
     private void configureSubsystems() {
 
+        // drive.setDefaultCommand(new DriveWithJoysticks(
+        //     drive,
+        //     () -> -leftStick.getRawAxis(1),
+        //     () -> -leftStick.getRawAxis(0),
+        //     () -> -rightStick.getRawAxis(0),
+        //     true
+        // ));
+
         drive.setDefaultCommand(new DriveWithJoysticks(
             drive,
-            () -> -leftStick.getRawAxis(1),
-            () -> -leftStick.getRawAxis(0),
-            () -> -rightStick.getRawAxis(0),
-            true
-        ));
+            () -> controller.getLeftX(),
+            () -> controller.getLeftY(),
+            () -> controller.getRawAxis(3),
+            false));
 
         pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
         telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
@@ -167,10 +178,7 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
 
         new JoystickButton(rightStick, 2)
-            .onTrue(new InstantCommand(() -> {
-                drive.resetHeading(); 
-                drive.setFieldToVehicle(new Pose2d(RobotState.getInstance().getFieldToVehicle().getTranslation(), new Rotation2d(0)));
-            }));
+            .onTrue(new InstantCommand(() -> drive.resetHeading()));
 
         new JoystickButton(leftStick, 1)
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
