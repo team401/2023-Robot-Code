@@ -5,7 +5,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.subsystems.pivot.PivotSubsystem;
 
 /**
@@ -54,7 +54,7 @@ public class MovePivot extends CommandBase{
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
-        if (RobotState.getInstance().atBack())
+        if (ArmManager.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
 
         // Create the trapezoid motion based on max vel and accel,

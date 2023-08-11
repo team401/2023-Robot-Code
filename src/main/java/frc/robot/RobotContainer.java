@@ -175,7 +175,7 @@ public class RobotContainer {
         
         // Drive
         new JoystickButton(rightStick, 1)
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+            .onTrue(new InstantCommand(() -> ArmManager.getInstance().invertBack()));
 
         new JoystickButton(rightStick, 2)
             .onTrue(new InstantCommand(() -> drive.resetHeading()));
@@ -233,11 +233,11 @@ public class RobotContainer {
 
         // Set game piece mode
         masher.leftBumper().onTrue(new InstantCommand(() ->
-            RobotState.getInstance().setMode(GamePieceMode.Cube)));           
+            ArmManager.getInstance().setMode(GamePieceMode.Cube)));           
         masher.rightBumper().onTrue(new InstantCommand(() ->
-            RobotState.getInstance().setMode(GamePieceMode.ConeDown)));
+            ArmManager.getInstance().setMode(GamePieceMode.ConeDown)));
         masher.y().onTrue(new InstantCommand(() ->
-            RobotState.getInstance().setMode(GamePieceMode.ConeUp)));
+            ArmManager.getInstance().setMode(GamePieceMode.ConeUp)));
         
         // Move arm
         masher.pov(0).onTrue(getMoveArmCommand(Position.High)); // move to high
@@ -251,7 +251,7 @@ public class RobotContainer {
         
         // TODO: set button
         // masher.??????().onTrue(
-        //     new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
+        //     new InstantCommand(() -> ArmManager.getInstance().invertBack())); // flip side
 
         // Manually jog arm
         masher.leftStickLeft()
@@ -335,7 +335,7 @@ public class RobotContainer {
         if(Constants.mode == Constants.Mode.REAL) {
             if (DriverStation.isTeleop()) {
                 new HomeTelescope(telescope).schedule();
-                if (!RobotState.getInstance().hasIntaked()) {
+                if (!ArmManager.getInstance().hasIntaked()) {
                     new HomeWrist(wrist).schedule();
                 }
                 pivot.normalConstrain();
@@ -350,16 +350,16 @@ public class RobotContainer {
     private Command getMoveArmCommand(Position position) {
         //TODO: agressively refactor arm state machine
 
-        RobotState.getInstance().setStow(position == Position.Stow);
-        double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+        ArmManager.getInstance().setStow(position == Position.Stow);
+        double[] positions = PositionHelper.getDouble(position, ArmManager.getInstance().getMode());
         
         // Autoset side
         if (position == Position.High || position == Position.Mid) {
             boolean atBack = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2;
-            RobotState.getInstance().setBack(atBack);
+            ArmManager.getInstance().setBack(atBack);
         } else if (position == Position.Shelf) {
             boolean atBack = Math.abs(drive.getRotation().getRadians()) > Math.PI / 2;
-            RobotState.getInstance().setBack(atBack);
+            ArmManager.getInstance().setBack(atBack);
         }
         
         Timer performanceTimer = new Timer();

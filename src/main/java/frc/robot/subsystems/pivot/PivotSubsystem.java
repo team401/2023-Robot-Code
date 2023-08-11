@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
 
@@ -219,13 +219,13 @@ public class PivotSubsystem extends SubsystemBase {
 
         // SmartDashboard.putBoolean("Pivot Dead", dead);
 
-        // SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());
+        // SmartDashboard.putBoolean("At Back", ArmManager.getInstance().atBack());
 
         io.updateInputs(inputs);
 
         Logger.getInstance().processInputs("Pivot", inputs);
 
-        RobotState.getInstance().putPivotDisplay(getPositionRad());
+        ArmManager.getInstance().putPivotDisplay(getPositionRad());
 
         //if (DriverStation.isEnabled()) checkIfDead();
     }

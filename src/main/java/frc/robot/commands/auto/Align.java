@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.subsystems.drive.Drive;
@@ -78,7 +78,7 @@ public class Align extends CommandBase {
 
     private Pose2d getGoalPose(boolean left) {
 
-        boolean cube = RobotState.getInstance().getMode() == GamePieceMode.Cube;
+        boolean cube = ArmManager.getInstance().getMode() == GamePieceMode.Cube;
         Pose2d currentPose = drive.getFieldToVehicle();
         Rotation2d rotation = new Rotation2d(Math.abs(drive.getRotation().getRadians()) > Math.PI / 2 ? Math.PI - 0.01 : 0);
 

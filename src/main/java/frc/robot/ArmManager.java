@@ -1,39 +1,27 @@
 package frc.robot;
 
-import org.littletonrobotics.junction.Logger;
 
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj.util.Color8Bit;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.WristConstants;
 
-public class RobotState {
+public class ArmManager {
 
-    private static RobotState instance;
+    private static ArmManager instance;
 
-    public static RobotState getInstance() {
+    public static ArmManager getInstance() {
         if (instance == null)
-            instance = new RobotState();
+            instance = new ArmManager();
         return instance;
     }
     
-    private SwerveDrivePoseEstimator poseEstimator;
 
     private boolean atBack = false;
 
@@ -71,56 +59,7 @@ public class RobotState {
 
     private GamePieceMode gamePieceMode = GamePieceMode.ConeDown;
 
-    private final Field2d field = new Field2d();
-
-    private SwerveDriveOdometry driveOdometry;
-
     private boolean isIntaking = false;
-
-    // public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
-    //     poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d());
-    //     field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
-    //     SmartDashboard.putData(field);
-    //     driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
-    // }
-
-    // public void recordDriveObservations(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
-    //     poseEstimator.update(rotation, modulePositions);
-    //     driveOdometry.update(rotation, modulePositions);
-
-    //     Logger.getInstance().recordOutput("Poses/Odometry", driveOdometry.getPoseMeters());
-    // }
-
-    // public void recordVisionObservations(Pose2d pose, Matrix<N3, N1> stdDevs, double timestamp) {
-        
-    //     poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
-    //     field.setRobotPose(poseEstimator.getEstimatedPosition());
-
-    // }
-
-    // public void setFieldToVehicle(Rotation2d rotation, SwerveModulePosition[] modulePositions, Pose2d fieldToVehicle) {
-    //     poseEstimator.resetPosition(rotation, modulePositions, fieldToVehicle);
-    //     driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
-    // }
-
-    // public void setSetpointPose(Pose2d pose) {
-    //     Logger.getInstance().recordOutput("Poses/Setpoint", pose);
-    // }
-
-    // public Pose2d getFieldToVehicle() {
-    //     // SmartDashboard.putNumber("OdometryX", driveOdometry.getPoseMeters().getX());    
-    //     // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
-    //     // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
-
-    //     field.setRobotPose(poseEstimator.getEstimatedPosition());
-        
-    //     return poseEstimator.getEstimatedPosition();    
-    // }
-
-    // public Pose2d getOdometryFieldToVehicle() {
-    //     return driveOdometry.getPoseMeters();
-    // }
-
     public void invertBack() {
         atBack = !atBack;
     }
@@ -129,17 +68,14 @@ public class RobotState {
         atBack = back;
     }
 
-
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
         SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
-
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
         SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
-
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
         SmartDashboard.putData("Arm Mechanism", displayMechanism);
@@ -148,19 +84,17 @@ public class RobotState {
     public void setStow(boolean stowed) {
         atStow = stowed;
     }
-
     public boolean atStow() {
         return atStow;
     }
 
+    // controls -> arm
     public boolean atBack() {
         return atBack;
     }
-
     public GamePieceMode getMode() {
         return gamePieceMode;
     }
-
     public void setMode(Constants.GamePieceMode mode) {
         gamePieceMode = mode;
 
@@ -168,18 +102,18 @@ public class RobotState {
         // SmartDashboard.putString("Mode", str);
     }
 
+    // intake -> robotcontainer | homing
     public boolean hasIntaked() {
         return hasIntaked;
     }
-
     public void setIntaked(boolean i) {
         hasIntaked = i;
     }
 
+    // intake -> leds
     public boolean isIntaking() {
         return isIntaking;
     }
-
     public void setIntaking(boolean i) {
         isIntaking = i;
     }

@@ -8,7 +8,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.WristConstants;
 
 public class WristSubsystem extends SubsystemBase {
@@ -186,6 +186,6 @@ public class WristSubsystem extends SubsystemBase {
 
         Logger.getInstance().processInputs("Wrist", inputs);
 
-        RobotState.getInstance().putWristDisplay(getPositionRad());
+        ArmManager.getInstance().putWristDisplay(getPositionRad());
     }
 }

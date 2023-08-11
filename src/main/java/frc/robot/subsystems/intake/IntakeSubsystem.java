@@ -4,7 +4,7 @@ import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.GamePieceMode;
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -31,13 +31,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void toggleIntake() {
         intakeMode = intakeMode == IntakeMode.Intake ? IntakeMode.None : IntakeMode.Intake;
         exceededCurrentDraw = false;
-        RobotState.getInstance().setIntaked(false);
-        RobotState.getInstance().setIntaking(intakeMode == IntakeMode.Intake);
+        ArmManager.getInstance().setIntaked(false);
+        ArmManager.getInstance().setIntaking(intakeMode == IntakeMode.Intake);
         intakeTimer.reset();
         intakeTimer.start();
 
         if (intakeMode == IntakeMode.Intake) {
-            if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+            if (ArmManager.getInstance().getMode() == GamePieceMode.Cube) {
                 io.setWheelVelocitiesVolts(-12, -12);
             }
             else  {
@@ -52,13 +52,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void setIntake(boolean intake) {
         intakeMode = intake ? IntakeMode.Intake : IntakeMode.None;
         exceededCurrentDraw = false;
-        RobotState.getInstance().setIntaked(false);
-        RobotState.getInstance().setIntaking(intakeMode == IntakeMode.Intake);
+        ArmManager.getInstance().setIntaked(false);
+        ArmManager.getInstance().setIntaking(intakeMode == IntakeMode.Intake);
         intakeTimer.reset();
         intakeTimer.start();
 
         if (intakeMode == IntakeMode.Intake) {
-            if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+            if (ArmManager.getInstance().getMode() == GamePieceMode.Cube) {
                 io.setWheelVelocitiesVolts(-12, -12);
             }
             else  {
@@ -72,11 +72,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void place() {
         intakeMode = IntakeMode.Place;
-        RobotState.getInstance().setIntaked(false);
-        RobotState.getInstance().setIntaking(false);
+        ArmManager.getInstance().setIntaked(false);
+        ArmManager.getInstance().setIntaking(false);
 
-        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+        if (ArmManager.getInstance().getMode() == GamePieceMode.Cube) {
+            boolean back = ArmManager.getInstance().atBack();
             io.setWheelVelocitiesVolts(back ? -9 : 9, back ? 9 : -9);
         }
         else {
@@ -86,11 +86,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void shoot() {
         intakeMode = IntakeMode.Place;
-        RobotState.getInstance().setIntaked(false);
-        RobotState.getInstance().setIntaking(false);
+        ArmManager.getInstance().setIntaked(false);
+        ArmManager.getInstance().setIntaking(false);
 
-        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+        if (ArmManager.getInstance().getMode() == GamePieceMode.Cube) {
+            boolean back = ArmManager.getInstance().atBack();
             io.setWheelVelocitiesVolts(back ? -12 : 12, back ? 12 : -12);
         }
         else {
@@ -100,11 +100,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void shootBackwards() {
         intakeMode = IntakeMode.Place;
-        RobotState.getInstance().setIntaked(false);
-        RobotState.getInstance().setIntaking(false);
+        ArmManager.getInstance().setIntaked(false);
+        ArmManager.getInstance().setIntaking(false);
 
-        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+        if (ArmManager.getInstance().getMode() == GamePieceMode.Cube) {
+            boolean back = ArmManager.getInstance().atBack();
             io.setWheelVelocitiesVolts(back ? -12 : 12, back ? 12 : -12);
         }
         else {
@@ -114,11 +114,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void slowPlace() {
         intakeMode = IntakeMode.Place;
-        RobotState.getInstance().setIntaked(false);
-        RobotState.getInstance().setIntaking(false);
+        ArmManager.getInstance().setIntaked(false);
+        ArmManager.getInstance().setIntaking(false);
 
-        if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+        if (ArmManager.getInstance().getMode() == GamePieceMode.Cube) {
+            boolean back = ArmManager.getInstance().atBack();
             io.setWheelVelocitiesVolts(back ? -9 : 9, back ? 9 : -9);
         }
         else {
@@ -128,8 +128,8 @@ public class IntakeSubsystem extends SubsystemBase {
 
     public void stop() {
         intakeMode = IntakeMode.None;
-        RobotState.getInstance().setIntaked(false);
-        RobotState.getInstance().setIntaking(false);
+        ArmManager.getInstance().setIntaked(false);
+        ArmManager.getInstance().setIntaking(false);
         io.setWheelVelocitiesVolts(0, 0);
     }
 
@@ -144,8 +144,8 @@ public class IntakeSubsystem extends SubsystemBase {
         if (intakeMode == IntakeMode.Intake && !exceededCurrentDraw) {
             if (currentDraw > 20 && intakeTimer.hasElapsed(1)) {
                 exceededCurrentDraw = true;
-                RobotState.getInstance().setIntaked(true);
-                if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
+                ArmManager.getInstance().setIntaked(true);
+                if (ArmManager.getInstance().getMode() == GamePieceMode.Cube) {
                     io.setWheelVelocitiesVolts(-4.2, -4.2);
                 }
                 else {

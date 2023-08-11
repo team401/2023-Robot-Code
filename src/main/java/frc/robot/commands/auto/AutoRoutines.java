@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.GamePieceMode;
@@ -229,9 +229,9 @@ public class AutoRoutines extends SequentialCommandGroup {
     
     private Command placeCone() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
+            new InstantCommand(() -> ArmManager.getInstance().setMode(GamePieceMode.ConeUp)),
             new InstantCommand(() -> intake.setIntake(true)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(true)),
             new ParallelRaceGroup(
                 new MovePivot(pivot, ArmPositions.placeConeUpHighPrepare[0], true).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.placeConeUpHighPrepare[1], true).andThen(new HoldTelescope(telescope, pivot)),
@@ -257,9 +257,9 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command placeCubeInitial() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
+            new InstantCommand(() -> ArmManager.getInstance().setMode(GamePieceMode.Cube)),
             new InstantCommand(() -> intake.setIntake(true)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(true)),
             new ParallelRaceGroup(
                 new MovePivot(pivot, ArmPositions.placeCubeAuto[0], false).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.placeCubeAuto[1], false).andThen(new HoldTelescope(telescope, pivot)),
@@ -279,8 +279,8 @@ public class AutoRoutines extends SequentialCommandGroup {
     
     private Command intakeCube() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(false)),
+            new InstantCommand(() -> ArmManager.getInstance().setMode(GamePieceMode.Cube)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(false)),
             new ParallelRaceGroup(
                 new HoldPivot(pivot, telescope),
                 new MoveTelescope(telescope, pivot, 0.05, true),
@@ -298,8 +298,8 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command intakeCubeBump() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(false)),
+            new InstantCommand(() -> ArmManager.getInstance().setMode(GamePieceMode.Cube)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(false)),
             new ParallelRaceGroup(
                 new HoldPivot(pivot, telescope),
                 new MoveTelescope(telescope, pivot, 0.05, true),
@@ -317,7 +317,7 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command preparePlaceCubeLow() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(true)),
             new ParallelRaceGroup(
                 new MovePivot(pivot, ArmPositions.stow[0], true).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.stow[1], true).andThen(new HoldTelescope(telescope, pivot)),
@@ -334,7 +334,7 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command preparePlaceCubeMid() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(true)),
             new ParallelRaceGroup(
                 new MovePivot(pivot, ArmPositions.stow[0], true).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.stow[1], true).andThen(new HoldTelescope(telescope, pivot)),
@@ -351,7 +351,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     
     private Command preparePlaceCubeHigh() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(true)),
             new ParallelRaceGroup(
                 new MovePivot(pivot, ArmPositions.stow[0], true).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.stow[1], true).andThen(new HoldTelescope(telescope, pivot)),
@@ -383,7 +383,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 new WaitCommand(3),
                 holdStow()
             ),
-            new InstantCommand(() -> RobotState.getInstance().setBack(false)),
+            new InstantCommand(() -> ArmManager.getInstance().setBack(false)),
             new ParallelRaceGroup(
                 new MovePivot(pivot, ArmPositions.preFlingCube[0], true).andThen(new HoldPivot(pivot, telescope)),
                 new MoveTelescope(telescope, pivot, ArmPositions.preFlingCube[1], true).andThen(new HoldTelescope(telescope, pivot)),
@@ -434,7 +434,7 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command spitCone() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
+            new InstantCommand(() -> ArmManager.getInstance().setMode(GamePieceMode.ConeUp)),
             new InstantCommand(intake::shoot),
             new WaitCommand(0.2),
             new InstantCommand(intake::stop)

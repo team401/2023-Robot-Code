@@ -19,7 +19,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 

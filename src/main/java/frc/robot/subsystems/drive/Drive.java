@@ -38,7 +38,7 @@ public class Drive extends SubsystemBase {
     private final AngleIOInputsAutoLogged driveAngleInputs = new AngleIOInputsAutoLogged();
 
     /**
-     * The positions of each module used to update RobotState
+     * The positions of each module used to update ArmManager
      */
     private SwerveModulePosition lastModulePositions[] = new SwerveModulePosition[4];
      
@@ -66,7 +66,7 @@ public class Drive extends SubsystemBase {
     private PoseEstimator poseEstimator = new PoseEstimator(VecBuilder.fill(0.1, 0.1, 0.1));
 
     /**
-     * Initialize all the modules, data arrays, and RobotState
+     * Initialize all the modules, data arrays, and ArmManager
      */
     public Drive(AngleIO angle, ModuleIO flModule, ModuleIO frModule, ModuleIO blModule, ModuleIO brModule) {
         driveModules[0] = flModule;
@@ -269,7 +269,7 @@ public class Drive extends SubsystemBase {
     }
 
     /**
-     * Used to pass the current field to vehicle to RobotState, needs to pass through drive because driveModulePositions and rotation are needed to set fieldToVehicle
+     * Used to pass the current field to vehicle to ArmManager, needs to pass through drive because driveModulePositions and rotation are needed to set fieldToVehicle
      * @param fieldToVehicle the current fieldToVehicle pose
      */
     public void setFieldToVehicle(Pose2d fieldToVehicle) {

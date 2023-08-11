@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.AutoConstants;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drive.Drive;
@@ -81,9 +81,9 @@ public class FollowTrajectory extends CommandBase {
         // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
         // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
         // SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
-        // SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
-        // SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
-        // SmartDashboard.putNumber("ActualOmega", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
+        // SmartDashboard.putNumber("ActualX", ArmManager.getInstance().getFieldToVehicle().getX());
+        // SmartDashboard.putNumber("ActualY", ArmManager.getInstance().getFieldToVehicle().getY());
+        // SmartDashboard.putNumber("ActualOmega", ArmManager.getInstance().getFieldToVehicle().getRotation().getRadians());
 
         // SmartDashboard.putNumber("DesiredSpeedX", adjustedSpeeds.vxMetersPerSecond);
         // SmartDashboard.putNumber("ActualSpeedX", drive.getVelocity().vxMetersPerSecond);

@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 

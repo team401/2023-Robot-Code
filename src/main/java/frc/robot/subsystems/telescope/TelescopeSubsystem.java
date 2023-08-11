@@ -9,7 +9,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.TelescopeConstants;
 
 public class TelescopeSubsystem extends SubsystemBase{
@@ -161,6 +161,6 @@ public class TelescopeSubsystem extends SubsystemBase{
 
         Logger.getInstance().processInputs("Telescope", inputs);
 
-        RobotState.getInstance().putTelescopeDisplay(getPositionM());
+        ArmManager.getInstance().putTelescopeDisplay(getPositionM());
     }
 }
