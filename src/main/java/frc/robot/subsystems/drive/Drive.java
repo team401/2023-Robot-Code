@@ -22,9 +22,6 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.util.PoseEstimator;
 import frc.robot.util.PoseEstimator.TimestampedVisionUpdate;
 
-/**
- * Subsystem that manages all things related to robot driving
- */
 public class Drive extends SubsystemBase {
 
     private final ModuleIO[] driveModules = new ModuleIO[4];
@@ -37,23 +34,15 @@ public class Drive extends SubsystemBase {
 
     private final AngleIOInputsAutoLogged driveAngleInputs = new AngleIOInputsAutoLogged();
 
-    /**
-     * The positions of each module used to update ArmManager
-     */
     private SwerveModulePosition lastModulePositions[] = new SwerveModulePosition[4];
      
     private Rotation2d lastGyroYaw = new Rotation2d();
 
     private Pose2d odometryPose = new Pose2d();
 
-    /**
-     * The desired state for each swerve module
-     */
     private SwerveModuleState[] goalModuleStates = new SwerveModuleState[4];
 
-    /**
-     * The controllers used to calculate the output volts for the rotation motors
-     */
+    // TODO: use falcon pid
     private PIDController[] rotationPIDs = new PIDController[4];
 
     private static SimpleMotorFeedforward driveFF;
@@ -65,9 +54,6 @@ public class Drive extends SubsystemBase {
     
     private PoseEstimator poseEstimator = new PoseEstimator(VecBuilder.fill(0.1, 0.1, 0.1));
 
-    /**
-     * Initialize all the modules, data arrays, and ArmManager
-     */
     public Drive(AngleIO angle, ModuleIO flModule, ModuleIO frModule, ModuleIO blModule, ModuleIO brModule) {
         driveModules[0] = flModule;
         driveModules[1] = frModule;
@@ -118,8 +104,6 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // SmartDashboard.putNumber("Angle", driveAngle.getHeading());
-
         // Driving
         for (int i = 0; i < 4; i++) {
             driveModules[i].updateInputs(driveInputs[i]);
@@ -147,6 +131,7 @@ public class Drive extends SubsystemBase {
             double speedSetpointRadPerS = speedSetpointMPerS / DriveConstants.wheelRadiusM;
             double ffVolts = driveFF.calculate(speedSetpointRadPerS);
             driveModules[i].setDriveVelocity(speedSetpointRadPerS, ffVolts);
+
             Logger.getInstance().recordOutput("Drive/Module"+i+"/FF", ffVolts);
 
             // Set module rotation
@@ -154,10 +139,11 @@ public class Drive extends SubsystemBase {
 
             double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
             driveModules[i].setRotationVoltage(rotationVoltage);
+
             Logger.getInstance().recordOutput("Drive/Module"+i+"/DesiredRotation", rotationSetpointRadians);
             Logger.getInstance().recordOutput("Drive/Module"+i+"/RotationError",
                 MathUtil.angleModulus(rotationSetpointRadians-moduleRotation.getRadians()));
-        }
+        } // Driving
 
         // Pose estimation
         SwerveModulePosition[] moduleDeltas = new SwerveModulePosition[4];
@@ -186,9 +172,7 @@ public class Drive extends SubsystemBase {
         // considering vision.
         odometryPose = odometryPose.exp(twist);
         Logger.getInstance().recordOutput("Poses/Odometry", odometryPose);
-
         Logger.getInstance().recordOutput("Poses/Filtered", getFieldToVehicle());
-
         Logger.getInstance().recordOutput("Drive/ModuleStates/Setpoints", goalModuleStates);
 
         //TODO: make less stupid
@@ -206,9 +190,9 @@ public class Drive extends SubsystemBase {
 
     /**
      * Set the desired state for each module (velocity and angle)
-     * @param states an array of SwerveModuleStates representing the desired state for each swerve module [frontLeft, frontRight, backLeft, backRight]
+     * @param states an array of SwerveModuleStates: [frontLeft, frontRight, backLeft, backRight]
      */
-    public void setGoalModuleStates(SwerveModuleState[] states) {
+    private void setGoalModuleStates(SwerveModuleState[] states) {
         for (int i = 0; i < 4; i++) {
             goalModuleStates[i] = states[i];
         }
@@ -216,7 +200,6 @@ public class Drive extends SubsystemBase {
 
     /**
      * Set the desired velocities of the robot drive (xVelocity, yVelocity, omegaVelocity)
-     * @param speeds the desired speed of the robot
      */
     public void setGoalChassisSpeeds(ChassisSpeeds speeds) {
         speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.1 : 1));
@@ -236,20 +219,23 @@ public class Drive extends SubsystemBase {
     }
 
     /**
-     * @return the rotation of the robot in radians from the gyro
+     * @return gyro rotation in radians
      */
     public Rotation2d getRotation() {
         return new Rotation2d(MathUtil.angleModulus(driveAngleInputs.yawRad));
     }
 
     /**
-     * Sets the heading (apparent rotation) of the robot to zero
+     * Set gyro heading to 0
      */
     public void resetHeading() {
         driveAngle.resetYaw();
         setFieldToVehicle(new Pose2d(getFieldToVehicle().getTranslation(), new Rotation2d()));
     }
 
+    /**
+     * Set gyro heading
+     */
     public void setHeading(double heading) {
         driveAngle.setYaw(heading);
     }
@@ -269,26 +255,38 @@ public class Drive extends SubsystemBase {
     }
 
     /**
-     * Used to pass the current field to vehicle to ArmManager, needs to pass through drive because driveModulePositions and rotation are needed to set fieldToVehicle
-     * @param fieldToVehicle the current fieldToVehicle pose
+     * Override odometry/vision calculations to start from a specific pose
      */
     public void setFieldToVehicle(Pose2d fieldToVehicle) {
         poseEstimator.resetPose(fieldToVehicle);
         odometryPose = fieldToVehicle;
     }
 
+    /**
+     * @return estimated robot pose from both vision and wheel odometry
+     */
     public Pose2d getFieldToVehicle() {
         return poseEstimator.getLatestPose();
     }
 
+    /**
+     * @return estimated robot pose from just wheel odometry
+     */
     public Pose2d getOdometryFieldToVehicle() {
         return odometryPose;
     }
 
+    /**
+     * This method should be passed as a Consumer into VisionSubsystem in order
+     * to supply vision data to the Kalman filter
+     */
     public void recordVisionObservations(TimestampedVisionUpdate update) {
         poseEstimator.addVisionData(Arrays.asList(update));
     }
 
+    /**
+     * Debug: set all modules to drive at voltage v
+     */
     public void setVolts(double v) {
         driveModules[0].setDriveVoltage(v);
         driveModules[1].setDriveVoltage(v);
@@ -316,6 +314,12 @@ public class Drive extends SubsystemBase {
         }
     }
 
+    /**
+     * Kills/revives module i.
+     * 
+     * <p>When dead, a module is set to coast mode, and will no longer send power
+     * to its motors.
+     */
     public void toggleKill(int i) {
         driveModules[i].toggleKill();
     }
