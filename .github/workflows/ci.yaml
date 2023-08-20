@@ -23,10 +23,6 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # Install a roboRIO toolchain
-    - name: Install RoboRIO Toolchain
-      run: ./gradlew installRoboRioToolchain
-
     # Copy the deploy directory explicitly
     - name: Copy deploy configuration
       run: ./gradlew copyDeployDir
