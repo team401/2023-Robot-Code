@@ -22,10 +22,6 @@ jobs:
     # Grant execute permission for gradlew
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
-
-    # Copy the deploy directory explicitly
-    - name: Copy deploy configuration
-      run: ./gradlew copyDeployDir
     
     # Runs a single command using the runners shell
     - name: Compile and run tests on robot code
