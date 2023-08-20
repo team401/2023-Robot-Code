@@ -2,7 +2,7 @@ name: CI
 run-name: ${{ github.event.pull_request.head.ref }}
 on: 
   push:
-    branches: [ master ]
+    branches: [ main, AdvantageKit ]
   pull_request:
     branches: [ '**' ]
 jobs:
