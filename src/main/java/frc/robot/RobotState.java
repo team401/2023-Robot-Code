@@ -71,6 +71,7 @@ public class RobotState {
     private GamePieceMode gamePieceMode = GamePieceMode.ConeDown;
 
     private final Field2d field = new Field2d();
+    private final Field2d targetField = new Field2d();
 
     private SwerveDriveOdometry driveOdometry;
 
@@ -79,7 +80,8 @@ public class RobotState {
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
         poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d());
         field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
-        SmartDashboard.putData(field);
+        SmartDashboard.putData("Field Pose", field);
+        SmartDashboard.putData("Target Pose", targetField);
         driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
     }
 
@@ -100,8 +102,9 @@ public class RobotState {
         driveOdometry.resetPosition(rotation, modulePositions, fieldToVehicle);
     }
 
-    public void setSimPose(Pose2d pose) {
-        field.setRobotPose(pose);
+    public void setGoalPose(Pose2d pose) {
+        targetField.setRobotPose(pose);
+        SmartDashboard.putData("Target Pose", targetField);
     }
 
     public Pose2d getFieldToVehicle() {
@@ -109,7 +112,8 @@ public class RobotState {
         // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
         // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
 
-        // field.setRobotPose(poseEstimator.getEstimatedPosition());
+        field.setRobotPose(poseEstimator.getEstimatedPosition());
+        SmartDashboard.putData("Field Pose", field);
         
         return poseEstimator.getEstimatedPosition();    
     }

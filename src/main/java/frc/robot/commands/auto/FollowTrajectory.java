@@ -74,7 +74,7 @@ public class FollowTrajectory extends CommandBase {
             adjustedSpeeds = controller.calculate(
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
         
-        RobotState.getInstance().setSimPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
+        RobotState.getInstance().setGoalPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
 
         // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
         // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
