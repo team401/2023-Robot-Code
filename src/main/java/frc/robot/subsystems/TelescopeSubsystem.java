@@ -23,7 +23,7 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     public boolean homed = false;
 
-    private boolean dead = false;
+    private boolean dead = true;
 
     public boolean atGoal = false;
 

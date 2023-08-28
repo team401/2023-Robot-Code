@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotState;
@@ -60,6 +61,23 @@ public class WristSubsystem extends SubsystemBase {
 
         controller.setTolerance(0.05);
         controllerHold.setTolerance(0.05);
+    }
+
+    public double findStatic() {
+        double ks = 0;
+        double pos = getPositionRad();
+        while(Math.abs(pos - getPositionRad()) < 0.01) {
+            ks += 0.01;
+            setVolts(ks);
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        SmartDashboard.putNumber("kS", ks);
+        return ks;
     }
 
     public double getPositionRad() {

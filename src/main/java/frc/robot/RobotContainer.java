@@ -78,8 +78,8 @@ public class RobotContainer {
     public RobotContainer() {
 
         configureSubsystems();
-        configureCompBindings();
-        // configureTestBindings();
+        // configureCompBindings();
+        configureTestBindings();
         configureAutos();
     }
 
@@ -100,7 +100,8 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-
+        // new JoystickButton(leftStick, 1)
+        //     .onTrue(new InstantCommand(wrist::findStatic));
     }   
 
     private void configureCompBindings() {
@@ -269,7 +270,7 @@ public class RobotContainer {
         if (DriverStation.isTeleop()) {
             new HomeTelescope(telescope).schedule();
             if (!RobotState.getInstance().hasIntaked()) {
-                new HomeWrist(wrist).schedule();
+                // new HomeWrist(wrist).schedule();
             }
             pivot.normalConstrain();
         }
