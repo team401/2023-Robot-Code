@@ -50,7 +50,8 @@ import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.commands.wrist.MoveWristAbsolute;
-import frc.robot.oi.XboxMasher;
+import frc.robot.oi.ButtonMasher;
+import frc.robot.oi.Thrustmaster;
 
 public class RobotContainer {
     
@@ -62,9 +63,9 @@ public class RobotContainer {
     private final Vision vision = new Vision();
     private final LEDManager ledManager = new LEDManager();
 
-    private final Joystick leftStick = new Joystick(0);
-    private final Joystick rightStick = new Joystick(1);
-    private final XboxMasher masher = new XboxMasher(new XboxController(2));
+    private final Thrustmaster leftStick = new Thrustmaster(0);
+    private final Thrustmaster rightStick = new Thrustmaster(1);
+    private final ButtonMasher masher = new ButtonMasher(2);
 
     SendableChooser<String> autoChooser = new SendableChooser<String>();
     private Command activeAutoCommand = null;
@@ -103,113 +104,114 @@ public class RobotContainer {
     }   
 
     private void configureCompBindings() {
-        
-        // Drive
-        new JoystickButton(rightStick, 1)
+        // Invert Sides (driver)
+        rightStick.trigger()
             .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
 
-        new JoystickButton(rightStick, 2)
+        // Reset heading
+        rightStick.top()
             .onTrue(new InstantCommand(() -> {
                 drive.resetHeading(); 
-                drive.setFieldToVehicle(new Pose2d(RobotState.getInstance().getFieldToVehicle().getTranslation(), new Rotation2d(0)));
+                drive.setFieldToVehicle(
+                    new Pose2d(
+                        RobotState.getInstance().getFieldToVehicle().getTranslation(),
+                        new Rotation2d(0)));
             }));
 
-        new JoystickButton(leftStick, 1)
+        // Slow down drive
+        leftStick.trigger()
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
-        new JoystickButton(leftStick, 3)
-            .whileTrue(new Align(drive, true));
-        new JoystickButton(leftStick, 4)
-            .whileTrue(new Align(drive, false));
+        // Auto-align
+        leftStick.topLeft().whileTrue(new Align(drive, true));
+        leftStick.topRight().whileTrue(new Align(drive, false));
 
-        // Overrides
-        new JoystickButton(rightStick, 12)
-            .onTrue(new HomeWrist(wrist));
+        // Home
+        rightStick.lowerButton(12).onTrue(new HomeWrist(wrist)); // Home wrist
+        rightStick.lowerButton(13).onTrue(new HomeTelescope(telescope)); // Home telescope
         
-        new JoystickButton(rightStick, 13)
-            .onTrue(new HomeTelescope(telescope));
-        
-        new JoystickButton(rightStick, 15)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(12), pivot));
+        // Manually send power to the arm
+        // TODO: Remove/disable outside comp? We've only flipped over twice.
+        rightStick.lowerButton(15)
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(4), pivot));
+        rightStick.lowerButton(14)
+            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-4), pivot));
+        rightStick.lowerButton(11)
+            .whileTrue(new RunCommand(() -> wrist.overrideVolts(2), wrist));
+        rightStick.lowerButton(16)
+            .whileTrue(new RunCommand(() -> wrist.overrideVolts(-2), wrist));
 
-        new JoystickButton(rightStick, 14)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-12), pivot));
-
-        new JoystickButton(rightStick, 11)
-            .whileTrue(new RunCommand(() -> wrist.overrideVolts(5), wrist));
-
-        new JoystickButton(rightStick, 16)
-            .whileTrue(new RunCommand(() -> wrist.overrideVolts(-5), wrist));
-
-        new JoystickButton(leftStick, 7)
+        // Manually disable (kill) subsystems
+        leftStick.lowerButton(7)
             .onTrue(new InstantCommand(pivot::toggleKill, pivot));
-
-        new JoystickButton(leftStick, 6)
+        leftStick.lowerButton(6)
             .onTrue(new InstantCommand(telescope::toggleKill, telescope));
-
-        new JoystickButton(leftStick, 5)
+        leftStick.lowerButton(5)
             .onTrue(new InstantCommand(wrist::toggleKill, wrist));
-
-        new JoystickButton(leftStick, 8)
+        leftStick.lowerButton(8)
             .onTrue(new InstantCommand(pivot::toggleKill))
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
-
-        new JoystickButton(leftStick,12)
+        
+        // Kill drive modules individually
+        // TODO: No longer needed if we've fixed the encoder issue?
+        leftStick.lowerButton(12)
             .onTrue(new InstantCommand(() -> drive.toggleKill(0)));
-        new JoystickButton(leftStick,13)
+        leftStick.lowerButton(13)
             .onTrue(new InstantCommand(() -> drive.toggleKill(1)));
-        new JoystickButton(leftStick,15)
+        leftStick.lowerButton(15)
             .onTrue(new InstantCommand(() -> drive.toggleKill(2)));
-        new JoystickButton(leftStick,14)
+        leftStick.lowerButton(14)
             .onTrue(new InstantCommand(() -> drive.toggleKill(3)));
 
         // Set game piece mode
-        masher.cubeMode().onTrue(new InstantCommand(() ->
+        masher.leftBumper().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
-        masher.coneDownMode().onTrue(new InstantCommand(() ->
+        masher.rightBumper().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.ConeDown)));
-        masher.coneUpMode().onTrue(new InstantCommand(() ->
+        masher.y().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.ConeUp)));
         
         // Move arm
-        masher.high().onTrue(getMoveArmCommand(Position.High)); // move to high
-        masher.mid().onTrue(getMoveArmCommand(Position.Mid)); // move to mid
-        masher.ground().onTrue(getMoveArmCommand(Position.Ground)); // move to ground
-        masher.stow().onTrue(getMoveArmCommand(Position.Stow)); // move to stow    
-        masher.shelf().onTrue(getMoveArmCommand(Position.Shelf)); // move to shelf
+        masher.pov(0).onTrue(getMoveArmCommand(Position.High)); // move to high
+        masher.pov(90).onTrue(getMoveArmCommand(Position.Mid)); // move to mid
+        masher.pov(180).onTrue(getMoveArmCommand(Position.Ground)); // move to ground
+        masher.pov(270).onTrue(getMoveArmCommand(Position.Stow)); // move to stow    
+        masher.x().onTrue(getMoveArmCommand(Position.Shelf)); // move to shelf
 
-        masher.special().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace));
-        masher.otherSpecial().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeDownHigh[2]));
-        // masher.flipSide().onTrue(
+        masher.a().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace)); // Dunk cone
+        masher.b().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeDownHigh[2])); // Un-dunk cone
+        
+        // TODO: let masher flip sides
+        // masher.??????().onTrue(
         //     new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
 
         // Manually jog arm
-        masher.jogPivotUp()
+        masher.leftStickLeft()
             .onTrue(new InstantCommand(pivot::jogSetpointForward, pivot)); // jog pivot right
-        masher.jogPivotDown()
+        masher.leftStickRight()
             .onTrue(new InstantCommand(pivot::jogSetpointBack, pivot)); // jog pivot left
 
-        masher.jogTelescopeUp()
+        masher.rightStickRight()
             .onTrue(new InstantCommand(telescope::jogSetpointForward, telescope)); // jog telescope up
-        masher.jogTelescopeDown()
+        masher.rightStickLeft()
             .onTrue(new InstantCommand(telescope::jogSetpointBackward, telescope)); // jog telescope down
 
-        masher.jogWristUp()
+        masher.rightStickUp()
             .onTrue(new InstantCommand(wrist::jogSetpointForward, wrist)); // jog wrist right
-        masher.jogWristDown()
+        masher.rightStickDown()
             .onTrue(new InstantCommand(wrist::jogSetpointBack, wrist)); // jog wrist left
 
         // Intake
-        masher.intake()
+        masher.leftTrigger()
             .onTrue(new InstantCommand(intake::toggleIntake)); // toggle intake
 
-        masher.place()
+        masher.rightTrigger()
             .onTrue(new InstantCommand(intake::place)) // start place
             .onFalse(new InstantCommand(intake::stop)); // stop place
 
-        masher.homeWrist()
+        masher.start()
             .onTrue(new HomeWrist(wrist));
         }
 
@@ -278,9 +280,9 @@ public class RobotContainer {
     }
 
     private Command getMoveArmCommand(Position position) {
-        return new InstantCommand(() -> {{
+        return new InstantCommand(() -> {
             
-            RobotState.getInstance().setStow(position.equals(Position.Stow));
+            RobotState.getInstance().setStow(position == Position.Stow);
             double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
             
             if (position == Position.High || position == Position.Mid) {
@@ -327,7 +329,7 @@ public class RobotContainer {
 
             // SmartDashboard.putNumber("MoveInitTime", timer.get()*1000);
             
-        }});
+        });
     }
 
 }
