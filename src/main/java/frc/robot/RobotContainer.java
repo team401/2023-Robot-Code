@@ -350,9 +350,6 @@ public class RobotContainer {
                 new MoveTelescope(telescope, pivot, positions[1]).schedule();
                 new MoveWrist(wrist, pivot, positions[2]).schedule();
             }
-
-            // SmartDashboard.putNumber("MoveInitTime", timer.get()*1000);
-            
         });
     }
 

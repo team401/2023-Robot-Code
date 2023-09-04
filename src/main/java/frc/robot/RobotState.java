@@ -146,17 +146,17 @@ public class RobotState {
 
     public void putPivotDisplay(double posRad) {
         pivotLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putTelescopeDisplay(double posM) {
         telescopeLigament.setLength(posM);
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void putWristDisplay(double posRad) {
         wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        // SmartDashboard.putData("Arm Mechanism", displayMechanism);
+        SmartDashboard.putData("Arm Mechanism", displayMechanism);
     }
 
     public void setStow(boolean stowed) {
@@ -177,9 +177,6 @@ public class RobotState {
 
     public void setMode(Constants.GamePieceMode mode) {
         gamePieceMode = mode;
-
-        String str = mode == gamePieceMode.ConeUp ? "up" : "normal";
-        // SmartDashboard.putString("Mode", str);
     }
 
     public boolean hasIntaked() {
