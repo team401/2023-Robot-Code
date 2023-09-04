@@ -189,9 +189,9 @@ public class RobotContainer {
 
         // Manually jog arm
         masher.leftStickLeft()
-            .onTrue(new InstantCommand(pivot::jogSetpointForward, pivot)); // jog pivot right
+            .onTrue(new InstantCommand(pivot::jogSetpointForward, pivot)); // jog pivot left
         masher.leftStickRight()
-            .onTrue(new InstantCommand(pivot::jogSetpointBack, pivot)); // jog pivot left
+            .onTrue(new InstantCommand(pivot::jogSetpointBack, pivot)); // jog pivot right
 
         masher.rightStickRight()
             .onTrue(new InstantCommand(telescope::jogSetpointForward, telescope)); // jog telescope up
