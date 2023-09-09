@@ -1,6 +1,7 @@
 package frc.robot;
 
 import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -78,7 +79,15 @@ public class RobotState {
     private boolean isIntaking = false;
 
     public void initializePoseEstimator(Rotation2d rotation, SwerveModulePosition[] modulePositions) {
-        poseEstimator = new SwerveDrivePoseEstimator(DriveConstants.kinematics, rotation, modulePositions, new Pose2d());
+        poseEstimator = new SwerveDrivePoseEstimator(
+            DriveConstants.kinematics,
+            rotation,
+            modulePositions,
+            new Pose2d(),
+            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
+        );
+
         field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
         SmartDashboard.putData("Field Pose", field);
         SmartDashboard.putData("Target Pose", targetField);

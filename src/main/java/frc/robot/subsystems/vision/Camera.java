@@ -58,6 +58,7 @@ public class Camera {
         for (PhotonTrackedTarget target : estimation.targetsUsed) {
             distance += target.getBestCameraToTarget().getTranslation().getDistance(new Translation3d());
         }
+
         distance /= estimation.targetsUsed.size();
         stdDevs = computeStdDevs(distance);
 
