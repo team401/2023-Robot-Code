@@ -30,6 +30,7 @@ import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.commands.FindDriveKs;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
@@ -39,6 +40,7 @@ import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
 import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.Drive.LockWheels;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PositionHelper;
 import frc.robot.commands.pivot.HoldPivot;
@@ -81,6 +83,8 @@ public class RobotContainer {
         configureCompBindings();
         // configureTestBindings();
         configureAutos();
+
+        SmartDashboard.putNumber("Manual drive voltage", 0);
     }
 
     private void configureSubsystems() {
@@ -100,7 +104,20 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-
+        rightStick.trigger()
+            .whileTrue(new FindDriveKs(drive));
+        
+        leftStick.trigger()
+            .onTrue(new InstantCommand(() -> {
+                drive.setPIDOverride(true);
+                drive.setVolts(
+                    SmartDashboard.getNumber("Manual drive voltage", 0)
+                );
+            }))
+            .onFalse(new InstantCommand(() -> {
+                drive.setVolts(0);
+                drive.setPIDOverride(false);
+            }));
     }   
 
     private void configureCompBindings() {

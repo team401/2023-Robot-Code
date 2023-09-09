@@ -23,6 +23,12 @@ import frc.robot.Constants.CANDevices;
  */
 public class Drive extends SubsystemBase {
 
+    public static enum LockWheels {
+        CROSS,
+        STRAIGHT,
+        UNLOCKED
+    }
+
     /**
      * Used to set module states and get data for RobotState
      */
@@ -52,6 +58,10 @@ public class Drive extends SubsystemBase {
      * True if drive should be slow, false if drive should be going at max speed
      */
     private boolean babyMode = false;
+
+    private LockWheels wheelsLocked = LockWheels.UNLOCKED;
+
+    private boolean overridePID = false;
 
     /**
      * Initialize all the modules, data arrays, and RobotState
@@ -111,7 +121,9 @@ public class Drive extends SubsystemBase {
             // SmartDashboard.putNumber("ActualSpeed"+i, driveModules[i].getDriveVelocityMPerS());
             // SmartDashboard.putNumber("ErrorSpeed"+i, Math.abs(driveModules[i].getDriveVelocityMPerS()-speedSetpointMPerS));
             // SmartDashboard.putNumber("DriveOutput"+i, speedRadPerS);
-            driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
+            if (!overridePID) {
+                driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
+            }
 
             // Set module rotation
             // rotationSetpointRadians = 0;
@@ -157,6 +169,10 @@ public class Drive extends SubsystemBase {
      * @param speeds the desired speed of the robot
      */
     public void setGoalChassisSpeeds(ChassisSpeeds speeds) {
+        if (wheelsLocked != LockWheels.UNLOCKED) {
+            return;
+        }
+
         speeds = new ChassisSpeeds(speeds.vxMetersPerSecond * (babyMode ? 0.2 : 1), speeds.vyMetersPerSecond * (babyMode ? 0.2 : 1), speeds.omegaRadiansPerSecond * (babyMode ? 0.1 : 1));
         SwerveModuleState[] goalModuleStates = DriveConstants.kinematics.toSwerveModuleStates(speeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(goalModuleStates, DriveConstants.maxDriveSpeed);
@@ -169,6 +185,22 @@ public class Drive extends SubsystemBase {
             };
         }
         setGoalModuleStates(goalModuleStates);
+    }
+
+    public void lockWheels(LockWheels locked) {
+        wheelsLocked = locked;
+
+        if (locked == wheelsLocked.CROSS) {
+
+        }
+        if (locked == wheelsLocked.STRAIGHT) {
+            goalModuleStates = new SwerveModuleState[] {
+                new SwerveModuleState(0, new Rotation2d()),
+                new SwerveModuleState(0, new Rotation2d()),
+                new SwerveModuleState(0, new Rotation2d()),
+                new SwerveModuleState(0, new Rotation2d()),
+            };
+        }
     }
 
     /**
@@ -189,11 +221,27 @@ public class Drive extends SubsystemBase {
         driveAngle.setHeading(heading);
     }
 
+    public void setPIDOverride(boolean override) {
+        overridePID = override;
+    }
+
     /**
      * @return the roll of the gyro in radians
      */
     public double getRoll() {
         return driveAngle.getRoll();
+    }
+
+    /**
+     * Used for tuning
+     */
+    public double[] getDriveEncoderPositions() {
+        return new double[] {
+            driveModules[0].getDrivePosition(),
+            driveModules[1].getDrivePosition(),
+            driveModules[2].getDrivePosition(),
+            driveModules[3].getDrivePosition(),
+        };
     }
 
     /**
@@ -214,8 +262,8 @@ public class Drive extends SubsystemBase {
     public void setVolts(double v) {
         driveModules[0].setDriveVoltage(v);
         driveModules[1].setDriveVoltage(v);
-        driveModules[2].setDriveVoltage(v);
-        driveModules[3].setDriveVoltage(v);
+        driveModules[2].setDriveVoltage(-v);
+        driveModules[3].setDriveVoltage(-v);
     }
 
     public SwerveModuleState[] getModuleStates() {
