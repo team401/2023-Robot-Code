@@ -96,7 +96,7 @@ public final class Constants {
                 new Translation2d(-trackWidth / 2.0, -wheelBase / 2.0) //rear right
         );
 
-        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.23, 2.185);
+        public static final SimpleMotorFeedforward driveFF = new SimpleMotorFeedforward(0.24, 2.185);
 
         public static final double maxDriveSpeed = 5;
         public static final double maxTurnRate = 2 * Math.PI;
@@ -276,8 +276,8 @@ public final class Constants {
         public static final double fieldWidth = 8.014;
 
         public static final double singleTagAmbiguityCutoff = 0.05;
-        public static final double minimumStdDev = 0.5;
-        public static final double stdDevEulerMultiplier = 0.3;
+        public static final double minimumStdDev = 0.3;
+        public static final double stdDevEulerMultiplier = 0.25;
         public static final double stdDevDistanceMultiplier = 0.4;
 
     }
