@@ -85,7 +85,7 @@ public class RobotState {
             modulePositions,
             new Pose2d(),
             VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
-            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
+            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)) // doesn't matter
         );
 
         field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
