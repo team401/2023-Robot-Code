@@ -163,14 +163,15 @@ public final class Constants {
 
         public static final double gearRatio = 8.0 / 78;
 
-        public static final double kP = 14;
-        public static final double kI = 3;
-        public static final double kPHold = 12;
-        public static final double kIHold = 3;
-        public static final double kV = 0.275;
+        public static final double kP = 2; //14
+        public static final double kI = 1; //3
+        public static final double kD = 0.1;
+        public static final double kPHold = 0; //12
+        public static final double kIHold = 0; //3
+        public static final double kV = 0.22; // 0.275
         public static final double kA = 0.01; // estimate
-        public static final double kG = 0.35;
-        public static final double kS = 0.35;
+        public static final double kG = 0.35; // 0.35
+        public static final double kS = 0.28; // 0.35
     }
 
     public static final class ArmPositions {

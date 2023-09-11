@@ -11,6 +11,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Robot;
 import frc.robot.RobotState;
@@ -32,7 +33,7 @@ public class WristSubsystem extends SubsystemBase {
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
         Units.degreesToRadians(630),
         Units.degreesToRadians(810));
-    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
+    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, WristConstants.kD);
     private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
@@ -44,6 +45,8 @@ public class WristSubsystem extends SubsystemBase {
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
 
     private double simPos = 0.0;
+
+    private double testKs = 0.2;
 
     public WristSubsystem() {
         motor.setInverted(false);
@@ -60,6 +63,13 @@ public class WristSubsystem extends SubsystemBase {
 
         controller.setTolerance(0.05);
         controllerHold.setTolerance(0.05);
+    }
+
+    public double findStatic() {
+        testKs += 0.01;
+        
+        return 0;
+
     }
 
     public double getPositionRad() {

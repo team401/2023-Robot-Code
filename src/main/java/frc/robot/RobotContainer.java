@@ -100,7 +100,8 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-
+        // new JoystickButton(leftStick, 1)
+        //     .onTrue(new InstantCommand(wrist::findStatic));
     }   
 
     private void configureCompBindings() {
