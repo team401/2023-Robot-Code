@@ -33,7 +33,7 @@ public class PivotSubsystem extends SubsystemBase {
     private double lastEncoderPos;
     private double velocityRadS;
     
-    private boolean dead = true;
+    private boolean dead = false;
 
     public boolean atGoal = false;
 
