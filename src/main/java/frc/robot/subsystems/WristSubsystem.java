@@ -33,7 +33,7 @@ public class WristSubsystem extends SubsystemBase {
     private final TrapezoidProfile.Constraints constraintsRad = new TrapezoidProfile.Constraints(
         Units.degreesToRadians(630),
         Units.degreesToRadians(810));
-    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, 0);
+    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, WristConstants.kD);
     private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
@@ -45,6 +45,8 @@ public class WristSubsystem extends SubsystemBase {
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
 
     private double simPos = 0.0;
+
+    private double testKs = 0.2;
 
     public WristSubsystem() {
         motor.setInverted(false);
@@ -64,20 +66,10 @@ public class WristSubsystem extends SubsystemBase {
     }
 
     public double findStatic() {
-        double ks = 0;
-        double pos = getPositionRad();
-        while(Math.abs(pos - getPositionRad()) < 0.01) {
-            ks += 0.01;
-            setVolts(ks);
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-        SmartDashboard.putNumber("kS", ks);
-        return ks;
+        testKs += 0.01;
+        
+        return 0;
+
     }
 
     public double getPositionRad() {
