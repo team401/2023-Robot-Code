@@ -30,6 +30,8 @@ import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.commands.FeedForward.TuneArmG;
+import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
@@ -278,6 +280,11 @@ public class RobotContainer {
         pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));
         telescope.setDesiredSetpoint(new State(ArmPositions.stow[1], 0));
         wrist.updateDesiredSetpointRad(new State(ArmPositions.stow[2], 0));
+    }
+
+    public Command autoTune() {
+        return new SequentialCommandGroup(  new TuneArmS(wrist),
+                                            new TuneArmG(wrist, 0));
     }
 
     private Command getMoveArmCommand(Position position) {
