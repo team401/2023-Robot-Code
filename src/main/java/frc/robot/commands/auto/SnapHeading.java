@@ -26,10 +26,10 @@ public class SnapHeading extends CommandBase {
         this.drive = drive;
 
         holonomicDrive = new CustomHolonomicDrive(
-            new PIDController(DriveConstants.poseMoveTranslationkP, 0, 0),
+            new PIDController(0, 0, 0),
             new PIDController(DriveConstants.poseMoveRotationkP, 0, 0),
-            new SlewRateLimiter(DriveConstants.poseMoveTranslationMaxAccel),
-            new SlewRateLimiter(DriveConstants.poseMoveTranslationMaxAccel),
+            new SlewRateLimiter(0),
+            new SlewRateLimiter(0),
             new SlewRateLimiter(DriveConstants.poseMoveRotationMaxAccel)
         );
 
