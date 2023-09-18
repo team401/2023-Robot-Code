@@ -100,8 +100,18 @@ public class RobotContainer {
     }
 
     private void configureTestBindings() {
-        // new JoystickButton(leftStick, 1)
-        //     .onTrue(new InstantCommand(wrist::findStatic));
+        masher.back()
+            .onTrue(new MovePivot(pivot, 0.8))
+            .onTrue(new MoveTelescope(telescope, pivot, 0.74))
+            .onTrue(new MoveWrist(wrist, pivot, -0.43));
+
+        masher.start()
+            .onTrue(new MovePivot(pivot, 0.69))
+            .onTrue(new MoveTelescope(telescope, pivot, 0.78))
+            .onTrue(new MoveWrist(wrist, pivot, -0.379));
+        
+        masher.a()
+            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
     }   
 
     private void configureCompBindings() {
@@ -214,6 +224,8 @@ public class RobotContainer {
 
         masher.start()
             .onTrue(new HomeWrist(wrist));
+
+        
         }
 
     private void configureAutos() {

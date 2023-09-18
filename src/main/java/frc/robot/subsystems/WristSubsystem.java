@@ -34,7 +34,7 @@ public class WristSubsystem extends SubsystemBase {
         Units.degreesToRadians(630),
         Units.degreesToRadians(810));
     private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, WristConstants.kD);
-    private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, 0);
+    private final PIDController controllerHold = new PIDController(WristConstants.kPHold, WristConstants.kIHold, WristConstants.kDHold);
     private final ArmFeedforward feedforward = new ArmFeedforward(
         WristConstants.kS,
         WristConstants.kG,
