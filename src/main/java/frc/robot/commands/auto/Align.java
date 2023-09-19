@@ -8,6 +8,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.Constants.DriveConstants;
@@ -46,6 +47,7 @@ public class Align extends CommandBase {
     public void initialize() {
 
         Pose2d goalPose = getGoalPose(left);
+        SmartDashboard.putNumberArray("Auto Allign Pose", new Double[]{goalPose.getX(), goalPose.getY(), goalPose.getRotation().getDegrees()});
         targetPose = new ExtendedPathPoint(goalPose.getTranslation(), goalPose.getRotation(), goalPose.getRotation());
 
     }
