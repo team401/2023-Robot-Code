@@ -47,7 +47,7 @@ public class Align extends CommandBase {
     public void initialize() {
 
         Pose2d goalPose = getGoalPose(left);
-        SmartDashboard.putNumberArray("Auto Allign Pose", new Double[]{goalPose.getX(), goalPose.getY(), goalPose.getRotation().getDegrees()});
+        SmartDashboard.putNumberArray("Target Pose", new Double[]{goalPose.getX(), goalPose.getY(), goalPose.getRotation().getDegrees()});
         targetPose = new ExtendedPathPoint(goalPose.getTranslation(), goalPose.getRotation(), goalPose.getRotation());
 
     }
