@@ -125,7 +125,7 @@ public class RobotState {
         mainField.setRobotPose(poseEstimator.getEstimatedPosition());
         SmartDashboard.putData("Field Pose", mainField);
 
-        odometryField.setRobotPose(odometryField.getRobotPose());
+        odometryField.setRobotPose(driveOdometry.getPoseMeters());
         SmartDashboard.putData("Odometry Pose", odometryField);
         
         return poseEstimator.getEstimatedPosition();    
