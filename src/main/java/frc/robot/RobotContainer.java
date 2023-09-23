@@ -35,6 +35,7 @@ import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
+import frc.robot.commands.auto.SnapHeading;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -125,6 +126,9 @@ public class RobotContainer {
         leftStick.trigger()
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+
+        // Snap robot heading to y-axis
+        leftStick.top().whileTrue(new SnapHeading(drive));
 
         // Auto-align
         leftStick.topLeft().whileTrue(new Align(drive, true));
