@@ -169,6 +169,7 @@ public final class Constants {
         public static final double kPHold = 4; //12
         public static final double kIHold = 2; //3
         public static final double kDHold = 0;
+
         public static final double kV = 0.22; // 0.275
         public static final double kA = 0.01; // estimate
         public static final double kG = 0.35; // 0.35

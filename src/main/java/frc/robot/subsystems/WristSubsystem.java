@@ -18,7 +18,7 @@ import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
 
-public class WristSubsystem extends SubsystemBase {
+public class WristSubsystem extends ArmSubsystem {
     private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
 
     public boolean homed = false;
@@ -63,13 +63,6 @@ public class WristSubsystem extends SubsystemBase {
 
         controller.setTolerance(0.05);
         controllerHold.setTolerance(0.05);
-    }
-
-    public double findStatic() {
-        testKs += 0.01;
-        
-        return 0;
-
     }
 
     public double getPositionRad() {

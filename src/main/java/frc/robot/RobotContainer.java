@@ -30,9 +30,12 @@ import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.commands.FeedForward.TuneArmG;
+import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.Balance;
+import frc.robot.commands.auto.SnapHeading;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -133,6 +136,9 @@ public class RobotContainer {
         leftStick.trigger()
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+
+        // Snap robot heading to y-axis
+        leftStick.top().whileTrue(new SnapHeading(drive));
 
         // Auto-align
         leftStick.topLeft().whileTrue(new Align(drive, true));
@@ -290,6 +296,11 @@ public class RobotContainer {
         pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));
         telescope.setDesiredSetpoint(new State(ArmPositions.stow[1], 0));
         wrist.updateDesiredSetpointRad(new State(ArmPositions.stow[2], 0));
+    }
+
+    public Command autoTune() {
+        return new SequentialCommandGroup(  new TuneArmS(wrist),
+                                            new TuneArmG(wrist, 0));
     }
 
     private Command getMoveArmCommand(Position position) {
