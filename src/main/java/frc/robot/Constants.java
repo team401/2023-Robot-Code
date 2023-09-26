@@ -163,11 +163,13 @@ public final class Constants {
 
         public static final double gearRatio = 8.0 / 78;
 
-        public static final double kP = 2; //14
-        public static final double kI = 1; //3
+        public static final double kP = 12; //14
+        public static final double kI = 2; //3
         public static final double kD = 0.1;
         public static final double kPHold = 4; //12
         public static final double kIHold = 2; //3
+        public static final double kDHold = 0;
+
         public static final double kV = 0.22; // 0.275
         public static final double kA = 0.01; // estimate
         public static final double kG = 0.35; // 0.35
@@ -176,7 +178,7 @@ public final class Constants {
 
     public static final class ArmPositions {
         public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15};
-        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.45};
+        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.55};
         public static final double[] placeCubeHigh = {0.590, 0.781, 1.5};
         public static final double[] placeCubeMid = {0.555, 0.276, 1.5};
         public static final double[] placeCubeLow = {0, 0.1, 1.4};
@@ -190,7 +192,7 @@ public final class Constants {
         public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15};
         public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85};
         public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.13};
-        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379};
+        public static final double[] placeConeUpHigh = {0.69, 0.7, -0.379};
         public static final double[] placeConeUpMid = {0.7, 0.37, -0.6,};
         
         public static final double[] stow = {1.5, 0.1, Math.PI / 2};
@@ -199,7 +201,7 @@ public final class Constants {
         
         public static final double[] preFlingCube = {0.4, 0.1, 0.78};
         public static final double[] postFlingCube = {Math.PI / 1.5, 0.1, 1.8};
-        public static final double[] placeConeUpHighPrepare = {0.8, 0.74, -0.43};
+        public static final double[] placeConeUpHighPrepare = {0.8, 0.65, -0.5};
         public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.5};
         public static final double[] placeCubeAuto = {0.590, 0.781, 1.8};
 
@@ -256,10 +258,10 @@ public final class Constants {
         };
 
         public static final Transform3d[] vehicleToCameras = {//10 deg yaw, 5 deg pitch
-            new Transform3d(new Translation3d(0.03, 0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-10))),
-            new Transform3d(new Translation3d(0.03, -0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
-            new Transform3d(new Translation3d(-0.03, 0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-175))),
-            new Transform3d(new Translation3d(-0.03, -0.146, 0), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(175)))
+            new Transform3d(new Translation3d(0.03, 0.146, Units.inchesToMeters(31.5)), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-10))),
+            new Transform3d(new Translation3d(0.03, -0.146, Units.inchesToMeters(31.5)), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(10))),
+            new Transform3d(new Translation3d(-0.03, 0.146, Units.inchesToMeters(31.5)), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(-175))),
+            new Transform3d(new Translation3d(-0.03, -0.146, Units.inchesToMeters(31.5)), new Rotation3d(0, Units.degreesToRadians(-5), Units.degreesToRadians(175)))
         };
 
         public static final List<AprilTag> tags = new ArrayList<AprilTag>() {{
@@ -310,7 +312,7 @@ public final class Constants {
         public static final double autoTranslationSlowYKi = 0;
         public static final double autoTranslationSlowYKd = 0;
 
-        public static final double autoRotationKp = 8;
+        public static final double autoRotationKp = 7;
         public static final double autoRotationKi = 0;
         public static final double autoRotationKd = 0;
 

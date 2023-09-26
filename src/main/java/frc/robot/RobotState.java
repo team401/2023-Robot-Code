@@ -71,8 +71,9 @@ public class RobotState {
 
     private GamePieceMode gamePieceMode = GamePieceMode.ConeDown;
 
-    private final Field2d field = new Field2d();
+    private final Field2d mainField = new Field2d();
     private final Field2d targetField = new Field2d();
+    private final Field2d odometryField = new Field2d();
 
     private SwerveDriveOdometry driveOdometry;
 
@@ -88,8 +89,8 @@ public class RobotState {
             VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30)) // doesn't matter
         );
 
-        field.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
-        SmartDashboard.putData("Field Pose", field);
+        mainField.setRobotPose(new Pose2d(1.9, 4.99, Rotation2d.fromDegrees(0)));
+        SmartDashboard.putData("Field Pose", mainField);
         SmartDashboard.putData("Target Pose", targetField);
         driveOdometry = new SwerveDriveOdometry(DriveConstants.kinematics, rotation, modulePositions);
     }
@@ -102,7 +103,7 @@ public class RobotState {
     public void recordVisionObservations(Pose2d pose, Matrix<N3, N1> stdDevs, double timestamp) {
         
         poseEstimator.addVisionMeasurement(pose, timestamp, stdDevs);
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
+        mainField.setRobotPose(poseEstimator.getEstimatedPosition());
 
     }
 
@@ -121,8 +122,11 @@ public class RobotState {
         // SmartDashboard.putNumber("OdometryY", driveOdometry.getPoseMeters().getY());
         // SmartDashboard.putNumber("OdometryTheta", driveOdometry.getPoseMeters().getRotation().getDegrees());
 
-        field.setRobotPose(poseEstimator.getEstimatedPosition());
-        SmartDashboard.putData("Field Pose", field);
+        mainField.setRobotPose(poseEstimator.getEstimatedPosition());
+        SmartDashboard.putData("Field Pose", mainField);
+
+        odometryField.setRobotPose(driveOdometry.getPoseMeters());
+        SmartDashboard.putData("Odometry Pose", odometryField);
         
         return poseEstimator.getEstimatedPosition();    
     }
