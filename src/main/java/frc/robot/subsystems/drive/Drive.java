@@ -8,14 +8,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.RobotState;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.CANDevices;
 
 /**
@@ -94,7 +90,7 @@ public class Drive extends SubsystemBase {
         // Driving
         for (int i = 0; i < 4; i++) {
 
-            SmartDashboard.putBoolean("DriveStatus"+i, driveModules[i].getDeadBoolean());
+            SmartDashboard.putBoolean("Drive/modules/"+i+"/status", driveModules[i].getDeadBoolean());
 
             // Get encoder value
             Rotation2d moduleRotation = new Rotation2d(driveModules[i].getRotationPosition());
@@ -114,7 +110,6 @@ public class Drive extends SubsystemBase {
             driveModules[i].setDriveVelocity(speedRadPerS, ffVolts);
 
             // Set module rotation
-            // rotationSetpointRadians = 0;
             double rotationVoltage = rotationPIDs[i].calculate(moduleRotation.getRadians(), rotationSetpointRadians);
             driveModules[i].setRotationVoltage(rotationVoltage);
             // SmartDashboard.putNumber("DesiredRot"+i, rotationSetpointRadians);
@@ -128,16 +123,14 @@ public class Drive extends SubsystemBase {
         for (int i = 0; i < 4; i++) {
             modulePositions[i].distanceMeters = driveModules[i].getDrivePosition() * DriveConstants.wheelRadiusM;
             modulePositions[i].angle = new Rotation2d(driveModules[i].getRotationPosition());
-            // SmartDashboard.putNumber("DriveAngle"+i, modulePositions[i].angle.getRadians());
-            // SmartDashboard.putNumber("DriveStator"+i, driveModules[i].getDriveStatorCurrent());
-            // SmartDashboard.putNumber("RotationStator"+i, driveModules[i].getRotationStatorCurrent());
+
+            SmartDashboard.putNumber("Drive/modules/"+i+"/angle", modulePositions[i].angle.getRadians());
+            SmartDashboard.putNumber("Drive/modules/"+i+"/drive stator current", driveModules[i].getDriveStatorCurrent());
+            SmartDashboard.putNumber("Drive/modules/"+i+"/rotation stator current", driveModules[i].getRotationStatorCurrent());
         }
         RobotState.getInstance().recordDriveObservations(getRotation(), modulePositions);
 
-        // SmartDashboard.putNumber("DriveVelocity", getChassisSpeeds().vxMetersPerSecond);
-
-        // SmartDashboard.putNumber("Roll", driveAngle.getRoll());
-
+        SmartDashboard.putNumber("Drive/velocity magnitude", getChassisSpeeds().vxMetersPerSecond);
     }
 
     /**
@@ -145,9 +138,7 @@ public class Drive extends SubsystemBase {
      * @param states an array of SwerveModuleStates representing the desired state for each swerve module [frontLeft, frontRight, backLeft, backRight]
      */
     public void setGoalModuleStates(SwerveModuleState[] states) {
-        // SmartDashboard.putNumber("lol", System.currentTimeMillis());
         for (int i = 0; i < 4; i++) {
-            // SmartDashboard.putNumber("lel"+i, states[i].speedMetersPerSecond);
             goalModuleStates[i] = states[i];
         }
     }

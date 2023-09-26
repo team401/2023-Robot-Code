@@ -10,31 +10,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.commands.CharacterizeMechanism;
 import frc.robot.commands.DriveWithJoysticks;
-import frc.robot.commands.FeedForward.TuneArmG;
-import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
-import frc.robot.commands.auto.Balance;
 import frc.robot.commands.auto.SnapHeading;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
@@ -52,7 +43,6 @@ import frc.robot.commands.telescope.MoveTelescope;
 import frc.robot.commands.wrist.HoldWrist;
 import frc.robot.commands.wrist.HomeWrist;
 import frc.robot.commands.wrist.MoveWrist;
-import frc.robot.commands.wrist.MoveWristAbsolute;
 import frc.robot.oi.ButtonMasher;
 import frc.robot.oi.Thrustmaster;
 
@@ -63,6 +53,7 @@ public class RobotContainer {
     private final TelescopeSubsystem telescope = new TelescopeSubsystem();
     private final WristSubsystem wrist = new WristSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
+    @SuppressWarnings("unused")
     private final Vision vision = new Vision();
     private final LEDManager ledManager = new LEDManager();
 
@@ -102,6 +93,7 @@ public class RobotContainer {
 
     }
 
+    @SuppressWarnings("unused")
     private void configureTestBindings() {
         masher.back()
             .onTrue(new MovePivot(pivot, 0.8))
@@ -296,11 +288,6 @@ public class RobotContainer {
         pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));
         telescope.setDesiredSetpoint(new State(ArmPositions.stow[1], 0));
         wrist.updateDesiredSetpointRad(new State(ArmPositions.stow[2], 0));
-    }
-
-    public Command autoTune() {
-        return new SequentialCommandGroup(  new TuneArmS(wrist),
-                                            new TuneArmG(wrist, 0));
     }
 
     private Command getMoveArmCommand(Position position) {

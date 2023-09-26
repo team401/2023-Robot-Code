@@ -12,13 +12,11 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.RobotState;
 import frc.robot.Constants.VisionConstants;
@@ -84,9 +82,6 @@ public class Camera {
         hasNewPose = false;
 
         log3dPose("Vision/" + name + "/RawPose", calculatedPose);
-        // SmartDashboard.putNumber(camera.getName()+"X", calculatedPose.getX());
-        // SmartDashboard.putNumber(camera.getName()+"Y", calculatedPose.getY());
-        // SmartDashboard.putNumber(camera.getName()+"Theta", calculatedPose.getRotation().getRadians());
     }
 
     private Matrix<N3, N1> computeStdDevs(double distance) {

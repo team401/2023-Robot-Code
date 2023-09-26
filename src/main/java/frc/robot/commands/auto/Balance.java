@@ -78,7 +78,7 @@ public class Balance extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return false;//errorChecker.hasElapsed(3)
+        return false;
     }
 
     @Override

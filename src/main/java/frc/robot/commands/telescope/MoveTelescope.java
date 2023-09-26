@@ -56,7 +56,6 @@ public class MoveTelescope extends CommandBase {
         telescope.resetPID();
 
         telescope.atGoal = false;
-
     }
 
     @Override
@@ -66,8 +65,8 @@ public class MoveTelescope extends CommandBase {
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
-        // SmartDashboard.putNumber("Telescope Position", telescope.getPositionM());
-        // SmartDashboard.putNumber("Telescope Setpoint", setpoint.position);
+        SmartDashboard.putNumber("Telescope/profiled setpoint", setpoint.position);
+        SmartDashboard.putNumber("Telescope/final setpoint", goalM);
 
         telescope.setVolts(output);
 

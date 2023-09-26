@@ -166,7 +166,6 @@ public class IntakeSubsystem extends SubsystemBase {
     public void periodic() {
 
         double currentDraw = Math.max(leftMotor.getOutputCurrent(), rightMotor.getOutputCurrent());
-        // SmartDashboard.putNumber("IntakeCurrentDraw", currentDraw);
         if (intakeMode == IntakeMode.Intake && !exceededCurrentDraw) {
             if (currentDraw > 20 && intakeTimer.hasElapsed(1)) {
                 exceededCurrentDraw = true;

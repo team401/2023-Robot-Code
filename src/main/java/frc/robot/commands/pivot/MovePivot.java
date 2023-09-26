@@ -4,6 +4,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
@@ -77,9 +78,9 @@ public class MovePivot extends CommandBase{
     public void execute() {
         State setpoint = profile.calculate(timer.get());
 
-        // SmartDashboard.putNumber("MovePivot State", setpoint.position);
+        SmartDashboard.putNumber("Pivot/profiled setpoint", setpoint.position);
 
-        // SmartDashboard.putNumber("Pivot Setpoint", setpoint.position);
+        SmartDashboard.putNumber("Pivot/final setpoint", setpoint.position);
 
         double pivotOut = pivot.calculateControl(setpoint, 0);
         pivot.setVolts(pivotOut);
@@ -93,7 +94,6 @@ public class MovePivot extends CommandBase{
     @Override
     public boolean isFinished() {
         return finishedTimer.hasElapsed(0.2) || (ignoreValidation && profile.isFinished(timer.get()));
-        // return false;
     }
 
     @Override

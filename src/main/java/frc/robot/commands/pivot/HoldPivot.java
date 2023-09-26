@@ -4,6 +4,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
@@ -47,7 +48,7 @@ public class HoldPivot extends CommandBase {
 
         State setpoint = profile.calculate(timer.get());
 
-        // SmartDashboard.putNumber("Hold Setpoint", setpoint.velocity);
+        SmartDashboard.putNumber("Pivot/hold setpoint", setpoint.position);
 
         // Calculate output from feedforward & PID
         double pivotOut = MathUtil.clamp(pivot.calculateControl(setpoint, telescope.getPositionM()), -4, 4);
