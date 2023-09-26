@@ -4,7 +4,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotState;
 import frc.robot.subsystems.PivotSubsystem;
@@ -86,10 +85,6 @@ public class MoveWristAbsolute extends CommandBase {
     public boolean isFinished() {
         return finishedTimer.hasElapsed(0.2) || (ignoreValidation && profile.isFinished(timer.get()));
         // return false;
-    }
-
-    private double getAdjustedAngle() {
-        return wrist.getPositionRad() + pivot.getPositionRad();
     }
 
     @Override

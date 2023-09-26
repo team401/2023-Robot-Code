@@ -1,6 +1,7 @@
 package frc.robot.commands.telescope;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.TelescopeSubsystem;
@@ -26,6 +27,7 @@ public class HoldTelescope extends CommandBase {
 
     @Override
     public void execute() {
+        SmartDashboard.putNumber("Pivot/hold setpoint", goalState.position);
 
         double output = telescope.calculateControl(goalState, pivot.getPositionRad());
 

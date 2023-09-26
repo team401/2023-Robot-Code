@@ -7,7 +7,6 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -18,9 +17,6 @@ public class DriveWithJoysticks extends CommandBase {
     private final DoubleSupplier yPercent;
     private final DoubleSupplier omegaPercent;
     private final boolean fieldRelative;
-
-    // private final Timer directionTimer = new Timer();
-    // private double currentDirection = 1;
 
     /** Creates a new DriveWithJoysticks. */
     public DriveWithJoysticks(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, DoubleSupplier omegaPercent, boolean fieldRelative) {
@@ -51,11 +47,6 @@ public class DriveWithJoysticks extends CommandBase {
             : new ChassisSpeeds(xMPerS, yMPerS, omegaRadPerS);
 
         drive.setGoalChassisSpeeds(targetSpeeds);
-
-        // SmartDashboard.putNumber("VelXError", xMPerS-drive.getVelocity().vxMetersPerSecond);
-        // SmartDashboard.putNumber("VelYError", xMPerS-drive.getVelocity().vxMetersPerSecond);
-        // SmartDashboard.putNumber("VelOmegaError", omegaRadPerS-drive.getVelocity().omegaRadiansPerSecond);
-
     }
 
     // Called once the command ends or is interrupted.

@@ -76,18 +76,7 @@ public class FollowTrajectory extends CommandBase {
         
         RobotState.getInstance().setGoalPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
 
-        // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
-        // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
-        // SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
-        // SmartDashboard.putNumber("ActualX", RobotState.getInstance().getFieldToVehicle().getX());
-        // SmartDashboard.putNumber("ActualY", RobotState.getInstance().getFieldToVehicle().getY());
-        // SmartDashboard.putNumber("ActualOmega", RobotState.getInstance().getFieldToVehicle().getRotation().getRadians());
-
-        // SmartDashboard.putNumber("DesiredSpeedX", adjustedSpeeds.vxMetersPerSecond);
-        // SmartDashboard.putNumber("ActualSpeedX", drive.getVelocity().vxMetersPerSecond);
-
         drive.setGoalChassisSpeeds(adjustedSpeeds);
-    
     }
 
     @Override

@@ -20,6 +20,7 @@ If you wanted to tune the proportional of the telescope controller:
 telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamepad(), (p) -> telescope.setP(p), 0));
 */
 
+@Deprecated
 public class CharacterizeMechanism extends CommandBase {
 
     private final XboxController controller;

@@ -173,12 +173,12 @@ public class TelescopeSubsystem extends SubsystemBase{
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Telescope Position", getPositionM()); 
-        // SmartDashboard.putNumber("Telescope Velocity", getVel());
-        // SmartDashboard.putNumber("Telescope Desired Position", currentSetpoint.position);
-        // SmartDashboard.putBoolean("Telescope Dead", dead);
-        // SmartDashboard.putNumber("Telescope Voltage", motor.getMotorOutputVoltage());
-        // SmartDashboard.putNumber("Telescope Amps", getAmps());
+        SmartDashboard.putNumber("Telescope/position", getPositionM()); 
+        SmartDashboard.putNumber("Telescope/velocity", getVel());
+
+        SmartDashboard.putBoolean("Telescope/dead", dead);
+        SmartDashboard.putNumber("Telescope/applied voltage", motor.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Telescope/motor current", getAmps());
 
         RobotState.getInstance().putTelescopeDisplay(getPositionM());
     }

@@ -24,7 +24,7 @@ import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
 
-public class PivotSubsystem extends ArmSubsystem {
+public class PivotSubsystem extends SubsystemBase {
     /**Primary Motor/ Leader */
     private TalonFX rightMotor = new TalonFX(CANDevices.rightPivotMotorID, CANDevices.canivoreName);
     private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
@@ -88,15 +88,12 @@ public class PivotSubsystem extends ArmSubsystem {
             80,
             1)
         );
-
-        // SmartDashboard.putNumber("Pivot test setpoint", 0);
     }
 
     public double getPositionRad() {
         if (Robot.isReal()) {
             return encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad;
         }
-        // return encoder.getAbsolutePosition();
         return simPos;
     }
 
@@ -117,6 +114,8 @@ public class PivotSubsystem extends ArmSubsystem {
     }
 
     public void printAutoTimer() {
+        // I don't know why this is here, but it is used in AutoRoutines, so I've
+        // deemed it to dangerous to remove.
         SmartDashboard.putNumber("autoTmp", autoTimer.get());
     }
 
@@ -199,7 +198,7 @@ public class PivotSubsystem extends ArmSubsystem {
     public void setVolts(double input) {
         if (!dead && withinSoftLimits(input)) {
             rightMotor.set(ControlMode.PercentOutput, input / 12);
-            // SmartDashboard.putNumber("Pivot Commanded V", input);
+            SmartDashboard.putNumber("Pivot/commanded voltage", input);
         } else {
             rightMotor.set(ControlMode.PercentOutput, 0);
         }
@@ -256,17 +255,15 @@ public class PivotSubsystem extends ArmSubsystem {
     @Override
     public void periodic() {
 
+        // Again, I don't know what this is for, but it will go unremoved for now.
         SmartDashboard.putNumber("AutoTimer", autoTimer.get());
 
-        SmartDashboard.putNumber("Pivot Position", getPositionRad());
-        // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
-        // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
-        // SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
-        // SmartDashboard.putNumber("Pivot Desired Setpoint", currentSetpointRad.position);
+        SmartDashboard.putNumber("Pivot/position", getPositionRad());
+        SmartDashboard.putNumber("Pivot/velocity", getVelRadS());
+        SmartDashboard.putNumber("Pivot/right motor current", rightMotor.getStatorCurrent());
+        SmartDashboard.putNumber("Pivot/left motor current", leftMotor.getStatorCurrent());
 
-        // SmartDashboard.putBoolean("Pivot Dead", dead);
-
-        // SmartDashboard.putBoolean("At Back", RobotState.getInstance().atBack());
+        SmartDashboard.putBoolean("Pivot/dead", dead);
 
         RobotState.getInstance().putPivotDisplay(getPositionRad());
 

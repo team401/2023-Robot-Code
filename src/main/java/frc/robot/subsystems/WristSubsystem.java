@@ -18,7 +18,7 @@ import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
 
-public class WristSubsystem extends ArmSubsystem {
+public class WristSubsystem extends SubsystemBase {
     private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
 
     public boolean homed = false;
@@ -45,8 +45,6 @@ public class WristSubsystem extends ArmSubsystem {
     private TrapezoidProfile.State currentSetpointRad = new TrapezoidProfile.State();
 
     private double simPos = 0.0;
-
-    private double testKs = 0.2;
 
     public WristSubsystem() {
         motor.setInverted(false);
@@ -195,15 +193,12 @@ public class WristSubsystem extends ArmSubsystem {
     }
 
     public void periodic() {
+        SmartDashboard.putNumber("Wrist/position", getPositionRad());
+        SmartDashboard.putNumber("Wrist/motor current", getAmps());
 
-        SmartDashboard.putNumber("Wrist Position", getPositionRad());
-        // SmartDashboard.putNumber("Wrist Desired Position", currentSetpointRad.position);
-        // SmartDashboard.putNumber("Wrist Amps", getAmps());
-        // SmartDashboard.putBoolean("Wrist Dead", dead);
-        // SmartDashboard.putNumber("Wrist Input Voltage", motor.getmotor)
-        // SmartDashboard.putNumber("Wrist Voltage", motor.getMotorOutputVoltage());
-        // SmartDashboard.putBoolean("Wrist Homed", homed);
-        // SmartDashboard.putNumber("Wrist Velocity", getVelRadS());
+        SmartDashboard.putBoolean("Wrist/dead", dead);
+        SmartDashboard.putNumber("Wrist/applied voltage", motor.getMotorOutputVoltage());
+        SmartDashboard.putNumber("Wrist/velocity", getVelRadS());
 
         RobotState.getInstance().putWristDisplay(getPositionRad());
 
