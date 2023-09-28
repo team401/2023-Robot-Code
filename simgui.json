@@ -21,6 +21,9 @@
   },
   "NetworkTables": {
     "transitory": {
+      "AdvantageKit": {
+        "open": true
+      },
       "SmartDashboard": {
         "Arm Mechanism": {
           "arm": {

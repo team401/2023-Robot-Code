@@ -1,33 +1,26 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.telescope;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import org.littletonrobotics.junction.Logger;
+
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.RobotState;
-import frc.robot.Constants.CANDevices;
+import frc.robot.Constants;
+import frc.robot.ArmManager;
 import frc.robot.Constants.TelescopeConstants;
 
 public class TelescopeSubsystem extends SubsystemBase{
-    private TalonFX motor = new TalonFX(CANDevices.telescopeMotorID);
+    private final TelescopeIO io;
+    private final TelescopeIOInputsAutoLogged inputs = new TelescopeIOInputsAutoLogged();
 
     public boolean homed = false;
 
     private boolean dead = false;
 
     public boolean atGoal = false;
-
-    private double simPos;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
@@ -43,38 +36,26 @@ public class TelescopeSubsystem extends SubsystemBase{
     // Stores the most recent setpoint to allow the Hold command to hold it in place
     private TrapezoidProfile.State currentSetpoint = new TrapezoidProfile.State(0.06, 0);
 
-    public TelescopeSubsystem() {
-        motor.setInverted(InvertType.None);
-        motor.setNeutralMode(NeutralMode.Brake);
-        
-        motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        motor.setSensorPhase(false);
+    public TelescopeSubsystem(TelescopeIO io) {
+        this.io = io;
 
-        motor.configNeutralDeadband(0.004);
-
-        motor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(true, 40, 50, 0.5));
+        if(Constants.mode == Constants.Mode.SIM)
+            homed = true;
 
         // SmartDashboard.putNumber("Telescope test setpoint", 0);
     }
 
     public double getPositionM() {
         // 4096 units per rotation, multiply rotations by diameter
-        if (Robot.isReal()) {
-            return motor.getSelectedSensorPosition() / 4096
-                * 2 * Math.PI  * TelescopeConstants.conversionM;
-        }
-
-        return simPos;
+        return inputs.positionMeters;
     }
 
     public double getVel() {
-        return motor.getSelectedSensorVelocity() / 4096
-            * 2 * Math.PI * TelescopeConstants.conversionM * 10;
+        return inputs.velocityMetersPerSec;
     }
 
     public double getAmps() {
-        return Math.abs(motor.getStatorCurrent());
+        return inputs.currentAmps;
     }
 
      /**
@@ -90,7 +71,7 @@ public class TelescopeSubsystem extends SubsystemBase{
     }
 
     public void toggleKill() {
-        motor.set(ControlMode.PercentOutput, 0);
+        io.setVolts(0);
         dead = !dead;
     }
 
@@ -129,41 +110,37 @@ public class TelescopeSubsystem extends SubsystemBase{
         currentSetpoint.position = 
             MathUtil.clamp(
                     currentSetpoint.position + 0.05,
-                    TelescopeConstants.minPosM,
-                    TelescopeConstants.maxPosM);
+                    TelescopeConstants.minPosMeters,
+                    TelescopeConstants.maxPosMeters);
     }
 
     public void jogSetpointBackward() {
         currentSetpoint.position = 
             MathUtil.clamp(
                     currentSetpoint.position - 0.05,
-                    TelescopeConstants.minPosM,
-                    TelescopeConstants.maxPosM);
-    }
-
-    public void setSimPos(double pos) {
-        simPos = pos;
+                    TelescopeConstants.minPosMeters,
+                    TelescopeConstants.maxPosMeters);
     }
 
     public void setVolts(double input) {
         if (!dead)
-            motor.set(ControlMode.PercentOutput, input / 12);
+        io.setVolts(input);
     }
 
     public void overrideVolts(double input) {
-        motor.set(ControlMode.PercentOutput, input / 12);
+        io.setVolts(input);
     }
 
     public void stop() {
-        motor.set(ControlMode.PercentOutput, 0);
+        io.setVolts(0);
     }
 
     public void setBrakeMode(boolean braked) {
-        motor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+        io.setBrakeMode(braked);
     }
 
     public void resetOffset() {
-        motor.setSelectedSensorPosition(0);
+        io.setOffset(0);
     }
 
     public void setP(double p) {
@@ -180,6 +157,10 @@ public class TelescopeSubsystem extends SubsystemBase{
         SmartDashboard.putNumber("Telescope/applied voltage", motor.getMotorOutputVoltage());
         SmartDashboard.putNumber("Telescope/motor current", getAmps());
 
-        RobotState.getInstance().putTelescopeDisplay(getPositionM());
+        io.updateInputs(inputs);
+
+        Logger.getInstance().processInputs("Telescope", inputs);
+
+        ArmManager.getInstance().putTelescopeDisplay(getPositionM());
     }
 }

@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import edu.wpi.first.apriltag.AprilTag;
-import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Quaternion;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -20,6 +19,16 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
+    public static final Mode mode = Mode.SIM;
+
+    public static enum Mode {
+        REAL, SIM, REPLAY
+    }
+
+    public static enum DriveModulePosition {
+        FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT
+    }
+
     public static final class CANDevices {
 
         public static final String canivoreName = "Canivore";
@@ -77,11 +86,8 @@ public final class Constants {
         public static final double backLeftAngleOffset = 1.681;
         public static final double backRightAngleOffset =  1.039;
 
-        public static final double[] driveKps = {0.7, 0.4, 0.7, 0.7};
-        public static final double[] driveKds = {3.5, 2.5, 3.7, 3.5};
-
-        public static final double[] rotationKps = {7, 7, 7, 7};
-        public static final double[] rotationKds = {0, 0, 0, 0};
+        public static final double[] driveRealKps = {0.7, 0.4, 0.7, 0.7};
+        public static final double[] driveRealKds = {3.5, 2.5, 3.7, 3.5};
 
         public static final double driveSnapKp = 1.5;
         public static final double driveSnapKi = 0;
@@ -116,7 +122,7 @@ public final class Constants {
     public static final class PivotConstants {
         public static final double encoderOffsetRad = -Units.rotationsToRadians(0.1775) + 0.01;
 
-        public static final double armToMotorGearRatio = 1 / 90;
+        public static final double armToMotorGearRatio = 90 / 1;
 
         public static final double maxFwdRotationRad = Units.degreesToRadians(-30);
         public static final double maxBackRotationRad = Units.degreesToRadians(210);
@@ -141,9 +147,11 @@ public final class Constants {
     }
 
     public static final class TelescopeConstants {
-        public static final double maxPosM = 0.8;
-        public static final double minPosM = 0.01;
+        public static final double maxPosMeters = 0.8;
+        public static final double minPosMeters = 0.01;
 
+        // TODO: Set weight and other stuff
+        public static final double weightKg = 5;
         public static final double conversionM = 0.00865;
 
         public static final double kP = 100;
@@ -159,8 +167,10 @@ public final class Constants {
         public static final double negativeLimitRad = Units.degreesToRadians(-160);
 
         public static final double intakeLengthM = Units.inchesToMeters(10);
+        // TODO: Set weight
+        public static final double intakeWeightKg = 1;
 
-        public static final double gearRatio = 8.0 / 78;
+        public static final double gearRatio = 78.0 / 8;
 
         public static final double kP = 12; //14
         public static final double kI = 2; //3
@@ -323,4 +333,18 @@ public final class Constants {
 
     }
 
+    // Not the robot main function. This is called by Gradle when deploying to
+    // make sure nobody deploys sim code. 
+    // Stolen from 6328 ;-)
+    // See build.gradle
+
+    /**
+     * Checks that code is set to right mode when deploying
+     */
+    public static void main(String... args) {
+        if (mode != Mode.REAL) {
+            System.err.println("Cannot deploy. Invalid mode: " + mode);
+            System.exit(1);
+        }
+    }
 }

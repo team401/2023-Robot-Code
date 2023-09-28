@@ -1,6 +1,6 @@
 package frc.robot.util;
 
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
@@ -25,11 +25,11 @@ public final class PositionHelper {
     private static double[] getGround(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeGround;
         if (mode == GamePieceMode.ConeDown) {
-            if (RobotState.getInstance().atBack()) return ArmPositions.intakeConeDownBackGround;
+            if (ArmManager.getInstance().atBack()) return ArmPositions.intakeConeDownBackGround;
             return ArmPositions.intakeConeDownFrontGround;
         }
         if (mode == GamePieceMode.ConeUp)  {
-            if (RobotState.getInstance().atBack()) return ArmPositions.intakeConeUpBackGround;
+            if (ArmManager.getInstance().atBack()) return ArmPositions.intakeConeUpBackGround;
             return ArmPositions.intakeConeUpFrontGround;
         }
         return null;
@@ -53,7 +53,7 @@ public final class PositionHelper {
         // if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeShelf;
         // if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownShelf;
         // if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpShelf;
-        RobotState.getInstance().setMode(GamePieceMode.ConeUp);
+        ArmManager.getInstance().setMode(GamePieceMode.ConeUp);
         return ArmPositions.intakeConeUpShelf;
         // return null;
     }

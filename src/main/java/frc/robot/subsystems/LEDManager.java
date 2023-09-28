@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.LEDConstants;
 
@@ -138,7 +138,7 @@ public class LEDManager extends SubsystemBase {
             return;
         }
 
-        if (!RobotState.getInstance().atBack()) {
+        if (!ArmManager.getInstance().atBack()) {
             for (int i = LEDConstants.baseLedCount/2; i < 3*LEDConstants.baseLedCount/4; i++) {
                 setBaseLED(i, LEDConstants.activeSideFlashColor);
             }
@@ -152,7 +152,7 @@ public class LEDManager extends SubsystemBase {
 
     private void setIntakeModeIndicator() {
 
-        Color color = RobotState.getInstance().getMode() != GamePieceMode.Cube ? new Color(127, 127, 0) : new Color(127, 0, 127);
+        Color color = ArmManager.getInstance().getMode() != GamePieceMode.Cube ? new Color(127, 127, 0) : new Color(127, 0, 127);
         for (int i = 0; i < LEDConstants.baseLedCount/4; i++) {
             setBaseLED(i, color);
         }
@@ -160,7 +160,7 @@ public class LEDManager extends SubsystemBase {
             setBaseLED(i, color);
         }
 
-        if (RobotState.getInstance().getMode() != GamePieceMode.ConeUp) {
+        if (ArmManager.getInstance().getMode() != GamePieceMode.ConeUp) {
             for (int i = 0; i < LEDConstants.armLedCount; i++) {
                 setArmLED(i, color);
             }
@@ -193,8 +193,8 @@ public class LEDManager extends SubsystemBase {
     }
 
     private void flashOnIntake() {
-        if (RobotState.getInstance().isIntaking()) {
-            Color color = (RobotState.getInstance().hasIntaked() && (flashTimer.get()*10%10)%5 < 2.5) ? Color.kBlack : LEDConstants.intakeFlashColor;
+        if (ArmManager.getInstance().isIntaking()) {
+            Color color = (ArmManager.getInstance().hasIntaked() && (flashTimer.get()*10%10)%5 < 2.5) ? Color.kBlack : LEDConstants.intakeFlashColor;
             for (int i = 0; i < LEDConstants.baseLedCount/4; i++) {
                 setBaseLED(i, color);
             }

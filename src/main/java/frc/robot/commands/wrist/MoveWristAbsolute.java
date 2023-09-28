@@ -5,9 +5,9 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotState;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.ArmManager;
+import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class MoveWristAbsolute extends CommandBase {
     private WristSubsystem wrist;
@@ -43,7 +43,7 @@ public class MoveWristAbsolute extends CommandBase {
 
         goalState = new TrapezoidProfile.State(goalRad-pivotGoalRad, 0);
 
-        if (RobotState.getInstance().atBack()) {
+        if (ArmManager.getInstance().atBack()) {
             goalState.position = -goalState.position;
             wrist.updateDesiredSetpointRad(new TrapezoidProfile.State(Math.PI-goalRad, 0));
         }
@@ -74,7 +74,6 @@ public class MoveWristAbsolute extends CommandBase {
         // SmartDashboard.putNumber("Wrist real pos", wrist.getPositionRad());
 
         wrist.setVolts(output);
-        wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
 
         if (Math.abs(wrist.getPositionRad()-goalState.position) > Units.degreesToRadians(4)) {
             finishedTimer.reset();
@@ -85,6 +84,13 @@ public class MoveWristAbsolute extends CommandBase {
     public boolean isFinished() {
         return finishedTimer.hasElapsed(0.2) || (ignoreValidation && profile.isFinished(timer.get()));
         // return false;
+    }
+
+    //need to check up on this later
+    //might want to delete this command
+    @SuppressWarnings("unused")
+    private double getAdjustedAngle() {
+        return wrist.getPositionRad() + pivot.getPositionRad();
     }
 
     @Override

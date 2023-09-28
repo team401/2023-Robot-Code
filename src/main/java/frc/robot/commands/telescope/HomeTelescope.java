@@ -2,7 +2,7 @@ package frc.robot.commands.telescope;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.TelescopeSubsystem;
+import frc.robot.subsystems.telescope.TelescopeSubsystem;
 
 public class HomeTelescope extends CommandBase{
     private TelescopeSubsystem telescope;

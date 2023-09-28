@@ -4,11 +4,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotState;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.ArmManager;
+import frc.robot.subsystems.pivot.PivotSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class MoveWrist extends CommandBase {
     private WristSubsystem wrist;
@@ -46,7 +45,7 @@ public class MoveWrist extends CommandBase {
 
         goalState = new TrapezoidProfile.State(goalRad, 0);
 
-        if (RobotState.getInstance().atBack())
+        if (ArmManager.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
 
 
@@ -73,7 +72,6 @@ public class MoveWrist extends CommandBase {
         SmartDashboard.putNumber("Wrist/adjusted position", getAdjustedAngle());
 
         wrist.setVolts(output);
-        wrist.setSimPosRad(setpoint.position - pivot.getPositionRad());
 
         if (Math.abs(getAdjustedAngle()-goalState.position) > Units.degreesToRadians(4)) {
             finishedTimer.reset();

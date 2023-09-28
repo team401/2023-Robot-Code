@@ -1,5 +1,7 @@
 package frc.robot.commands.auto;
 
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
@@ -10,7 +12,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import frc.robot.Constants.AutoConstants;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.drive.Drive;
@@ -66,7 +68,7 @@ public class FollowTrajectory extends CommandBase {
     @Override
     public void execute() {
 
-        latestFieldToVehicle = RobotState.getInstance().getFieldToVehicle();
+        latestFieldToVehicle = drive.getFieldToVehicle();
 
         PathPlannerState desiredState = (PathPlannerState) trajectory.sample(timer.get());
 
@@ -74,7 +76,17 @@ public class FollowTrajectory extends CommandBase {
             adjustedSpeeds = controller.calculate(
                 latestFieldToVehicle, desiredState, desiredState.holonomicRotation);
         
-        RobotState.getInstance().setGoalPose(new Pose2d(desiredState.poseMeters.getTranslation(), desiredState.holonomicRotation));
+        Logger.getInstance().recordOutput("Poses/AutoSetpoint", desiredState.poseMeters);
+
+        // SmartDashboard.putNumber("DesiredX", desiredState.poseMeters.getX());
+        // SmartDashboard.putNumber("DesiredY", desiredState.poseMeters.getY());
+        // SmartDashboard.putNumber("DesiredOmega", desiredState.holonomicRotation.getRadians());
+        // SmartDashboard.putNumber("ActualX", ArmManager.getInstance().getFieldToVehicle().getX());
+        // SmartDashboard.putNumber("ActualY", ArmManager.getInstance().getFieldToVehicle().getY());
+        // SmartDashboard.putNumber("ActualOmega", ArmManager.getInstance().getFieldToVehicle().getRotation().getRadians());
+
+        // SmartDashboard.putNumber("DesiredSpeedX", adjustedSpeeds.vxMetersPerSecond);
+        // SmartDashboard.putNumber("ActualSpeedX", drive.getVelocity().vxMetersPerSecond);
 
         drive.setGoalChassisSpeeds(adjustedSpeeds);
     }

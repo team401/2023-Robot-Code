@@ -1,43 +1,28 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.pivot;
 
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
-import frc.robot.RobotState;
-import frc.robot.Constants.CANDevices;
+import frc.robot.ArmManager;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
 
 public class PivotSubsystem extends SubsystemBase {
-    /**Primary Motor/ Leader */
-    private TalonFX rightMotor = new TalonFX(CANDevices.rightPivotMotorID, CANDevices.canivoreName);
-    private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
-    private TalonFX leftMotor = new TalonFX(CANDevices.leftPivotMotorID, CANDevices.canivoreName);
+    private final PivotIO io;
+    private final PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
-    private double lastEncoderPos;
-    private double velocityRadS;
-    
     private boolean dead = false;
-
     public boolean atGoal = false;
-
-    private double simPos;
 
     // The subsystem holds its own PID and feedforward controllers and provides calculations from
     // them, but cannot actually set its own motor output, as accurate feedforward calculations
@@ -62,47 +47,23 @@ public class PivotSubsystem extends SubsystemBase {
         new TrapezoidProfile.State(getPositionRad(), 0);
 
 
-    public PivotSubsystem() {
-        rightMotor.setInverted(InvertType.None);
+    public PivotSubsystem(PivotIO io) {
+        this.io = io;
 
-        leftMotor.follow(rightMotor);
-        leftMotor.setInverted(InvertType.OpposeMaster);
-
-        leftMotor.configNeutralDeadband(0.004);
-        rightMotor.configNeutralDeadband(0.004);
-
-        leftMotor.setNeutralMode(NeutralMode.Brake);
-        rightMotor.setNeutralMode(NeutralMode.Brake);
-
-        rightMotor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(
-                true,
-            70,
-            80,
-            1)
-        );
-        rightMotor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(
-                true,
-            70,
-            80,
-            1)
-        );
+        // SmartDashboard.putNumber("Pivot test setpoint", 0);
     }
 
     public double getPositionRad() {
-        if (Robot.isReal()) {
-            return encoder.getAbsolutePosition() * 2 * Math.PI + PivotConstants.encoderOffsetRad;
-        }
-        return simPos;
+        return inputs.positionRad;
+        // return encoder.getAbsolutePosition();
     }
 
     public double getVelRadS() {
-        return velocityRadS;
+        return inputs.velocityRadPerSec;
     }
 
     public void toggleKill() {
-        rightMotor.set(ControlMode.PercentOutput, 0);
+        io.setVolts(0);
         dead = !dead;
     }
 
@@ -114,8 +75,6 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void printAutoTimer() {
-        // I don't know why this is here, but it is used in AutoRoutines, so I've
-        // deemed it to dangerous to remove.
         SmartDashboard.putNumber("autoTmp", autoTimer.get());
     }
 
@@ -150,7 +109,7 @@ public class PivotSubsystem extends SubsystemBase {
             + feedforward.calculate(setpointRad.position, setpointRad.velocity)
             // Compensates for telescope extention
             // Gravity constant * Telescope Extention (proportion) * Cosine of Angle
-            + PivotConstants.extraKg * telescopePosM / TelescopeConstants.maxPosM
+            + PivotConstants.extraKg * telescopePosM / TelescopeConstants.maxPosMeters
                 * Math.cos(getPositionRad());
     }
 
@@ -184,10 +143,6 @@ public class PivotSubsystem extends SubsystemBase {
                     PivotConstants.maxFwdRotationRad,
                     PivotConstants.maxBackRotationRad);
     }
-
-    public void setSimPos(double pos) {
-        simPos = pos;
-    }
  
     /**
      * Sets the output power of the motors in volts if the boundry conditions
@@ -197,15 +152,15 @@ public class PivotSubsystem extends SubsystemBase {
      */
     public void setVolts(double input) {
         if (!dead && withinSoftLimits(input)) {
-            rightMotor.set(ControlMode.PercentOutput, input / 12);
-            SmartDashboard.putNumber("Pivot/commanded voltage", input);
+            io.setVolts(input);
+            // SmartDashboard.putNumber("Pivot Commanded V", input);
         } else {
-            rightMotor.set(ControlMode.PercentOutput, 0);
+            io.setVolts(0);
         }
     }
 
     public void stop() {
-        rightMotor.set(ControlMode.PercentOutput, 0);
+        io.setVolts(0);
     }
 
     /**
@@ -216,7 +171,7 @@ public class PivotSubsystem extends SubsystemBase {
      * @param input The voltage to set
      */
     public void overrideVolts(double input) {
-        rightMotor.set(ControlMode.PercentOutput, input / 12);
+        io.setVolts(input);
     }
 
 
@@ -229,8 +184,7 @@ public class PivotSubsystem extends SubsystemBase {
     }
 
     public void setBrakeMode(boolean braked) {
-        leftMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
-        rightMotor.setNeutralMode(braked ? NeutralMode.Brake : NeutralMode.Coast);
+        io.setBrakeMode(braked);
     }
     
     /**
@@ -255,19 +209,23 @@ public class PivotSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // Again, I don't know what this is for, but it will go unremoved for now.
         SmartDashboard.putNumber("AutoTimer", autoTimer.get());
 
-        SmartDashboard.putNumber("Pivot/position", getPositionRad());
-        SmartDashboard.putNumber("Pivot/velocity", getVelRadS());
-        SmartDashboard.putNumber("Pivot/right motor current", rightMotor.getStatorCurrent());
-        SmartDashboard.putNumber("Pivot/left motor current", leftMotor.getStatorCurrent());
+        // SmartDashboard.putNumber("Pivot Position", getPositionRad());
+        // SmartDashboard.putNumber("Pivot Velocity", getVelRadS());
+        // SmartDashboard.putNumber("Right Pivot Current", rightMotor.getStatorCurrent());
+        // SmartDashboard.putNumber("Left Pivot Current", leftMotor.getStatorCurrent());
+        // SmartDashboard.putNumber("Pivot Desired Setpoint", currentSetpointRad.position);
 
-        SmartDashboard.putBoolean("Pivot/dead", dead);
+        // SmartDashboard.putBoolean("Pivot Dead", dead);
 
-        RobotState.getInstance().putPivotDisplay(getPositionRad());
+        // SmartDashboard.putBoolean("At Back", ArmManager.getInstance().atBack());
 
-        findVel();
+        io.updateInputs(inputs);
+
+        Logger.getInstance().processInputs("Pivot", inputs);
+
+        ArmManager.getInstance().putPivotDisplay(getPositionRad());
 
         //if (DriverStation.isEnabled()) checkIfDead();
     }
@@ -289,10 +247,5 @@ public class PivotSubsystem extends SubsystemBase {
             return false;
         }
         return true;
-    }
-
-    private void findVel() {
-        velocityRadS = (getPositionRad() - lastEncoderPos) / 0.02;
-        lastEncoderPos = getPositionRad();
     }
 }

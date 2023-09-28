@@ -6,8 +6,8 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotState;
-import frc.robot.subsystems.PivotSubsystem;
+import frc.robot.ArmManager;
+import frc.robot.subsystems.pivot.PivotSubsystem;
 
 /**
  * Command that moves the pivot from its current location to a new setpoint.<n>
@@ -55,7 +55,7 @@ public class MovePivot extends CommandBase{
         
         // Shift the setpoint to the back of the robot if the pivot is flagged
         // as such.
-        if (RobotState.getInstance().atBack())
+        if (ArmManager.getInstance().atBack())
             goalState.position = Math.PI - goalState.position;
 
         // Create the trapezoid motion based on max vel and accel,
@@ -84,7 +84,6 @@ public class MovePivot extends CommandBase{
 
         double pivotOut = pivot.calculateControl(setpoint, 0);
         pivot.setVolts(pivotOut);
-        pivot.setSimPos(setpoint.position);
 
         if (Math.abs(pivot.getPositionRad()-goalState.position) > Units.degreesToRadians(4)) {
             finishedTimer.reset();

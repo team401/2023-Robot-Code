@@ -3,7 +3,7 @@ package frc.robot.commands.wrist;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class HomeWrist extends CommandBase {
     private WristSubsystem wrist;

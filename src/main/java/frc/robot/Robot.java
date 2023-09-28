@@ -5,11 +5,17 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.TimedRobot;
+
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -19,7 +25,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * the package after creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class Robot extends TimedRobot {
+public class Robot extends LoggedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
@@ -28,8 +34,7 @@ public class Robot extends TimedRobot {
 
   private final Timer loopTimer = new Timer();
 
-  public Robot() {
-}
+  public Robot() {}
 
 /**
  * This function is run when the robot is first started up and should be used for any
@@ -37,8 +42,49 @@ public class Robot extends TimedRobot {
  */
 @Override
 public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
+    Logger logger = Logger.getInstance();
+
+    logger.recordMetadata("2023 Robot Code", "2023 Robot Code"); // Set a metadata value
+
+    // Record metadata
+    logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+    logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+    logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    switch (BuildConstants.DIRTY) {
+        case 0:
+            logger.recordMetadata("GitDirty", "All changes committed");
+            break;
+        case 1:
+            logger.recordMetadata("GitDirty", "Uncomitted changes");
+            break;
+        default:
+            logger.recordMetadata("GitDirty", "Unknown");
+            break;
+    }
+
+    switch(Constants.mode) {
+    case REAL:
+        // TODO: Add a USB stick
+        // logger.addDataReceiver(new WPILOGWriter("/media/sda1/"));
+        logger.addDataReceiver(new NT4Publisher());
+        break;
+    case SIM:
+        logger.addDataReceiver(new WPILOGWriter("logs/"));
+        logger.addDataReceiver(new NT4Publisher());
+        break;
+    case REPLAY:
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog();
+        logger.setReplaySource(new WPILOGReader(logPath));
+        logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+        break;
+    }
+
+    // Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+    logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
+    
     m_robotContainer = new RobotContainer();
     pdh = new PowerDistribution(1, ModuleType.kRev);
     pdh.setSwitchableChannel(false);
@@ -61,7 +107,7 @@ public void robotInit() {
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
 
-    SmartDashboard.putNumber("Loop Time", loopTimer.get() * 1000);
+    Logger.getInstance().recordOutput("Loop Time", loopTimer.get() * 1000);
     loopTimer.reset();
     loopTimer.start();
   }
