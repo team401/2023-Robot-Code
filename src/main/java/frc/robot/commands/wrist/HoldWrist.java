@@ -42,8 +42,8 @@ public class HoldWrist extends CommandBase {
 
         wrist.setVolts(output);
 
-        SmartDashboard.putNumber("Wrist/hold setpoint", goalState.position);
-        SmartDashboard.putNumber("Wrist/adjusted position", getAdjustedAngle());
+        // SmartDashboard.putNumber("Wrist/hold setpoint", goalState.position);
+        // SmartDashboard.putNumber("Wrist/adjusted position", getAdjustedAngle());
     }
 
     private double getAdjustedAngle() {

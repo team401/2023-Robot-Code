@@ -64,8 +64,8 @@ public class MoveTelescope extends CommandBase {
 
         double output = telescope.calculateControl(setpoint, pivot.getPositionRad());
 
-        SmartDashboard.putNumber("Telescope/profiled setpoint", setpoint.position);
-        SmartDashboard.putNumber("Telescope/final setpoint", goalM);
+        // SmartDashboard.putNumber("Telescope/profiled setpoint", setpoint.position);
+        // SmartDashboard.putNumber("Telescope/final setpoint", goalM);
 
         telescope.setVolts(output);
 

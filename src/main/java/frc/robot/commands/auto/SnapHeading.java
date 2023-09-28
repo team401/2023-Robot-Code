@@ -7,7 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import frc.robot.RobotState;
+import frc.robot.ArmManager;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
@@ -40,7 +40,7 @@ public class SnapHeading extends CommandBase {
     @Override
     public void initialize() {
 
-        Pose2d currentPose = RobotState.getInstance().getFieldToVehicle();
+        Pose2d currentPose = drive.getFieldToVehicle();
         targetPose = new ExtendedPathPoint(new Translation2d(currentPose.getX(), currentPose.getY()), new Rotation2d(Math.abs(drive.getRotation().getRadians()) > Math.PI / 2 ? Math.PI - 0.01 : 0), new Rotation2d(Math.abs(drive.getRotation().getRadians()) > Math.PI / 2 ? Math.PI - 0.01 : 0));
 
     }
@@ -48,9 +48,9 @@ public class SnapHeading extends CommandBase {
     @Override
     public void execute() {
 
-        ChassisSpeeds speeds = holonomicDrive.calculate(RobotState.getInstance().getFieldToVehicle(), targetPose.getPose2d());
+        ChassisSpeeds speeds = holonomicDrive.calculate(drive.getFieldToVehicle(), targetPose.getPose2d());
 
-        Transform2d distance = RobotState.getInstance().getFieldToVehicle().minus(targetPose.getPose2d());
+        Transform2d distance = drive.getFieldToVehicle().minus(targetPose.getPose2d());
         if (Math.abs(distance.getX()) < 0.01) speeds.vxMetersPerSecond = 0;
         if (Math.abs(distance.getY()) < 0.01) speeds.vyMetersPerSecond = 0;
         if (Math.abs(distance.getRotation().getRadians()) < 0.07) speeds.omegaRadiansPerSecond = 0;
