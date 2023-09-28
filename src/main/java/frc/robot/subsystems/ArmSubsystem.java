@@ -2,10 +2,6 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-/**
- * artifact of experimental refactoring, please ignore
- */
-@Deprecated
 public class ArmSubsystem extends SubsystemBase {
     public void zero() {}
 

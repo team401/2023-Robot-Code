@@ -18,7 +18,7 @@ import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.TelescopeConstants;
 
-public class TelescopeSubsystem extends SubsystemBase{
+public class TelescopeSubsystem extends ArmSubsystem{
     private TalonFX motor = new TalonFX(CANDevices.telescopeMotorID);
 
     public boolean homed = false;

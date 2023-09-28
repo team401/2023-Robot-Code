@@ -24,7 +24,7 @@ import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
 
-public class PivotSubsystem extends SubsystemBase {
+public class PivotSubsystem extends ArmSubsystem {
     /**Primary Motor/ Leader */
     private TalonFX rightMotor = new TalonFX(CANDevices.rightPivotMotorID, CANDevices.canivoreName);
     private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);

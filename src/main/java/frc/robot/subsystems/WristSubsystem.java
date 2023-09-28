@@ -18,7 +18,7 @@ import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
 
-public class WristSubsystem extends SubsystemBase {
+public class WristSubsystem extends ArmSubsystem {
     private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
 
     public boolean homed = false;

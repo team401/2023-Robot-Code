@@ -24,6 +24,7 @@ import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.SnapHeading;
@@ -95,18 +96,37 @@ public class RobotContainer {
 
     @SuppressWarnings("unused")
     private void configureTestBindings() {
-        masher.back()
-            .onTrue(new MovePivot(pivot, 0.8))
-            .onTrue(new MoveTelescope(telescope, pivot, 0.74))
-            .onTrue(new MoveWrist(wrist, pivot, -0.43));
+        // masher.back()
+        //     .onTrue(new MovePivot(pivot, 0.8))
+        //     .onTrue(new MoveTelescope(telescope, pivot, 0.74))
+        //     .onTrue(new MoveWrist(wrist, pivot, -0.43));
 
-        masher.start()
-            .onTrue(new MovePivot(pivot, 0.69))
-            .onTrue(new MoveTelescope(telescope, pivot, 0.78))
-            .onTrue(new MoveWrist(wrist, pivot, -0.379));
+        // masher.start()
+        //     .onTrue(new MovePivot(pivot, 0.69))
+        //     .onTrue(new MoveTelescope(telescope, pivot, 0.78))
+        //     .onTrue(new MoveWrist(wrist, pivot, -0.379));
         
+        // masher.a()
+        //     .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+
+        drive.setDefaultCommand(new DriveWithJoysticks(
+            drive,
+            () -> -masher.getLeftY(),
+            () -> -masher.getLeftX(),
+            () -> -masher.getRightX(),
+            true
+        ));
+
         masher.a()
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+            .onTrue(new InstantCommand(() -> {
+                drive.resetHeading(); 
+                drive.setFieldToVehicle(
+                    new Pose2d(
+                        RobotState.getInstance().getFieldToVehicle().getTranslation(),
+                        new Rotation2d(0)));
+            }));
+        
+        masher.b().onTrue(new TuneArmS(wrist));
     }   
 
     private void configureCompBindings() {
