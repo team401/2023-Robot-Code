@@ -79,7 +79,6 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-
         drive.setDefaultCommand(new DriveWithJoysticks(
             drive,
             () -> -leftStick.getRawAxis(1),
@@ -91,7 +90,6 @@ public class RobotContainer {
         pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
         telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
         wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
-
     }
 
     @SuppressWarnings("unused")
@@ -130,10 +128,6 @@ public class RobotContainer {
     }   
 
     private void configureCompBindings() {
-        // Invert Sides (driver)
-        rightStick.trigger()
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
-
         // Reset heading
         rightStick.top()
             .onTrue(new InstantCommand(() -> {
@@ -160,17 +154,6 @@ public class RobotContainer {
         rightStick.lowerButton(12).onTrue(new HomeWrist(wrist)); // Home wrist
         rightStick.lowerButton(13).onTrue(new HomeTelescope(telescope)); // Home telescope
         
-        // Manually send power to the arm
-        // TODO: Remove/disable outside comp? We've only flipped over twice.
-        rightStick.lowerButton(15)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(4), pivot));
-        rightStick.lowerButton(14)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-4), pivot));
-        rightStick.lowerButton(11)
-            .whileTrue(new RunCommand(() -> wrist.overrideVolts(2), wrist));
-        rightStick.lowerButton(16)
-            .whileTrue(new RunCommand(() -> wrist.overrideVolts(-2), wrist));
-
         // Manually disable (kill) subsystems
         leftStick.lowerButton(7)
             .onTrue(new InstantCommand(pivot::toggleKill, pivot));
@@ -183,17 +166,6 @@ public class RobotContainer {
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
         
-        // Kill drive modules individually
-        // TODO: No longer needed if we've fixed the encoder issue?
-        leftStick.lowerButton(12)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(0)));
-        leftStick.lowerButton(13)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(1)));
-        leftStick.lowerButton(15)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(2)));
-        leftStick.lowerButton(14)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(3)));
-
         // Set game piece mode
         masher.leftBumper().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
@@ -240,32 +212,32 @@ public class RobotContainer {
             .onTrue(new InstantCommand(intake::place)) // start place
             .onFalse(new InstantCommand(intake::stop)); // stop place
 
-        masher.start()
+        masher.back()
             .onTrue(new HomeWrist(wrist));
 
-        
-        }
+        masher.start()
+            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+    }
 
     private void configureAutos() {
-        autoChooser.addOption("B-1-1", "B-1-1");
-        autoChooser.addOption("B-1-2", "B-1-2");
-        autoChooser.addOption("B-1-3", "B-1-3");
+        autoChooser.setDefaultOption("Blue clear 3", "B-1-1");
+        autoChooser.addOption("Blue clear 2.5", "B-1-2");
+        // autoChooser.addOption("B-1-3", "B-1-3");
 
-        autoChooser.addOption("B-2-1", "B-2-1");
+        autoChooser.addOption("Blue middle balance", "B-2-1");
 
-        autoChooser.addOption("B-3-1", "B-3-1");
-        autoChooser.addOption("B-3-2", "B-3-2");
+        // autoChooser.addOption("B-3-1", "B-3-1");
+        // autoChooser.addOption("B-3-2", "B-3-2");
 
-        autoChooser.addOption("R-1-1", "R-1-1");
-        autoChooser.addOption("R-1-2", "R-1-2");
-        autoChooser.addOption("R-1-3", "R-1-3");
+        autoChooser.addOption("Red clear 3", "R-1-1");
+        autoChooser.addOption("Red clear 2.5", "R-1-2");
+        // autoChooser.addOption("R-1-3", "R-1-3");
 
-        autoChooser.addOption("R-2-1", "R-2-1");
+        autoChooser.addOption("Red middle balance", "R-2-1");
 
-        autoChooser.addOption("R-3-1", "R-3-1");
-        autoChooser.addOption("R-3-2", "R-3-2");
-        
-        autoChooser.setDefaultOption("default", "B-1-1");
+        // autoChooser.addOption("R-3-1", "R-3-1");
+        // autoChooser.addOption("R-3-2", "R-3-2");
+
         SmartDashboard.putData("Auto Mode", autoChooser);
     }
 
@@ -285,11 +257,9 @@ public class RobotContainer {
         wrist.setBrakeMode(!brakeSwitch.get());
 
         ledManager.setOff(ledsSwitch.get());
-
     }
 
     public void enabledInit() {
-
         drive.setBrakeMode(true);
         pivot.setBrakeMode(true);
         telescope.setBrakeMode(true);
