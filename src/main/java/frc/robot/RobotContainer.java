@@ -130,10 +130,6 @@ public class RobotContainer {
     }   
 
     private void configureCompBindings() {
-        // Invert Sides (driver)
-        rightStick.trigger()
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
-
         // Reset heading
         rightStick.top()
             .onTrue(new InstantCommand(() -> {
@@ -160,17 +156,6 @@ public class RobotContainer {
         rightStick.lowerButton(12).onTrue(new HomeWrist(wrist)); // Home wrist
         rightStick.lowerButton(13).onTrue(new HomeTelescope(telescope)); // Home telescope
         
-        // Manually send power to the arm
-        // TODO: Remove/disable outside comp? We've only flipped over twice.
-        rightStick.lowerButton(15)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(4), pivot));
-        rightStick.lowerButton(14)
-            .whileTrue(new RunCommand(() -> pivot.overrideVolts(-4), pivot));
-        rightStick.lowerButton(11)
-            .whileTrue(new RunCommand(() -> wrist.overrideVolts(2), wrist));
-        rightStick.lowerButton(16)
-            .whileTrue(new RunCommand(() -> wrist.overrideVolts(-2), wrist));
-
         // Manually disable (kill) subsystems
         leftStick.lowerButton(7)
             .onTrue(new InstantCommand(pivot::toggleKill, pivot));
@@ -183,17 +168,6 @@ public class RobotContainer {
             .onTrue(new InstantCommand(telescope::toggleKill))
             .onTrue(new InstantCommand(wrist::toggleKill));
         
-        // Kill drive modules individually
-        // TODO: No longer needed if we've fixed the encoder issue?
-        leftStick.lowerButton(12)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(0)));
-        leftStick.lowerButton(13)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(1)));
-        leftStick.lowerButton(15)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(2)));
-        leftStick.lowerButton(14)
-            .onTrue(new InstantCommand(() -> drive.toggleKill(3)));
-
         // Set game piece mode
         masher.leftBumper().onTrue(new InstantCommand(() ->
             RobotState.getInstance().setMode(GamePieceMode.Cube)));           
@@ -240,10 +214,11 @@ public class RobotContainer {
             .onTrue(new InstantCommand(intake::place)) // start place
             .onFalse(new InstantCommand(intake::stop)); // stop place
 
-        masher.start()
+        masher.back()
             .onTrue(new HomeWrist(wrist));
 
-        
+        masher.start()
+            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
         }
 
     private void configureAutos() {
