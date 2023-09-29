@@ -220,8 +220,8 @@ public class RobotContainer {
     }
 
     private void configureAutos() {
-        autoChooser.setDefaultOption("Blue upper 3", "B-1-1");
-        autoChooser.addOption("Blue upper 2.5", "B-1-2");
+        autoChooser.setDefaultOption("Blue clear 3", "B-1-1");
+        autoChooser.addOption("Blue clear 2.5", "B-1-2");
         // autoChooser.addOption("B-1-3", "B-1-3");
 
         autoChooser.addOption("Blue middle balance", "B-2-1");
@@ -229,8 +229,8 @@ public class RobotContainer {
         // autoChooser.addOption("B-3-1", "B-3-1");
         // autoChooser.addOption("B-3-2", "B-3-2");
 
-        autoChooser.addOption("Red upper 3", "R-1-1");
-        autoChooser.addOption("Red upper 2.5", "R-1-2");
+        autoChooser.addOption("Red clear 3", "R-1-1");
+        autoChooser.addOption("Red clear 2.5", "R-1-2");
         // autoChooser.addOption("R-1-3", "R-1-3");
 
         autoChooser.addOption("Red middle balance", "R-2-1");
