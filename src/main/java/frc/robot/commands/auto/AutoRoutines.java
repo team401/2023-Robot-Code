@@ -239,9 +239,9 @@ public class AutoRoutines extends SequentialCommandGroup {
                 new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal))
             ),
             new ParallelRaceGroup(
-                new MovePivot(pivot, ArmPositions.placeConeUpHigh[0], false).andThen(new HoldPivot(pivot, telescope)),
-                new MoveTelescope(telescope, pivot, ArmPositions.placeConeUpHigh[1], true).andThen(new HoldTelescope(telescope, pivot)),
-                new MoveWrist(wrist, pivot, ArmPositions.placeConeUpHigh[2], false).andThen(new HoldWrist(wrist, pivot)),
+                new MovePivot(pivot, ArmPositions.placeConeUpHighAuto[0], false).andThen(new HoldPivot(pivot, telescope)),
+                new MoveTelescope(telescope, pivot, ArmPositions.placeConeUpHighAuto[1], true).andThen(new HoldTelescope(telescope, pivot)),
+                new MoveWrist(wrist, pivot, ArmPositions.placeConeUpHighAuto[2], false).andThen(new HoldWrist(wrist, pivot)),
                 new WaitUntilCommand(() -> (pivot.atGoal && telescope.atGoal && wrist.atGoal))
             ),
             new ParallelRaceGroup(

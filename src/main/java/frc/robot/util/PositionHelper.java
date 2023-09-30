@@ -45,7 +45,7 @@ public final class PositionHelper {
     private static double[] getHigh(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.placeCubeHigh;
         if (mode == GamePieceMode.ConeDown) return ArmPositions.placeConeDownHigh;
-        if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpHigh;
+        if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpHighAuto;
         return null;
     }
 
