@@ -144,7 +144,7 @@ public class RobotContainer {
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         // Snap robot heading to y-axis
-        leftStick.top().whileTrue(new SnapHeading(drive));
+        // leftStick.top().whileTrue(new SnapHeading(drive));
 
         // Auto-align
         leftStick.topLeft().whileTrue(new Align(drive, true));
