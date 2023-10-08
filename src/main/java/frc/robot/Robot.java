@@ -4,11 +4,13 @@
 
 package frc.robot;
 
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -28,8 +30,9 @@ public class Robot extends TimedRobot {
 
   private final Timer loopTimer = new Timer();
 
-  public Robot() {
-}
+  SendableChooser<String> testChooser = new SendableChooser<>();
+
+  public Robot() {}
 
 /**
  * This function is run when the robot is first started up and should be used for any
@@ -42,6 +45,9 @@ public void robotInit() {
     m_robotContainer = new RobotContainer();
     pdh = new PowerDistribution(1, ModuleType.kRev);
     pdh.setSwitchableChannel(false);
+
+    testChooser.setDefaultOption("Systems Test", "Test");
+    testChooser.addOption("Auto Tuning", "Tune");
 
     LiveWindow.disableAllTelemetry();
   }
@@ -117,6 +123,8 @@ public void robotInit() {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     CommandScheduler.getInstance().cancelAll();
+
+    m_robotContainer.getTestCommand(testChooser.getSelected()).schedule();
   }
 
   /** This function is called periodically during test mode. */

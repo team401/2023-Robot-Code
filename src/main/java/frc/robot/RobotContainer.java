@@ -18,12 +18,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
+import frc.robot.commands.WaitForButton;
 import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
@@ -330,5 +332,33 @@ public class RobotContainer {
         });
     }
 
+    public Command getTestCommand(String mode) {
+        if(mode.equals("Tune")) {
+            return new WaitCommand(0);
+        } else {
+            return new SequentialCommandGroup(
+                new WaitForButton(masher),
+                new InstantCommand(() -> wrist.setVolts(1)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> wrist.setVolts(0)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> pivot.setVolts(1)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> pivot.setVolts(0)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> telescope.setVolts(1)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> telescope.setVolts(0)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> drive.setVolts(1)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> drive.setVolts(0)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> drive.setRotationVolts(1)),
+                new WaitForButton(masher),
+                new InstantCommand(() -> drive.setRotationVolts(0))
+            );
+        }
+    }
 }
 // </https://www.youtube.com/watch?v=mXlsbBgrKKY>

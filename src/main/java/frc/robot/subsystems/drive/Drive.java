@@ -209,6 +209,13 @@ public class Drive extends SubsystemBase {
         driveModules[3].setDriveVoltage(v);
     }
 
+    public void setRotationVolts(double v) {
+        driveModules[0].setRotationVoltage(v);
+        driveModules[1].setRotationVoltage(v);
+        driveModules[2].setRotationVoltage(v);
+        driveModules[3].setRotationVoltage(v);
+    }
+
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         for (int i = 0; i < 4; i++) {
