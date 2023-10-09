@@ -8,10 +8,13 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPlannerTrajectory.PathPlannerState;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
@@ -141,8 +144,9 @@ public class AutoRoutines extends SequentialCommandGroup {
         if (pathName.endsWith("1-2") || pathName.endsWith("3-2")) {
             addCommands(
                 new ParallelCommandGroup(
-                    drive(pathGroup.get(3)).andThen(balance(false)),
-                    holdStow()
+                    holdStow(),
+                    drive(pathGroup.get(3))
+                        .andThen(balance(false))
                 )
             );
         }
@@ -431,7 +435,11 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command balance(boolean forwards) {
-        return new Balance(drive, forwards);
+        return new SequentialCommandGroup(
+            new RunCommand(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(-1.25, 0, 0)), drive)
+                .raceWith(new WaitCommand(2.5)),
+            new InstantCommand(drive::stop, drive)
+        );
     }
 
     private Command spitCone() {
