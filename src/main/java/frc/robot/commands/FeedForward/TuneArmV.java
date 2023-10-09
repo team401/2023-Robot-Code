@@ -20,11 +20,11 @@ public class TuneArmV extends CommandBase {
     double average = 0;
     double vel = 0;
 
-    public TuneArmV(ArmSubsystem arm, double volts, double kS, double past) {
+    public TuneArmV(ArmSubsystem arm, double volts) {
         this.arm = arm;
         this.volts = volts;
-        this.kS = kS;
-        this.pastkV = past;
+        this.kS = SmartDashboard.getNumber("kS", 0);
+        this.pastkV = SmartDashboard.getNumber("kV", 0);
     }
 
     @Override

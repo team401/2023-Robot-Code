@@ -26,7 +26,9 @@ import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.WaitForButton;
+import frc.robot.commands.FeedForward.TuneArmG;
 import frc.robot.commands.FeedForward.TuneArmS;
+import frc.robot.commands.FeedForward.TuneArmV;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.SnapHeading;
@@ -334,7 +336,17 @@ public class RobotContainer {
 
     public Command getTestCommand(String mode) {
         if(mode.equals("Tune")) {
-            return new WaitCommand(0);
+            return new SequentialCommandGroup(
+                new HomeWrist(wrist),
+                new HomeTelescope(telescope),
+                new HoldPivot(pivot, telescope),
+                new HoldTelescope(telescope, pivot),
+                new HoldWrist(wrist, pivot),
+                new TuneArmS(wrist),
+                new MoveWrist(wrist, pivot, -Math.PI/2),
+                new TuneArmG(wrist),
+                new TuneArmV(wrist, 1)
+            );
         } else {
             return new SequentialCommandGroup(
                 new WaitForButton(masher),

@@ -12,9 +12,9 @@ public class TuneArmG extends CommandBase {
     double kG;
     double kS;
 
-    public TuneArmG(ArmSubsystem arm, double kS) {
+    public TuneArmG(ArmSubsystem arm) {
         this.arm = arm;
-        this.kS = kS;
+        this.kS = SmartDashboard.getNumber("kS", 0);
     }
 
     @Override
