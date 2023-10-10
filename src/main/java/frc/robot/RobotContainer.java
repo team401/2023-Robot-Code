@@ -23,6 +23,7 @@ import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
+import frc.robot.commands.DriveRobotRelative;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
@@ -142,6 +143,17 @@ public class RobotContainer {
         leftStick.trigger()
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+
+        rightStick.trigger()
+            .whileTrue(
+                new DriveRobotRelative(
+                    drive,
+                    () -> -leftStick.getRawAxis(1),
+                    () -> -leftStick.getRawAxis(0),
+                    () -> -rightStick.getRawAxis(0),
+                    true
+                )
+            );
 
         // Snap robot heading to y-axis
         // leftStick.top().whileTrue(new SnapHeading(drive));
