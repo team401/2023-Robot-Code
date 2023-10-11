@@ -91,7 +91,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 fakeHomeCube(),
                 placeCubeInitial(),
                 new ParallelRaceGroup(
-                    drive(pathGroup.get(0), true).andThen(balance(false)),
+                    drive(pathGroup.get(0), true).andThen(new Balance(drive)),
                     holdStow()
                 )
             );
@@ -146,7 +146,7 @@ public class AutoRoutines extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                     holdStow(),
                     drive(pathGroup.get(3))
-                        .andThen(balance(false))
+                        .andThen(new Balance(drive))
                 )
             );
         }
@@ -431,14 +431,6 @@ public class AutoRoutines extends SequentialCommandGroup {
                     new MoveWrist(wrist, pivot, ArmPositions.stow[2], false).andThen(new HoldWrist(wrist, pivot))
                 )
             )
-        );
-    }
-
-    private Command balance(boolean forwards) {
-        return new SequentialCommandGroup(
-            new RunCommand(() -> drive.setGoalChassisSpeeds(new ChassisSpeeds(-1.25, 0, 0)), drive)
-                .raceWith(new WaitCommand(2.5)),
-            new InstantCommand(drive::stop, drive)
         );
     }
 
