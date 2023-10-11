@@ -143,6 +143,18 @@ public class RobotContainer {
             .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
             .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
+        // Robot Relative Drive
+        rightStick.trigger()
+            .whileTrue(
+                new DriveWithJoysticks(
+                    drive,
+                    () -> -leftStick.getRawAxis(1),
+                    () -> -leftStick.getRawAxis(0),
+                    () -> -rightStick.getRawAxis(0),
+                    false
+                )
+            );
+
         // Snap robot heading to y-axis
         // leftStick.top().whileTrue(new SnapHeading(drive));
 
