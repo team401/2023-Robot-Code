@@ -162,6 +162,15 @@ public class Drive extends SubsystemBase {
         setGoalModuleStates(goalModuleStates);
     }
 
+    public void stop() {
+        setGoalModuleStates(new SwerveModuleState[] {
+            new SwerveModuleState(0, new Rotation2d()),
+            new SwerveModuleState(0, new Rotation2d()),
+            new SwerveModuleState(0, new Rotation2d()),
+            new SwerveModuleState(0, new Rotation2d()),
+        });
+    }
+
     /**
      * @return the rotation of the robot in radians from the gyro
      */

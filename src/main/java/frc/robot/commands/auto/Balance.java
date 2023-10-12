@@ -1,89 +1,102 @@
 package frc.robot.commands.auto;
 
+import com.ctre.phoenix.sensors.Pigeon2;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
 
 public class Balance extends CommandBase {
 
+    private enum Steps {
+        DRIVE,
+        BALANCE,
+        DONE,
+    }
+
     private final Drive drive;
 
-    private final int forwards;
+    private Steps step = Steps.DRIVE;
 
-    private final PIDController rollController = new PIDController(AutoConstants.autoBalanceKp, AutoConstants.autoBalanceKi, AutoConstants.autoBalanceKd);
+    private Alliance alliance;
 
-    private final PIDController yawController = new PIDController(DriveConstants.driveSnapKp, DriveConstants.driveSnapKi, DriveConstants.driveSnapKd);
+    private PIDController xController = 
+        new PIDController(2.3, 0.01, 0);
 
-    private final Timer onStationTimer = new Timer();
-    private final Timer errorChecker = new Timer();
-    private boolean onStationTimerStarted = false;
+    private PIDController thetaController = 
+        new PIDController(DriveConstants.poseMoveRotationkP, 0, 0);
 
-    public Balance(Drive drive, boolean forwards) {
+
+    private Timer timer = new Timer();
+
+    private double xOffset = 0.0;
+
+    public Balance(Drive drive) {
         this.drive = drive;
-        this.forwards = forwards ? 1 : -1;
-
-        yawController.enableContinuousInput(-Math.PI, Math.PI);
-
         addRequirements(drive);
     }
 
     @Override
     public void initialize() {
+        alliance = DriverStation.getAlliance();
 
-        onStationTimer.reset();
-        onStationTimer.stop();
-        onStationTimerStarted = false;
+        step = Steps.DRIVE;
 
-        errorChecker.reset();
-        errorChecker.start();
+        timer.start();
+        timer.reset();
 
-        rollController.reset();
-        yawController.reset();
-
+        xOffset = 0.0;
     }
 
     @Override
     public void execute() {
+        if (step == Steps.DRIVE) {
+            drive.setGoalChassisSpeeds(new ChassisSpeeds(-1.25, 0, 0));
 
-        double omegaRadPerS = Math.min(yawController.calculate(drive.getRotation().getRadians(), 0), DriveConstants.maxTurnRate);
-        omegaRadPerS = 0;
-
-        double xMPerS = 0;
-
-        if (!onStationTimer.hasElapsed(0.75)) {
-            xMPerS = AutoConstants.initialBalanceSpeed;
-            if (Math.abs(drive.getRoll()) > 0.2 && !onStationTimerStarted) {
-                onStationTimer.reset();
-                onStationTimer.start();
-                onStationTimerStarted = true;
-                errorChecker.reset();
-                errorChecker.start();
+            if (timer.get() > 2.2) {
+                step = Steps.BALANCE;
             }
         }
-        else {
-            double output = -rollController.calculate(drive.getRoll(), 0);
-            xMPerS = MathUtil.clamp(output, -1, 1);
-            omegaRadPerS = 0;
-        }
+        if (step == Steps.BALANCE) {
+            timer.reset();
 
-        ChassisSpeeds targetSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwards * xMPerS, 0, omegaRadPerS, drive.getRotation());
-        drive.setGoalChassisSpeeds(targetSpeeds);
-        
+            double pitchFeedforward = 0.0;
+
+            if (Math.abs(drive.getRoll()) > 0.1) {
+                pitchFeedforward = 0.3;
+            } else {
+                pitchFeedforward = 0.0;
+            }
+
+            ChassisSpeeds speeds = new ChassisSpeeds(
+                xController.calculate(RobotState.getInstance().getFieldToVehicle().getX(), 3.9)
+                    + pitchFeedforward,
+                0,
+                thetaController.calculate(RobotState.getInstance().getFieldToVehicle().getRotation().getRadians(), 0.0)
+            );
+
+            drive.setGoalChassisSpeeds(ChassisSpeeds.fromFieldRelativeSpeeds(speeds, drive.getRotation()));
+        }
     }
 
     @Override
     public boolean isFinished() {
-        return false;
+        return step == Steps.DONE;
     }
 
     @Override
-    public void end(boolean isFinished) {
-        drive.setGoalChassisSpeeds(new ChassisSpeeds(0, 0, 0));
+    public void end(boolean interrupted) {
+        drive.stop();
     }
     
 }

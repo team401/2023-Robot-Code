@@ -76,9 +76,10 @@ public class Camera {
     }
 
     public void recordVisionObservation() {
-        if(calculatedPose.toPose2d().getX() < 4 || calculatedPose.toPose2d().getX() > 12)
+        if(calculatedPose.toPose2d().getX() < 5 || calculatedPose.toPose2d().getX() > 11) {
             RobotState.getInstance()
                 .recordVisionObservations(calculatedPose.toPose2d(), stdDevs, timestamp);
+        }
         hasNewPose = false;
 
         log3dPose("Vision/" + name + "/RawPose", calculatedPose);
