@@ -27,7 +27,6 @@ import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
-import frc.robot.commands.auto.Balance;
 import frc.robot.commands.auto.SnapHeading;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
