@@ -48,6 +48,7 @@ public void robotInit() {
 
     testChooser.setDefaultOption("Systems Test", "Test");
     testChooser.addOption("Auto Tuning", "Tune");
+
     SmartDashboard.putData("Test Mode", testChooser);
 
     LiveWindow.disableAllTelemetry();
