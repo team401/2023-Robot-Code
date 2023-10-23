@@ -191,7 +191,7 @@ public final class Constants {
         public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15};
         public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85};
         public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.13};
-        public static final double[] placeConeUpHigh = {0.69, 0.72, -0.379};
+        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379};
         public static final double[] placeConeUpHighAuto = {0.69, 0.7, -0.379};
         public static final double[] placeConeUpMid = {0.7, 0.37, -0.6,};
         
