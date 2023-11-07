@@ -94,6 +94,11 @@ public class TelescopeSubsystem extends ArmSubsystem{
         dead = !dead;
     }
 
+    public void setKill(boolean kill) {
+        motor.set(ControlMode.PercentOutput, 0);
+        dead = kill;
+    }
+
     /**
      * Does control calculations from its ArmFeedforward and PID controllers.
      * Does not command any motors.

@@ -5,6 +5,8 @@
 
 package frc.robot;
 
+import java.util.function.DoubleSupplier;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
@@ -66,16 +68,19 @@ public class RobotContainer {
     private Command activeAutoCommand = null;
     private String activeAutoName = null;
 
+    SendableChooser<Boolean> armKill = new SendableChooser<Boolean>();
+    SendableChooser<Double> driveSpeed = new SendableChooser<Double>();
+
     private DigitalInput brakeSwitch = new DigitalInput(DIOPorts.switch1);
     private DigitalInput ledsSwitch = new DigitalInput(DIOPorts.switch2);
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        configureAutos();
 
         configureSubsystems();
         configureCompBindings();
         // configureTestBindings();
-        configureAutos();
     }
 
     private void configureSubsystems() {
@@ -84,7 +89,8 @@ public class RobotContainer {
             () -> -leftStick.getRawAxis(1),
             () -> -leftStick.getRawAxis(0),
             () -> -rightStick.getRawAxis(0),
-            true
+            true,
+            () -> driveSpeed.getSelected()
         ));
 
         pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
@@ -112,7 +118,8 @@ public class RobotContainer {
             () -> -masher.getLeftY(),
             () -> -masher.getLeftX(),
             () -> -masher.getRightX(),
-            true
+            true,
+            () -> driveSpeed.getSelected()
         ));
 
         masher.a()
@@ -151,7 +158,8 @@ public class RobotContainer {
                     () -> -leftStick.getRawAxis(1),
                     () -> -leftStick.getRawAxis(0),
                     () -> -rightStick.getRawAxis(0),
-                    false
+                    false,
+                    () -> driveSpeed.getSelected()
                 )
             );
 
@@ -251,6 +259,16 @@ public class RobotContainer {
         // autoChooser.addOption("R-3-2", "R-3-2");
 
         SmartDashboard.putData("Auto Mode", autoChooser);
+
+
+        armKill.setDefaultOption("false", false);
+        armKill.addOption("true", true);
+        SmartDashboard.putData("Arm Killed", armKill);
+
+        driveSpeed.setDefaultOption("100%", 1.0);
+        driveSpeed.addOption("50%", 0.5);
+        driveSpeed.addOption("10%", 0.1);
+        SmartDashboard.putData("Drive Speed", driveSpeed);
     }
 
     public Command getAutonomousCommand() {
@@ -290,6 +308,10 @@ public class RobotContainer {
         pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));
         telescope.setDesiredSetpoint(new State(ArmPositions.stow[1], 0));
         wrist.updateDesiredSetpointRad(new State(ArmPositions.stow[2], 0));
+
+        pivot.setKill(armKill.getSelected());
+        telescope.setKill(armKill.getSelected());
+        wrist.setKill(armKill.getSelected());
     }
 
     private Command getMoveArmCommand(Position position) {

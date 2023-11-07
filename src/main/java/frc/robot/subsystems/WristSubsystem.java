@@ -107,6 +107,11 @@ public class WristSubsystem extends ArmSubsystem {
         dead = !dead;
     }
 
+    public void setKill(boolean kill) {
+        motor.set(ControlMode.PercentOutput, 0);
+        dead = kill;
+    }
+
     public void setCurrentLimit(double currentLimit, double triggerThresholdCurrent, double triggerThresholdTime) {
         motor.configStatorCurrentLimit(
             new StatorCurrentLimitConfiguration(true, currentLimit, triggerThresholdCurrent, triggerThresholdTime));

@@ -18,13 +18,16 @@ public class DriveWithJoysticks extends CommandBase {
     private final DoubleSupplier omegaPercent;
     private final boolean fieldRelative;
 
+    private final DoubleSupplier driveSpeed;
+
     /** Creates a new DriveWithJoysticks. */
-    public DriveWithJoysticks(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, DoubleSupplier omegaPercent, boolean fieldRelative) {
+    public DriveWithJoysticks(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, DoubleSupplier omegaPercent, boolean fieldRelative, DoubleSupplier driveSpeed) {
         this.drive = drive;
         this.xPercent = xPercent;
         this.yPercent = yPercent;
         this.omegaPercent = omegaPercent;
         this.fieldRelative = fieldRelative;
+        this.driveSpeed = driveSpeed;
 
         addRequirements(drive);
     }
@@ -37,8 +40,8 @@ public class DriveWithJoysticks extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double xMPerS = processJoystickInputs(xPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
-        double yMPerS = processJoystickInputs(yPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
+        double xMPerS = processJoystickInputs(xPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed * driveSpeed.getAsDouble();
+        double yMPerS = processJoystickInputs(yPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed * driveSpeed.getAsDouble();
         double omegaRadPerS = processJoystickInputs(omegaPercent.getAsDouble(), true) * DriveConstants.maxTurnRate;
 
         //Convert to field relative speeds

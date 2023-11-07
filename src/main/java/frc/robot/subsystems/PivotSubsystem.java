@@ -106,6 +106,11 @@ public class PivotSubsystem extends ArmSubsystem {
         dead = !dead;
     }
 
+    public void setKill(boolean kill) {
+        rightMotor.set(ControlMode.PercentOutput, 0);
+        dead = kill;
+    }
+
     public void autoConstrain() {
         constraintsRad = 
             new TrapezoidProfile.Constraints(
