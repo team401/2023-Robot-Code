@@ -20,6 +20,9 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
+
+    public static final double loopTime = 0.02;
+
     public static final class CANDevices {
 
         public static final String canivoreName = "Canivore";
