@@ -34,7 +34,7 @@ public abstract class GenericArmJoint {
 
     public void runControls() {
         if (!active) {
-            setInput(0.0);
+            setOutput(0.0);
         }
 
         if (homing) {
@@ -48,14 +48,14 @@ public abstract class GenericArmJoint {
 
         TrapezoidProfile profile = new TrapezoidProfile(constraints, goalState, currentState);
 
-        double input = calculateControlInput(profile.calculate(Constants.loopTime));
-        setInput(input);
+        double input = calculateControl(profile.calculate(Constants.loopTime));
+        setOutput(input);
     }
 
     /**
      * Set the control input to this joint, in volts
      */
-    protected abstract void setInput(double volts);
+    protected abstract void setOutput(double volts);
 
     /**
      * Run a complete iteration of the homing sequence.
@@ -74,7 +74,7 @@ public abstract class GenericArmJoint {
      * @param setpointState Desired position and velocity based on motion profile
      * @return system input voltage
      */
-    protected abstract double calculateControlInput(TrapezoidProfile.State setpointState);
+    protected abstract double calculateControl(TrapezoidProfile.State setpointState);
 
     /**
      * Called every time the setpoint position is updated.<p>

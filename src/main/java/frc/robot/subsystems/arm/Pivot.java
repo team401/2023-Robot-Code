@@ -83,7 +83,7 @@ public class Pivot extends GenericArmJoint {
     }
 
     @Override
-    protected double calculateControlInput(TrapezoidProfile.State setpointState) {
+    protected double calculateControl(TrapezoidProfile.State setpointState) {
         return controller.calculate(getPosition(), setpointState.position)
                 + feedforward.calculate(setpointState.position, setpointState.velocity)
                 // Compensates for telescope extention
@@ -94,7 +94,7 @@ public class Pivot extends GenericArmJoint {
     }
 
     @Override
-    protected void setInput(double volts) {
+    protected void setOutput(double volts) {
         rightMotor.set(ControlMode.PercentOutput, volts / 12);
     }
 

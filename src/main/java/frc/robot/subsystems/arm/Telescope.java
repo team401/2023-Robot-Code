@@ -12,6 +12,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.TelescopeConstants;
 
@@ -26,6 +27,8 @@ public class Telescope extends GenericArmJoint {
         new PIDController(TelescopeConstants.kP, 0, 0);
 
     private final DoubleSupplier pivotPositionSupplier;
+
+    private final Timer homeTimer = new Timer();
 
 
     public Telescope(
@@ -66,7 +69,26 @@ public class Telescope extends GenericArmJoint {
     }
 
     @Override
-    protected double calculateControlInput(TrapezoidProfile.State setpoint) {
+    public void home() {
+        homing = true;
+
+        setOutput(-1.0);
+
+        homeTimer.reset();
+        homeTimer.start();
+    }
+
+    @Override
+    protected boolean runHomingLogic() {
+        if (motor.getStatorCurrent() < 30) {
+            homeTimer.reset();
+        }
+
+        return homeTimer.hasElapsed(0.3);
+    }
+
+    @Override
+    protected double calculateControl(TrapezoidProfile.State setpoint) {
         return controller.calculate(getPosition(), setpoint.position)
             + feedforward.calculate(setpoint.velocity)
             // Compensates for weight of telescope as the pivot goes up
@@ -75,7 +97,7 @@ public class Telescope extends GenericArmJoint {
     }
 
     @Override
-    protected void setInput(double volts) {
+    protected void setOutput(double volts) {
         motor.set(ControlMode.PercentOutput, volts / 12);
     }
 }
