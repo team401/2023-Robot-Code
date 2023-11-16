@@ -23,22 +23,22 @@ public class Telescope extends GenericArmJoint {
     private final SimpleMotorFeedforward feedforward = new SimpleMotorFeedforward(
         TelescopeConstants.kS,
         TelescopeConstants.kV);
-    private final PIDController controller = 
+    private final PIDController feedbackController = 
         new PIDController(TelescopeConstants.kP, 0, 0);
 
-    private final DoubleSupplier pivotPositionSupplier;
+    private final DoubleSupplier pivotAngleSupplier;
 
     private final Timer homeTimer = new Timer();
 
 
     public Telescope(
         TrapezoidProfile.Constraints constraints,
-        DoubleSupplier pivotPositionSupplier,
+        DoubleSupplier pivotAngleSupplier,
         double defaultSetpoint
     ) {
         super(constraints, defaultSetpoint);
 
-        this.pivotPositionSupplier = pivotPositionSupplier;
+        this.pivotAngleSupplier = pivotAngleSupplier;
 
         motor.setInverted(InvertType.None);
         motor.setNeutralMode(NeutralMode.Brake);
@@ -84,20 +84,32 @@ public class Telescope extends GenericArmJoint {
             homeTimer.reset();
         }
 
-        return homeTimer.hasElapsed(0.3);
+        if (homeTimer.hasElapsed(0.3)) {
+            motor.setSelectedSensorPosition(0);
+
+            homing = false;
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     protected double calculateControl(TrapezoidProfile.State setpoint) {
-        return controller.calculate(getPosition(), setpoint.position)
+        return feedbackController.calculate(getPosition(), setpoint.position)
             + feedforward.calculate(setpoint.velocity)
             // Compensates for weight of telescope as the pivot goes up
             // Gravity Constant * Sine of Angle
-            + TelescopeConstants.kG * Math.sin(pivotPositionSupplier.getAsDouble());
+            + TelescopeConstants.kG * Math.sin(pivotAngleSupplier.getAsDouble());
     }
 
     @Override
     protected void setOutput(double volts) {
         motor.set(ControlMode.PercentOutput, volts / 12);
+    }
+
+    @Override
+    protected void resetControlLoop() {
+        feedbackController.reset();
     }
 }

@@ -2,7 +2,6 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import frc.robot.Constants;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 
 public abstract class GenericArmJoint {
 

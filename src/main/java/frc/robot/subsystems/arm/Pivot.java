@@ -22,7 +22,7 @@ public class Pivot extends GenericArmJoint {
     private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
     private TalonFX leftMotor = new TalonFX(CANDevices.leftPivotMotorID, CANDevices.canivoreName);
 
-    public final PIDController controller = new PIDController(
+    public final PIDController feedbackController = new PIDController(
             PivotConstants.kP,
             0,
             PivotConstants.kD);
@@ -84,7 +84,7 @@ public class Pivot extends GenericArmJoint {
 
     @Override
     protected double calculateControl(TrapezoidProfile.State setpointState) {
-        return controller.calculate(getPosition(), setpointState.position)
+        return feedbackController.calculate(getPosition(), setpointState.position)
                 + feedforward.calculate(setpointState.position, setpointState.velocity)
                 // Compensates for telescope extention
                 // Gravity constant * Telescope Extention (proportion) * Cosine of Angle
@@ -96,6 +96,11 @@ public class Pivot extends GenericArmJoint {
     @Override
     protected void setOutput(double volts) {
         rightMotor.set(ControlMode.PercentOutput, volts / 12);
+    }
+
+    @Override
+    protected void resetControlLoop() {
+        feedbackController.reset();
     }
 
 }
