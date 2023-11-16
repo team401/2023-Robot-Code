@@ -154,6 +154,8 @@ public final class Constants {
         public static final double kA = 0.09; // estimate
         public static final double kG = 0.32; 
         public static final double kS = 0.25;
+
+        public static final double stowedPosition = 0.1;
     }
 
     public static final class WristConstants {

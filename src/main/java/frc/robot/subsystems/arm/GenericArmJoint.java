@@ -29,6 +29,7 @@ public abstract class GenericArmJoint {
 
     public void setSetpoint(double setpoint) {
         this.setpoint = setpoint;
+        resetControlLoop();
     }
 
     public void runControls() {
@@ -37,8 +38,8 @@ public abstract class GenericArmJoint {
         }
 
         if (homing) {
-            // It's expected that homing logic could be different from joint to joint to require a
-            // custom implementation.
+            // It's expected that homing logic could be different enough from joint to joint
+            // to require a custom implementation.
             runHomingLogic();
         }
 
@@ -74,6 +75,12 @@ public abstract class GenericArmJoint {
      * @return system input voltage
      */
     protected abstract double calculateControlInput(TrapezoidProfile.State setpointState);
+
+    /**
+     * Called every time the setpoint position is updated.<p>
+     * Intended to be used to avoid PID integral windup amoung other strange effects.
+     */
+    protected void resetControlLoop() {}
 
     /**
      * Returns the current absolute position of this joint
