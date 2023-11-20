@@ -34,9 +34,10 @@ public class Telescope extends GenericArmJoint {
     public Telescope(
         TrapezoidProfile.Constraints constraints,
         DoubleSupplier pivotAngleSupplier,
+        double range,
         double defaultSetpoint
     ) {
-        super(constraints, defaultSetpoint);
+        super(constraints, range, defaultSetpoint);
 
         this.pivotAngleSupplier = pivotAngleSupplier;
 
@@ -52,8 +53,12 @@ public class Telescope extends GenericArmJoint {
             new StatorCurrentLimitConfiguration(true, 40, 50, 0.5));
     }
 
+    public Telescope(TrapezoidProfile.Constraints constraints, DoubleSupplier pivotPositionSupplier, double range) {
+        this(constraints, pivotPositionSupplier, range, TelescopeConstants.stowedPosition);
+    }
+
     public Telescope(TrapezoidProfile.Constraints constraints, DoubleSupplier pivotPositionSupplier) {
-        this(constraints, pivotPositionSupplier, TelescopeConstants.stowedPosition);
+        this(constraints, pivotPositionSupplier, 0.02);
     }
 
     @Override

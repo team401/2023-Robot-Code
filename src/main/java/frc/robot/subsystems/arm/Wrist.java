@@ -31,13 +31,15 @@ public class Wrist extends GenericArmJoint {
     private final DoubleSupplier pivotAngleSupplier;
 
     private final Timer homeTimer = new Timer();
+    private boolean homingSecondStep = false;
 
     public Wrist(
         TrapezoidProfile.Constraints constraints,
         DoubleSupplier pivotAngleSupplier,
+        double range,
         double defaultSetpoint
     ) {
-        super(constraints, defaultSetpoint);
+        super(constraints, range, defaultSetpoint);
 
         this.pivotAngleSupplier = pivotAngleSupplier;
 
@@ -56,8 +58,12 @@ public class Wrist extends GenericArmJoint {
         controller.setTolerance(0.05);
     }
 
+    public Wrist(TrapezoidProfile.Constraints constraints, DoubleSupplier pivotAngleSupplier, double range) {
+        this(constraints, pivotAngleSupplier, range, 0.0);
+    }
+
     public Wrist(TrapezoidProfile.Constraints constraints, DoubleSupplier pivotAngleSupplier) {
-        this(constraints, pivotAngleSupplier, 0.0);
+        this(constraints, pivotAngleSupplier, 0.01);
     }
 
     @Override
@@ -75,26 +81,58 @@ public class Wrist extends GenericArmJoint {
         homing = true;
         setOutput(2);
 
+        homingSecondStep = false;
+
         homeTimer.reset();
         homeTimer.start();
     }
 
     @Override
     protected boolean runHomingLogic() {
-        if (Math.abs(motor.getStatorCurrent()) < 60) {
-            // homeTimer.reset
+        /*
+         * The homing logic runs in two steps:
+         * Step 1: Run the motor until it experiences resistence, assumed to be from the arm
+         * Step 2: Wait a little bit for the compliant wheels to squish back, ensuring an accurate reading
+         */
+        if (!homingSecondStep) {
+            if (Math.abs(motor.getStatorCurrent()) < 60) {
+                homeTimer.reset();
+            } else if (homeTimer.hasElapsed(0.2)) {
+                homeTimer.reset();
+                homingSecondStep = true;
+            }
+        } else {
+            if (homeTimer.hasElapsed(0.2)) {
+                resetOffset();
+
+                homing = false;
+                return true;
+            }
         }
-        return true;
+        return false;
+    }
+
+    private void resetOffset() {
+        motor.setSelectedSensorPosition(
+            WristConstants.homedPosition / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
     }
 
     @Override
     protected double calculateControl(TrapezoidProfile.State setpoint) {
-        
+        double adjustedPosition = getPosition() + pivotAngleSupplier.getAsDouble();
+
+        // TODO: Investigate the merits of having separate PID constants for when the wrist isn't moving
+        return controller.calculate(adjustedPosition, setpoint.position)
+            + feedforward.calculate(setpoint.position, setpoint.velocity);
     }
 
     @Override
     public void setOutput(double volts) {
         motor.set(ControlMode.PercentOutput, volts);
     }
-    
+
+    @Override
+    public void resetControlLoop() {
+        controller.reset();
+    }
 }

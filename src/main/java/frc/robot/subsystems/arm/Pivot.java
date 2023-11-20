@@ -37,9 +37,10 @@ public class Pivot extends GenericArmJoint {
     public Pivot(
     TrapezoidProfile.Constraints constraints,
     DoubleSupplier telescopePositionSupplier,
+    double range,
     double defaultSetpoint
     ) {
-        super(constraints, defaultSetpoint);
+        super(constraints, range, defaultSetpoint);
 
         this.telescopePositionSupplier = telescopePositionSupplier;
 
@@ -68,8 +69,12 @@ public class Pivot extends GenericArmJoint {
                         1));
     }
 
+    public Pivot(TrapezoidProfile.Constraints contraints, DoubleSupplier telescopePositionSupplier, double range) {
+        this(contraints, telescopePositionSupplier, range, Math.PI / 2);
+    }
+
     public Pivot(TrapezoidProfile.Constraints contraints, DoubleSupplier telescopePositionSupplier) {
-        this(contraints, telescopePositionSupplier, Math.PI / 2);
+        this(contraints, telescopePositionSupplier, 0.03);
     }
 
     @Override

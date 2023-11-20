@@ -10,15 +10,18 @@ public abstract class GenericArmJoint {
 
     protected boolean active = true;
 
+    protected double range;
+
     protected TrapezoidProfile.Constraints constraints;
 
-    public GenericArmJoint(TrapezoidProfile.Constraints constraints, double defaultSetpoint) {
+    public GenericArmJoint(TrapezoidProfile.Constraints constraints, double range, double defaultSetpoint) {
         this.constraints = constraints;
+        this.range = range;
         setpoint = defaultSetpoint;
     }
 
-    public GenericArmJoint(TrapezoidProfile.Constraints constraints) {
-        this(constraints, 0.0);
+    public GenericArmJoint(TrapezoidProfile.Constraints constraints, double range) {
+        this(constraints, range, 0.0);
     }
 
     public void home() {
@@ -86,6 +89,10 @@ public abstract class GenericArmJoint {
      */
     // TODO: upgrade to 2024 and try out the units library
     public abstract double getPosition();
+
+    public boolean atSetpoint() {
+        return setpoint - range / 2 < getPosition() && getPosition() < setpoint + range / 2;
+    }
 
     /**
      * Returns the current velocity of this joint in units / second

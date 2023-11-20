@@ -163,6 +163,8 @@ public final class Constants {
         public static final double positiveLimitRad = Units.degreesToRadians(160);
         public static final double negativeLimitRad = Units.degreesToRadians(-160);
 
+        public static final double homedPosition = 2.81;
+
         public static final double intakeLengthM = Units.inchesToMeters(10);
 
         public static final double gearRatio = 8.0 / 78;
