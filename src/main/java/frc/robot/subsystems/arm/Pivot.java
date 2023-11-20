@@ -12,6 +12,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import frc.robot.Constants;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
@@ -21,6 +22,9 @@ public class Pivot extends GenericArmJoint {
     private TalonFX rightMotor = new TalonFX(CANDevices.rightPivotMotorID, CANDevices.canivoreName);
     private DutyCycleEncoder encoder = new DutyCycleEncoder(CANDevices.pivotEncoderID);
     private TalonFX leftMotor = new TalonFX(CANDevices.leftPivotMotorID, CANDevices.canivoreName);
+
+    private double velocity = 0.0;
+    private double lastPosition;
 
     public final PIDController feedbackController = new PIDController(
             PivotConstants.kP,
@@ -67,6 +71,8 @@ public class Pivot extends GenericArmJoint {
                         70,
                         80,
                         1));
+
+        lastPosition = getPosition();
     }
 
     public Pivot(TrapezoidProfile.Constraints contraints, DoubleSupplier telescopePositionSupplier, double range) {
@@ -84,7 +90,7 @@ public class Pivot extends GenericArmJoint {
 
     @Override
     public double getVelocity() {
-        return 0.0; // TODO: implement velocity calculation
+        return velocity;
     }
 
     @Override
@@ -99,6 +105,11 @@ public class Pivot extends GenericArmJoint {
     }
 
     @Override
+    protected void update() {
+        findVelocity();
+    }
+
+    @Override
     protected void setOutput(double volts) {
         rightMotor.set(ControlMode.PercentOutput, volts / 12);
     }
@@ -106,6 +117,11 @@ public class Pivot extends GenericArmJoint {
     @Override
     protected void resetControlLoop() {
         feedbackController.reset();
+    }
+
+    private void findVelocity() {
+        velocity = (getPosition() - lastPosition) / Constants.loopTime;
+        lastPosition = getPosition();
     }
 
 }

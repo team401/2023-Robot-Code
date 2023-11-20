@@ -35,6 +35,8 @@ public abstract class GenericArmJoint {
     }
 
     public void runControls() {
+        update();
+
         if (!active) {
             setOutput(0.0);
         }
@@ -53,6 +55,11 @@ public abstract class GenericArmJoint {
         double input = calculateControl(profile.calculate(Constants.loopTime));
         setOutput(input);
     }
+
+    /**
+     * Optional Override: Update internal state periodically
+     */
+    protected void update() {}
 
     /**
      * Set the control input to this joint, in volts
@@ -101,5 +108,13 @@ public abstract class GenericArmJoint {
 
     public boolean isActive() {
         return active;
+    }
+
+    /**
+     * If this joint is active, it is 'alive,' and will attempt to drive itself to its setpoint
+     * using a control loop. If it is not, it is 'dead,' and will never apply output power.
+     */
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }
