@@ -56,6 +56,8 @@ public abstract class GenericArmJoint {
         setOutput(input);
     }
 
+    public abstract void setBrakeMode(boolean brake);
+
     /**
      * Optional Override: Update internal state periodically
      */

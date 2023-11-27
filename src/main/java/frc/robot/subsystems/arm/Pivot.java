@@ -94,6 +94,12 @@ public class Pivot extends GenericArmJoint {
     }
 
     @Override
+    public void setBrakeMode(boolean brake) {
+        leftMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+        rightMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    @Override
     protected double calculateControl(TrapezoidProfile.State setpointState) {
         return feedbackController.calculate(getPosition(), setpointState.position)
                 + feedforward.calculate(setpointState.position, setpointState.velocity)

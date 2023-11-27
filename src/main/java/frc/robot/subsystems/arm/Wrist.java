@@ -77,6 +77,11 @@ public class Wrist extends GenericArmJoint {
     }
 
     @Override
+    public void setBrakeMode(boolean brake) {
+        motor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    @Override
     public void home() {
         homing = true;
         setOutput(2);

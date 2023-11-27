@@ -23,11 +23,14 @@ import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
+import frc.robot.Constants.TelescopeConstants;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.commands.auto.SnapHeading;
+import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 import frc.robot.subsystems.PivotSubsystem;
@@ -50,9 +53,10 @@ import frc.robot.oi.Thrustmaster;
 public class RobotContainer {
     
     private final Drive drive = new Drive();
-    private final PivotSubsystem pivot = new PivotSubsystem();
-    private final TelescopeSubsystem telescope = new TelescopeSubsystem();
-    private final WristSubsystem wrist = new WristSubsystem();
+    // private final PivotSubsystem pivot = new PivotSubsystem();
+    // private final TelescopeSubsystem telescope = new TelescopeSubsystem();
+    // private final WristSubsystem wrist = new WristSubsystem();
+    private final ArmSubsystem arm = new ArmSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem();
     @SuppressWarnings("unused")
     private final Vision vision = new Vision();
@@ -86,10 +90,6 @@ public class RobotContainer {
             () -> -rightStick.getRawAxis(0),
             true
         ));
-
-        pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
-        telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
     }
 
     @SuppressWarnings("unused")
@@ -124,7 +124,7 @@ public class RobotContainer {
                         new Rotation2d(0)));
             }));
         
-        masher.b().onTrue(new TuneArmS(wrist));
+        // masher.b().onTrue(new TuneArmS(wrist));
     }   
 
     private void configureCompBindings() {
@@ -163,20 +163,18 @@ public class RobotContainer {
         leftStick.topRight().whileTrue(new Align(drive, false));
 
         // Home
-        rightStick.lowerButton(12).onTrue(new HomeWrist(wrist)); // Home wrist
-        rightStick.lowerButton(13).onTrue(new HomeTelescope(telescope)); // Home telescope
+        rightStick.lowerButton(12).onTrue(new InstantCommand(arm::homeWrist)); // Home wrist
+        rightStick.lowerButton(13).onTrue(new InstantCommand(arm::homeTelescope)); // Home telescope
         
         // Manually disable (kill) subsystems
         leftStick.lowerButton(7)
-            .onTrue(new InstantCommand(pivot::toggleKill, pivot));
+            .onTrue(new InstantCommand(arm::togglePivotActive));
         leftStick.lowerButton(6)
-            .onTrue(new InstantCommand(telescope::toggleKill, telescope));
+            .onTrue(new InstantCommand(arm::toggleTelescopeActive));
         leftStick.lowerButton(5)
-            .onTrue(new InstantCommand(wrist::toggleKill, wrist));
+            .onTrue(new InstantCommand(arm::toggleWristActive));
         leftStick.lowerButton(8)
-            .onTrue(new InstantCommand(pivot::toggleKill))
-            .onTrue(new InstantCommand(telescope::toggleKill))
-            .onTrue(new InstantCommand(wrist::toggleKill));
+            .onTrue(new InstantCommand(arm::toggleAllActive));
         
         // Set game piece mode
         masher.leftBumper().onTrue(new InstantCommand(() ->
@@ -225,7 +223,7 @@ public class RobotContainer {
             .onFalse(new InstantCommand(intake::stop)); // stop place
 
         masher.back()
-            .onTrue(new HomeWrist(wrist));
+            .onTrue(new InstantCommand(arm::homeWrist));
 
         masher.start()
             .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
@@ -264,39 +262,33 @@ public class RobotContainer {
         }
 
         drive.setBrakeMode(!brakeSwitch.get());
-        pivot.setBrakeMode(!brakeSwitch.get());
-        telescope.setBrakeMode(!brakeSwitch.get());
-        wrist.setBrakeMode(!brakeSwitch.get());
+        arm.setBrakeMode(!brakeSwitch.get());
 
         ledManager.setOff(ledsSwitch.get());
     }
 
     public void enabledInit() {
         drive.setBrakeMode(true);
-        pivot.setBrakeMode(true);
-        telescope.setBrakeMode(true);
-        wrist.setBrakeMode(true);
+        arm.setBrakeMode(true);
 
         ledManager.setOff(false);
 
         if (DriverStation.isTeleop()) {
-            new HomeTelescope(telescope).schedule();
+            arm.homeTelescope();
             if (!RobotState.getInstance().hasIntaked()) {
-                new HomeWrist(wrist).schedule();
+                arm.homeWrist();
             }
-            pivot.normalConstrain();
+            // pivot.normalConstrain();
         }
 
-        pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));
-        telescope.setDesiredSetpoint(new State(ArmPositions.stow[1], 0));
-        wrist.updateDesiredSetpointRad(new State(ArmPositions.stow[2], 0));
+        arm.setSetpoint(ArmPositions.stow);
     }
 
     private Command getMoveArmCommand(Position position) {
         return new InstantCommand(() -> {
             
             RobotState.getInstance().setStow(position == Position.Stow);
-            double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+            ArmPosition setpoint = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
             
             if (position == Position.High || position == Position.Mid) {
                 boolean atBack = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2;
@@ -311,33 +303,11 @@ public class RobotContainer {
             timer.reset();
             timer.start();
 
-            if (telescope.getPositionM() > 0.15 || positions[1] > 0.15) {
-                // move telescope to 0.05, then move pivot and wrist, then move telescope to goal
-                new SequentialCommandGroup(
-                    new ParallelRaceGroup(
-                        new HoldPivot(pivot, telescope),
-                        new MoveTelescope(telescope, pivot, 0.05, true),
-                        new HoldWrist(wrist, pivot)
-                    ),
-                    new ParallelRaceGroup(
-                        new MovePivot(pivot, positions[0], true).andThen(new HoldPivot(pivot, telescope)),
-                        new HoldTelescope(telescope, pivot),
-                        new MoveWrist(wrist, pivot, positions[2], true).andThen(new HoldWrist(wrist, pivot)),
-                        new WaitUntilCommand(() -> (pivot.atGoal && wrist.atGoal))
-                    ),
-                    new ParallelRaceGroup(
-                        new MovePivot(pivot, positions[0], false).andThen(new HoldPivot(pivot, telescope)),
-                        new MoveTelescope(telescope, pivot, positions[1], false).andThen(new HoldTelescope(telescope, pivot)),
-                        new MoveWrist(wrist, pivot, positions[2], false).andThen(new HoldWrist(wrist, pivot)),
-                        new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
-                    )
-                ).schedule();
-            }
-            else {
+            if (arm.getPosition().telescope() > 0.15 || setpoint.telescope() > 0.15) {
+                arm.moveAndRetract(setpoint, false).schedule();
+            } else {
                 // move
-                new MovePivot(pivot, positions[0]).schedule();
-                new MoveTelescope(telescope, pivot, positions[1]).schedule();
-                new MoveWrist(wrist, pivot, positions[2]).schedule();
+                arm.move(setpoint, false).schedule();
             }
         });
     }
