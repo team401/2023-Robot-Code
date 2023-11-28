@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -79,6 +80,18 @@ public class Wrist extends GenericArmJoint {
     @Override
     public void setBrakeMode(boolean brake) {
         motor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    @Override
+    public void jogSetpointPositive() {
+        //No clamping because the home is very unreliable
+        setpoint += Math.PI / 24;
+    }
+
+    @Override
+    public void jogSetpointNegative() {
+        //No clamping because the home is very unreliable
+        setpoint -= Math.PI / 24;
     }
 
     @Override

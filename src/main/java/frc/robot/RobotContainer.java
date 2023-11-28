@@ -200,19 +200,19 @@ public class RobotContainer {
 
         // Manually jog arm
         masher.leftStickLeft()
-            .onTrue(new InstantCommand(pivot::jogSetpointForward, pivot)); // jog pivot left
+            .onTrue(new InstantCommand(arm::jogPivotBackward)); // jog pivot back
         masher.leftStickRight()
-            .onTrue(new InstantCommand(pivot::jogSetpointBack, pivot)); // jog pivot right
+            .onTrue(new InstantCommand(arm::jogPivotForward)); // jog pivot forward
 
         masher.rightStickRight()
-            .onTrue(new InstantCommand(telescope::jogSetpointForward, telescope)); // jog telescope up
+            .onTrue(new InstantCommand(arm::jogTelescopeIn)); // jog telescope in
         masher.rightStickLeft()
-            .onTrue(new InstantCommand(telescope::jogSetpointBackward, telescope)); // jog telescope down
+            .onTrue(new InstantCommand(arm::jogTelescopeOut)); // jog telescope out
 
         masher.rightStickUp()
-            .onTrue(new InstantCommand(wrist::jogSetpointForward, wrist)); // jog wrist right
+            .onTrue(new InstantCommand(arm::jogWristBackward)); // jog wrist back
         masher.rightStickDown()
-            .onTrue(new InstantCommand(wrist::jogSetpointBack, wrist)); // jog wrist left
+            .onTrue(new InstantCommand(arm::jogWristForward)); // jog wrist forward
 
         // Intake
         masher.leftTrigger()
@@ -288,7 +288,7 @@ public class RobotContainer {
         return new InstantCommand(() -> {
             
             RobotState.getInstance().setStow(position == Position.Stow);
-            ArmPosition setpoint = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+            ArmPosition setpoint = PositionHelper.getPosition(position, RobotState.getInstance().getMode());
             
             if (position == Position.High || position == Position.Mid) {
                 boolean atBack = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2;

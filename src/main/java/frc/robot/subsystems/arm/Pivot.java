@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -97,6 +98,22 @@ public class Pivot extends GenericArmJoint {
     public void setBrakeMode(boolean brake) {
         leftMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
         rightMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    @Override
+    public void jogSetpointPositive() {
+        setpoint = MathUtil.clamp(
+            setpoint + Math.PI / 64,                
+            PivotConstants.maxFwdRotationRad,
+            PivotConstants.maxBackRotationRad);
+    }
+
+    @Override
+    public void jogSetpointNegative() {
+        setpoint = MathUtil.clamp(
+            setpoint - Math.PI / 64,                
+            PivotConstants.maxFwdRotationRad,
+            PivotConstants.maxBackRotationRad);
     }
 
     @Override

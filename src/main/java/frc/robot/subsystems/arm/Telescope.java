@@ -9,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -76,6 +77,22 @@ public class Telescope extends GenericArmJoint {
     @Override
     public void setBrakeMode(boolean brake) {
         motor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+    }
+
+    @Override
+    public void jogSetpointPositive() {
+        setpoint = MathUtil.clamp(
+            setpoint + 0.05,                
+            TelescopeConstants.minPosM,
+            TelescopeConstants.maxPosM);
+    }
+
+    @Override
+    public void jogSetpointNegative() {
+        setpoint = MathUtil.clamp(
+            setpoint - 0.05,                
+            TelescopeConstants.minPosM,
+            TelescopeConstants.maxPosM);
     }
 
     @Override

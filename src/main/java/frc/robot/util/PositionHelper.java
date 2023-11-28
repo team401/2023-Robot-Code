@@ -4,10 +4,11 @@ import frc.robot.RobotState;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
+import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 
 public final class PositionHelper {
     
-    public static double[] getDouble(Position position, GamePieceMode mode) {
+    public static ArmPosition getPosition(Position position, GamePieceMode mode) {
         switch(position) {
             case Ground:
                 return getGround(mode);
@@ -16,45 +17,34 @@ public final class PositionHelper {
             case High:
                 return getHigh(mode);
             case Shelf:
-                return getShelf(mode);
+                return ArmPositions.intakeConeUpShelf;
             default:
                 return ArmPositions.stow;
         }
     }
 
-    private static double[] getGround(GamePieceMode mode) {
+    private static ArmPosition getGround(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeGround;
         if (mode == GamePieceMode.ConeDown) {
-            if (RobotState.getInstance().atBack()) return ArmPositions.intakeConeDownBackGround;
-            return ArmPositions.intakeConeDownFrontGround;
+            return ArmPositions.intakeConeDownGround;
         }
         if (mode == GamePieceMode.ConeUp)  {
-            if (RobotState.getInstance().atBack()) return ArmPositions.intakeConeUpBackGround;
-            return ArmPositions.intakeConeUpFrontGround;
+            return ArmPositions.intakeConeUpGround;
         }
         return null;
     }
 
-    private static double[] getMid(GamePieceMode mode) {
+    private static ArmPosition getMid(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.placeCubeMid;
         if (mode == GamePieceMode.ConeDown) return ArmPositions.placeConeDownMid;
         if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpMid;
         return null;
     }
     
-    private static double[] getHigh(GamePieceMode mode) {
+    private static ArmPosition getHigh(GamePieceMode mode) {
         if (mode == GamePieceMode.Cube) return ArmPositions.placeCubeHigh;
         if (mode == GamePieceMode.ConeDown) return ArmPositions.placeConeDownHigh;
         if (mode == GamePieceMode.ConeUp) return ArmPositions.placeConeUpHigh;
         return null;
-    }
-
-    private static double[] getShelf(GamePieceMode mode) {
-        // if (mode == GamePieceMode.Cube) return ArmPositions.intakeCubeShelf;
-        // if (mode == GamePieceMode.ConeDown) return ArmPositions.intakeConeDownShelf;
-        // if (mode == GamePieceMode.ConeUp) return ArmPositions.intakeConeUpShelf;
-        RobotState.getInstance().setMode(GamePieceMode.ConeUp);
-        return ArmPositions.intakeConeUpShelf;
-        // return null;
     }
 }

@@ -56,6 +56,10 @@ public abstract class GenericArmJoint {
         setOutput(input);
     }
 
+    public abstract void jogSetpointPositive();
+    
+    public abstract void jogSetpointNegative();
+
     public abstract void setBrakeMode(boolean brake);
 
     /**

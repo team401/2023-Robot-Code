@@ -85,6 +85,32 @@ public class ArmSubsystem extends SubsystemBase {
         wrist.setActive(!wrist.isActive());
     }
 
+    public void jogPivotForward() {
+        //Negative pivot values are closer to the front
+        pivot.jogSetpointNegative();
+    }
+
+    public void jogPivotBackward() {
+        //Negative pivot values are closer to the front
+        pivot.jogSetpointPositive();
+    }
+
+    public void jogTelescopeOut() {
+        telescope.jogSetpointPositive();
+    }
+
+    public void jogTelescopeIn() {
+        telescope.jogSetpointNegative();
+    }
+
+    public void jogWristForward() {
+        wrist.jogSetpointPositive();
+    }
+
+    public void jogWristBackward() {
+        wrist.jogSetpointNegative();
+    }
+
     public void toggleAllActive() {
         // this method forces all joints into the same active state; subject to change
         allActive = !allActive;
