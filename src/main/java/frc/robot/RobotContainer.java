@@ -191,8 +191,8 @@ public class RobotContainer {
         masher.pov(270).onTrue(getMoveArmCommand(Position.Stow)); // move to stow    
         masher.x().onTrue(getMoveArmCommand(Position.Shelf)); // move to shelf
 
-        masher.a().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace)); // Dunk cone
-        masher.b().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeDownHigh[2])); // Un-dunk cone
+        masher.a().onTrue(getWristDunkCommand(true)); // Dunk cone
+        masher.b().onTrue(getWristDunkCommand(false)); // Un-dunk cone
         
         // TODO: let masher flip sides
         // masher.??????().onTrue(
@@ -282,6 +282,16 @@ public class RobotContainer {
         }
 
         arm.setSetpoint(ArmPositions.stow);
+    }
+
+    private Command getWristDunkCommand(boolean up) {
+        return arm.move(
+            new ArmPosition(
+                arm.getPosition().pivot(),
+                arm.getPosition().telescope(),
+                up ? ArmPositions.wristConePlace : ArmPositions.placeConeDownHigh.wrist()),
+            false
+        );
     }
 
     private Command getMoveArmCommand(Position position) {

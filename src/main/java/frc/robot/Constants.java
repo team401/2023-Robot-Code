@@ -202,7 +202,7 @@ public final class Constants {
         
         public static final ArmPosition stow = new ArmPosition(1.5, 0.1, Math.PI / 2);
         
-        // public static final double wristConePlace = -0.88;
+        public static final double wristConePlace = -0.88;
         
         // public static final double[] placeConeUpHighPrepare = {0.8, 0.65, -0.5};
         // public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.5};
