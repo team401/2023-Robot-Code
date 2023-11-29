@@ -7,7 +7,6 @@ package frc.robot;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
@@ -15,38 +14,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.Constants.TelescopeConstants;
 import frc.robot.commands.DriveWithJoysticks;
-import frc.robot.commands.FeedForward.TuneArmS;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
-import frc.robot.commands.auto.SnapHeading;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
-import frc.robot.subsystems.WristSubsystem;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PositionHelper;
-import frc.robot.commands.pivot.HoldPivot;
-import frc.robot.commands.pivot.MovePivot;
-import frc.robot.commands.telescope.HoldTelescope;
-import frc.robot.commands.telescope.HomeTelescope;
-import frc.robot.commands.telescope.MoveTelescope;
-import frc.robot.commands.wrist.HoldWrist;
-import frc.robot.commands.wrist.HomeWrist;
-import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.oi.ButtonMasher;
 import frc.robot.oi.Thrustmaster;
 
@@ -257,7 +238,7 @@ public class RobotContainer {
 
     public void disabledPeriodic() {
         if (activeAutoCommand == null || !activeAutoName.equals(autoChooser.getSelected())) {
-            activeAutoCommand = new AutoRoutines(autoChooser.getSelected(), drive, pivot, telescope, wrist, intake);
+            activeAutoCommand = new AutoRoutines(autoChooser.getSelected(), drive, arm, intake);
             activeAutoName = autoChooser.getSelected();
         }
 

@@ -205,6 +205,7 @@ public final class Constants {
         public static final double wristConePlace = -0.88;
         
         // public static final double[] placeConeUpHighPrepare = {0.8, 0.65, -0.5};
+        public static final ArmPosition placeConeUpHighPrepare = new ArmPosition(0.8, 0.65, -0.5);
         // public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.5};
         // public static final double[] placeCubeAuto = {0.590, 0.781, 1.8};
 
