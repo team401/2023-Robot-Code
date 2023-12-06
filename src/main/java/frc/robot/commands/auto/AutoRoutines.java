@@ -20,6 +20,7 @@ import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem.ActiveArmSide;
 import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.drive.Drive;
@@ -205,7 +206,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.ConeUp)),
             new InstantCommand(() -> intake.setIntake(true)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> arm.setArmSide(ActiveArmSide.FRONT)),
             arm.move(ArmPositions.placeConeUpHighPrepare, true),
             arm.move(ArmPositions.placeConeUpHighAuto, true),
             new SequentialCommandGroup(
@@ -220,7 +221,7 @@ public class AutoRoutines extends SequentialCommandGroup {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
             new InstantCommand(() -> intake.setIntake(true)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> arm.setArmSide(ActiveArmSide.FRONT)),
             arm.move(ArmPositions.placeCubeHigh, true),
             new InstantCommand(intake::place),
             new WaitCommand(0.5),
@@ -231,7 +232,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command intakeCube() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(false)),
+            new InstantCommand(() -> arm.setArmSide(ActiveArmSide.BACK)),
             // FIXME cursed retraction implementation
             // We need a better API to implement odd auto optimizations
             arm.move(
@@ -246,7 +247,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     private Command intakeCubeBump() {
         return new SequentialCommandGroup(
             new InstantCommand(() -> RobotState.getInstance().setMode(GamePieceMode.Cube)),
-            new InstantCommand(() -> RobotState.getInstance().setBack(false)),
+            new InstantCommand(() -> arm.setArmSide(ActiveArmSide.BACK)),
             // FIXME cursed retraction implementation
             // We need a better API to implement odd auto optimizations
             arm.move(
@@ -259,7 +260,7 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command preparePlaceCubeLow() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> arm.setArmSide(ActiveArmSide.FRONT)),
             arm.move(ArmPositions.stow, true),
             arm.move(ArmPositions.placeCubeLow, true)
         );
@@ -267,7 +268,7 @@ public class AutoRoutines extends SequentialCommandGroup {
 
     private Command preparePlaceCubeMid() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> arm.setArmSide(ActiveArmSide.FRONT)),
             arm.move(ArmPositions.stow, true),
             arm.move(ArmPositions.placeCubeHigh, true)
         );
@@ -275,7 +276,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     
     private Command preparePlaceCubeHigh() {
         return new SequentialCommandGroup(
-            new InstantCommand(() -> RobotState.getInstance().setBack(true)),
+            new InstantCommand(() -> arm.setArmSide(ActiveArmSide.BACK)),
             arm.move(ArmPositions.stow, true),
             arm.move(ArmPositions.placeCubeHigh, true)
         );

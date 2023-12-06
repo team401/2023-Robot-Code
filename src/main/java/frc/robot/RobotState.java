@@ -34,10 +34,6 @@ public class RobotState {
     
     private SwerveDrivePoseEstimator poseEstimator;
 
-    private boolean atBack = false;
-
-    private boolean atStow = true;
-
     private boolean hasIntaked = false;
 
     private Mechanism2d displayMechanism = 
@@ -132,42 +128,6 @@ public class RobotState {
 
     public Pose2d getOdometryFieldToVehicle() {
         return driveOdometry.getPoseMeters();
-    }
-
-    public void invertBack() {
-        atBack = !atBack;
-    }
-
-    public void setBack(boolean back) {
-        atBack = back;
-    }
-
-
-    public void putPivotDisplay(double posRad) {
-        pivotLigament.setAngle(Units.radiansToDegrees(posRad));
-        SmartDashboard.putData("Arm Mechanism", displayMechanism);
-    }
-
-    public void putTelescopeDisplay(double posM) {
-        telescopeLigament.setLength(posM);
-        SmartDashboard.putData("Arm Mechanism", displayMechanism);
-    }
-
-    public void putWristDisplay(double posRad) {
-        wrisLigament.setAngle(Units.radiansToDegrees(posRad));
-        SmartDashboard.putData("Arm Mechanism", displayMechanism);
-    }
-
-    public void setStow(boolean stowed) {
-        atStow = stowed;
-    }
-
-    public boolean atStow() {
-        return atStow;
-    }
-
-    public boolean atBack() {
-        return atBack;
     }
 
     public GamePieceMode getMode() {

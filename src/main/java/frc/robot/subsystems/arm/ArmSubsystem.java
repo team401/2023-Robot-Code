@@ -2,11 +2,19 @@ package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
+import edu.wpi.first.wpilibj.util.Color8Bit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
+import frc.robot.Constants.WristConstants;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -16,7 +24,36 @@ public class ArmSubsystem extends SubsystemBase {
 
     private boolean allActive = true;
 
-    public ActiveArmSide activeSide = ActiveArmSide.FRONT;
+    private ActiveArmSide activeSide = ActiveArmSide.FRONT;
+
+    private Mechanism2d displayMechanism = 
+        new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
+    private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 0.43);
+
+    private MechanismLigament2d pivotLigament = root.append(
+        new MechanismLigament2d(
+            "pivot",
+            PivotConstants.lengthWOTeleM,
+            0,
+            4,
+            new Color8Bit(Color.kPurple)));
+    
+    private MechanismLigament2d telescopeLigament = pivotLigament.append(
+        new MechanismLigament2d(
+            "telescope",
+            0,
+            0,
+            3,
+            new Color8Bit(Color.kBlue)));
+
+    private MechanismLigament2d wrisLigament = telescopeLigament.append(
+        new MechanismLigament2d(
+            "wrist",
+            WristConstants.intakeLengthM,
+            0,
+            3,
+            new Color8Bit(Color.kCoral)));
+
 
     public ArmSubsystem() {
         pivot = new Pivot(
@@ -41,6 +78,14 @@ public class ArmSubsystem extends SubsystemBase {
         pivot.runControls();
         telescope.runControls();
         wrist.runControls();
+
+        SmartDashboard.putString("Arm/Side", activeSide.name());
+
+        pivotLigament.setAngle(Units.radiansToDegrees(pivot.getPosition()));
+        telescopeLigament.setLength(telescope.getPosition());
+        wrisLigament.setAngle(Units.radiansToDegrees(wrist.getPosition()));
+
+        SmartDashboard.putData("Arm/Mechanism", displayMechanism);
     }
 
     public boolean atSetpoint() {
@@ -124,6 +169,24 @@ public class ArmSubsystem extends SubsystemBase {
         pivot.setBrakeMode(brake);
         telescope.setBrakeMode(brake);
         wrist.setBrakeMode(brake);
+    }
+
+    public void setArmSide(ActiveArmSide side) {
+        activeSide = side;
+    }
+    
+    public ActiveArmSide getArmSide() {
+        return activeSide;
+    }
+
+    public void invertActiveSide() {
+        // java enums are lame
+        // I hope the JVM optimizes this
+        if (activeSide == ActiveArmSide.BACK) {
+            setArmSide(ActiveArmSide.FRONT);
+        } else {
+            setArmSide(ActiveArmSide.BACK);
+        }
     }
 
     public Command move(ArmPosition setpoint, boolean wait) {

@@ -13,6 +13,7 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.PivotConstants;
@@ -118,6 +119,7 @@ public class Pivot extends GenericArmJoint {
 
     @Override
     protected double calculateControl(TrapezoidProfile.State setpointState) {
+        SmartDashboard.putNumber("Pivot/control-setpoint", setpointState.position);
         return feedbackController.calculate(getPosition(), setpointState.position)
                 + feedforward.calculate(setpointState.position, setpointState.velocity)
                 // Compensates for telescope extention

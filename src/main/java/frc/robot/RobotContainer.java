@@ -22,6 +22,7 @@ import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.commands.auto.Align;
 import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem.ActiveArmSide;
 import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
@@ -38,10 +39,10 @@ public class RobotContainer {
     // private final TelescopeSubsystem telescope = new TelescopeSubsystem();
     // private final WristSubsystem wrist = new WristSubsystem();
     private final ArmSubsystem arm = new ArmSubsystem();
-    private final IntakeSubsystem intake = new IntakeSubsystem();
+    private final IntakeSubsystem intake = new IntakeSubsystem(() -> arm.getArmSide());
     @SuppressWarnings("unused")
     private final Vision vision = new Vision();
-    private final LEDManager ledManager = new LEDManager();
+    private final LEDManager ledManager = new LEDManager(() -> arm.getArmSide());
 
     private final Thrustmaster leftStick = new Thrustmaster(0);
     private final Thrustmaster rightStick = new Thrustmaster(1);
@@ -207,7 +208,7 @@ public class RobotContainer {
             .onTrue(new InstantCommand(arm::homeWrist));
 
         masher.start()
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+            .onTrue(new InstantCommand(arm::invertActiveSide));
     }
 
     private void configureAutos() {
@@ -277,17 +278,17 @@ public class RobotContainer {
 
     private Command getMoveArmCommand(Position position) {
         return new InstantCommand(() -> {
-            
-            RobotState.getInstance().setStow(position == Position.Stow);
             ArmPosition setpoint = PositionHelper.getPosition(position, RobotState.getInstance().getMode());
             
             if (position == Position.High || position == Position.Mid) {
-                boolean atBack = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2;
-                RobotState.getInstance().setBack(atBack);
+                ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
+                    ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
+                arm.setArmSide(side);
             }
             else if (position == Position.Shelf) {
-                boolean atBack = Math.abs(drive.getRotation().getRadians()) > Math.PI / 2;
-                RobotState.getInstance().setBack(atBack);
+                ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
+                    ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
+                arm.setArmSide(side);
             }
             
             Timer timer = new Timer();

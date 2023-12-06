@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
@@ -8,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.GamePieceMode;
+import frc.robot.subsystems.arm.ArmSubsystem.ActiveArmSide;
 
 public class IntakeSubsystem extends SubsystemBase {
     private static enum IntakeMode {
@@ -22,8 +25,10 @@ public class IntakeSubsystem extends SubsystemBase {
     private boolean exceededCurrentDraw = false;
 
     private final Timer intakeTimer = new Timer();
+
+    private final Supplier<ActiveArmSide> sideSupplier;
     
-    public IntakeSubsystem() {
+    public IntakeSubsystem(Supplier<ActiveArmSide> sideSupplier) {
         
         leftMotor.restoreFactoryDefaults();
         rightMotor.restoreFactoryDefaults();
@@ -40,6 +45,7 @@ public class IntakeSubsystem extends SubsystemBase {
         intakeTimer.reset();
         intakeTimer.start();
 
+        this.sideSupplier = sideSupplier;
     }
 
     public void toggleIntake() {
@@ -96,7 +102,7 @@ public class IntakeSubsystem extends SubsystemBase {
         RobotState.getInstance().setIntaking(false);
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+            boolean back = sideSupplier.get() == ActiveArmSide.BACK;
             leftMotor.set(back ? -0.75 : 0.75);
             rightMotor.set(back ? 0.75 : -0.75);
         }
@@ -112,7 +118,7 @@ public class IntakeSubsystem extends SubsystemBase {
         RobotState.getInstance().setIntaking(false);
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+            boolean back = sideSupplier.get() == ActiveArmSide.BACK;
             leftMotor.set(back ? -1 : 1);
             rightMotor.set(back ? 1 : -1);
         }
@@ -128,7 +134,7 @@ public class IntakeSubsystem extends SubsystemBase {
         RobotState.getInstance().setIntaking(false);
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+            boolean back = sideSupplier.get() == ActiveArmSide.BACK;
             leftMotor.set(!back ? -1 : 1);
             rightMotor.set(!back ? 1 : -1);
         }
@@ -144,7 +150,7 @@ public class IntakeSubsystem extends SubsystemBase {
         RobotState.getInstance().setIntaking(false);
 
         if (RobotState.getInstance().getMode() == GamePieceMode.Cube) {
-            boolean back = RobotState.getInstance().atBack();
+            boolean back = sideSupplier.get() == ActiveArmSide.BACK;
             leftMotor.set(back ? -0.75 : 0.75);
             rightMotor.set(back ? 0.75 : -0.75);
         }
