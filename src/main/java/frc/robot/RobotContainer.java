@@ -291,10 +291,6 @@ public class RobotContainer {
                 arm.setArmSide(side);
             }
             
-            Timer timer = new Timer();
-            timer.reset();
-            timer.start();
-
             if (arm.getPosition().telescope() > 0.15 || setpoint.telescope() > 0.15) {
                 arm.moveAndRetract(setpoint, false).schedule();
             } else {

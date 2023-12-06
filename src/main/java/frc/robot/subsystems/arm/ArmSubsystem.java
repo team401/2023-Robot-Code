@@ -46,7 +46,7 @@ public class ArmSubsystem extends SubsystemBase {
             3,
             new Color8Bit(Color.kBlue)));
 
-    private MechanismLigament2d wrisLigament = telescopeLigament.append(
+    private MechanismLigament2d wristLigament = telescopeLigament.append(
         new MechanismLigament2d(
             "wrist",
             WristConstants.intakeLengthM,
@@ -83,9 +83,17 @@ public class ArmSubsystem extends SubsystemBase {
 
         pivotLigament.setAngle(Units.radiansToDegrees(pivot.getPosition()));
         telescopeLigament.setLength(telescope.getPosition());
-        wrisLigament.setAngle(Units.radiansToDegrees(wrist.getPosition()));
+        wristLigament.setAngle(Units.radiansToDegrees(wrist.getPosition()));
 
         SmartDashboard.putData("Arm/Mechanism", displayMechanism);
+
+        SmartDashboard.putNumber("Arm/Pivot/Setpoint", pivot.setpoint);
+        SmartDashboard.putNumber("Arm/Telescope/Setpoint", telescope.setpoint);
+        SmartDashboard.putNumber("Arm/Wrist/Setpoint", wrist.setpoint);
+
+        SmartDashboard.putNumber("Arm/Pivot/Position", pivot.getPosition());
+        SmartDashboard.putNumber("Arm/Telescope/Position", telescope.getPosition());
+        SmartDashboard.putNumber("Arm/Wrist/Position", wrist.getPosition());
     }
 
     public boolean atSetpoint() {

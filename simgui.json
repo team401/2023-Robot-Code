@@ -18,6 +18,7 @@
       "/LiveWindow/Ungrouped/PIDController[9]": "PIDController",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
       "/SmartDashboard/Arm Mechanism": "Mechanism2d",
+      "/SmartDashboard/Arm/Mechanism": "Mechanism2d",
       "/SmartDashboard/Auto Mode": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Field Pose": "Field2d",
@@ -27,10 +28,10 @@
   },
   "NetworkTables": {
     "transitory": {
-      "Shuffleboard": {
-        "open": true
-      },
       "SmartDashboard": {
+        "Arm": {
+          "open": true
+        },
         "Arm Mechanism": {
           "arm": {
             "pivot": {
@@ -46,6 +47,21 @@
         },
         "Pivot": {
           "open": true
+        },
+        "debug": {
+          "frc.robot.subsystems.arm.Pivot": {
+            "open": true
+          },
+          "frc.robot.subsystems.arm.Telescope": {
+            "open": true
+          },
+          "frc.robot.subsystems.arm.Wrist": {
+            "open": true
+          },
+          "open": true,
+          "setSetpoint": {
+            "open": true
+          }
         },
         "open": true,
         "setSetpoint": {

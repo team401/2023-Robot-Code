@@ -1,6 +1,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants;
 
 public abstract class GenericArmJoint {
@@ -52,8 +53,8 @@ public abstract class GenericArmJoint {
 
         TrapezoidProfile profile = new TrapezoidProfile(constraints, goalState, currentState);
 
-        double input = calculateControl(profile.calculate(Constants.loopTime));
-        setOutput(input);
+        double output = calculateControl(profile.calculate(Constants.loopTime));
+        setOutput(output);
     }
 
     public abstract void jogSetpointPositive();
