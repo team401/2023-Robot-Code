@@ -293,7 +293,7 @@ public class AutoRoutines extends SequentialCommandGroup {
     }
 
     private Command holdStow() {
-        return arm.moveAndRetract(ArmPositions.stow, true);
+        return arm.move(ArmPositions.stow, true);
     }
 
     private Command spitCone() {

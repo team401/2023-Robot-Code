@@ -26,6 +26,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     private ActiveArmSide activeSide = ActiveArmSide.FRONT;
 
+    private ArmMovementState state = ArmMovementState.DEFAULT;
+
+    private ArmPosition setpoint = new ArmPosition(0, 0, 0);
+
     private Mechanism2d displayMechanism = 
         new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
     private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 0.43);
@@ -75,10 +79,27 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        pivot.runControls();
-        telescope.runControls();
-        wrist.runControls();
-
+        switch (state) {
+            case RETRACT_TELESCOPE:
+                if (telescope.atSetpoint()) {
+                    pivot.setSetpoint(setpoint.pivot);
+                    state = ArmMovementState.MOVE_PIVOT;
+                }
+                break;
+            case MOVE_PIVOT:
+                if (pivot.atSetpoint()) {
+                    telescope.setSetpoint(setpoint.telescope);
+                    wrist.setSetpoint(setpoint.wrist);
+                    state = ArmMovementState.DEFAULT;
+                }
+                break;
+            default:
+                pivot.runControls();
+                telescope.runControls();
+                wrist.runControls();
+                break;
+        }
+        
         SmartDashboard.putString("Arm/Side", activeSide.name());
 
         pivotLigament.setAngle(Units.radiansToDegrees(pivot.getPosition()));
@@ -106,14 +127,23 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void setSetpoint(ArmPosition setpoint) {
         if (activeSide == ActiveArmSide.FRONT) {
-            pivot.setSetpoint(setpoint.pivot);
-            telescope.setSetpoint(setpoint.telescope);
-            wrist.setSetpoint(setpoint.wrist);
+            this.setpoint = new ArmPosition(setpoint.pivot, setpoint.telescope, setpoint.wrist);
         }
         if (activeSide == ActiveArmSide.BACK) {
-            pivot.setSetpoint(Math.PI - setpoint.pivot);
-            telescope.setSetpoint(setpoint.telescope);
-            wrist.setSetpoint(Math.PI - setpoint.wrist);
+            this.setpoint = new ArmPosition(
+                Math.PI - setpoint.pivot,
+                setpoint.telescope,
+                Math.PI - setpoint.wrist
+            );
+        }
+
+        if (Math.abs(this.setpoint.pivot - this.getPosition().pivot) > 0.3) {
+            telescope.setSetpoint(TelescopeConstants.stowedPosition);
+            state = ArmMovementState.RETRACT_TELESCOPE;
+        } else {
+            pivot.setSetpoint(this.setpoint.pivot);
+            telescope.setSetpoint(this.setpoint.telescope);
+            wrist.setSetpoint(this.setpoint.wrist);
         }
     }
 
@@ -206,21 +236,23 @@ public class ArmSubsystem extends SubsystemBase {
         return new InstantCommand(() -> this.setSetpoint(setpoint));
     }
 
-    public Command moveAndRetract(ArmPosition setpoint, boolean wait) {
-        // TODO: implement telescope retraction more ergonomically. This probably
-        // deserves a state machine of its own
-        return Commands.sequence(
-                // retract telescope
-                new InstantCommand(() -> telescope.setSetpoint(TelescopeConstants.stowedPosition))
-                        .andThen(Commands.waitUntil(this::atSetpoint)),
-                // move pivot
-                new InstantCommand(() -> pivot.setSetpoint(setpoint.pivot))
-                        .andThen(Commands.waitUntil(this::atSetpoint)),
-                // move to actual setpoint
-                move(setpoint, wait));
+    public static record ArmPosition(double pivot, double telescope, double wrist) {
     }
 
-    public static record ArmPosition(double pivot, double telescope, double wrist) {
+    private static enum ArmMovementState {
+        /**
+         * Try to move everything to the setpoint position. Takes place as the last step of a large
+         * movement, the only step of a small movement, and the default state in between movements.
+         */
+        DEFAULT,
+        /**
+         * Retract the telescope to avoid jolting the robot with a large movement.
+         */
+        RETRACT_TELESCOPE,
+        /**
+         * Move the pivot to the new setpoint position with the telescope retracted.
+         */
+        MOVE_PIVOT
     }
 
     public static enum ActiveArmSide {

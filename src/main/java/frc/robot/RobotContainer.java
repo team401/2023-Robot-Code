@@ -175,11 +175,7 @@ public class RobotContainer {
 
         masher.a().onTrue(getWristDunkCommand(true)); // Dunk cone
         masher.b().onTrue(getWristDunkCommand(false)); // Un-dunk cone
-        
-        // TODO: let masher flip sides
-        // masher.??????().onTrue(
-        //     new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
-
+       
         // Manually jog arm
         masher.leftStickLeft()
             .onTrue(new InstantCommand(arm::jogPivotBackward)); // jog pivot back
@@ -205,10 +201,10 @@ public class RobotContainer {
             .onFalse(new InstantCommand(intake::stop)); // stop place
 
         masher.back()
-            .onTrue(new InstantCommand(arm::homeWrist));
+            .onTrue(new InstantCommand(arm::homeWrist)); // home wrist
 
         masher.start()
-            .onTrue(new InstantCommand(arm::invertActiveSide));
+            .onTrue(new InstantCommand(arm::invertActiveSide)); // flip side
     }
 
     private void configureAutos() {
@@ -291,12 +287,8 @@ public class RobotContainer {
                 arm.setArmSide(side);
             }
             
-            if (arm.getPosition().telescope() > 0.15 || setpoint.telescope() > 0.15) {
-                arm.moveAndRetract(setpoint, false).schedule();
-            } else {
-                // move
-                arm.move(setpoint, false).schedule();
-            }
+            // move
+            arm.move(setpoint, false).schedule();
         });
     }
 
