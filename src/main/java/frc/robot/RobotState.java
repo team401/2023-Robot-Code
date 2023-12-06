@@ -11,16 +11,9 @@ import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
-import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.util.Color;
-import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.GamePieceMode;
-import frc.robot.Constants.PivotConstants;
-import frc.robot.Constants.WristConstants;
 
 public class RobotState {
 
@@ -35,35 +28,7 @@ public class RobotState {
     private SwerveDrivePoseEstimator poseEstimator;
 
     private boolean hasIntaked = false;
-
-    private Mechanism2d displayMechanism = 
-        new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
-    private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 0.43);
-
-    private MechanismLigament2d pivotLigament = root.append(
-        new MechanismLigament2d(
-            "pivot",
-            PivotConstants.lengthWOTeleM,
-            0,
-            4,
-            new Color8Bit(Color.kPurple)));
     
-    private MechanismLigament2d telescopeLigament = pivotLigament.append(
-        new MechanismLigament2d(
-            "telescope",
-            0,
-            0,
-            3,
-            new Color8Bit(Color.kBlue)));
-
-    private MechanismLigament2d wrisLigament = telescopeLigament.append(
-        new MechanismLigament2d(
-            "wrist",
-            WristConstants.intakeLengthM,
-            0,
-            3,
-            new Color8Bit(Color.kCoral)));
-
     private GamePieceMode gamePieceMode = GamePieceMode.ConeDown;
 
     private final Field2d mainField = new Field2d();
