@@ -25,6 +25,9 @@ public abstract class GenericArmJoint {
         this(constraints, range, 0.0);
     }
 
+    /**
+     * Signal this joint to home.
+     */
     public void home() {
         throw new UnsupportedOperationException(
                 "This joint cannot home. If it should be able to home, implement `home()`");
@@ -104,6 +107,9 @@ public abstract class GenericArmJoint {
     // TODO: upgrade to 2024 and try out the units library
     public abstract double getPosition();
 
+    /**
+     * Whether the joint's position is within range of its setpoint.
+     */
     public boolean atSetpoint() {
         return setpoint - range / 2 < getPosition() && getPosition() < setpoint + range / 2;
     }
@@ -113,6 +119,10 @@ public abstract class GenericArmJoint {
      */
     public abstract double getVelocity();
 
+    /**
+     * If the joint is inactive, it will not provide power to its motors.
+     * @return
+     */
     public boolean isActive() {
         return active;
     }

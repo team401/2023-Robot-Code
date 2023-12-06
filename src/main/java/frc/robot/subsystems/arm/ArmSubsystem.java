@@ -125,6 +125,11 @@ public class ArmSubsystem extends SubsystemBase {
         return new ArmPosition(pivot.getPosition(), telescope.getPosition(), wrist.getPosition());
     }
 
+    /**
+     * Signal this subsystem to move to the setpoint provided. If the setpoint is extremely different
+     * from the current state of the arm, it will retract the telescope first.
+     * @param setpoint
+     */
     public void setSetpoint(ArmPosition setpoint) {
         if (activeSide == ActiveArmSide.FRONT) {
             this.setpoint = new ArmPosition(setpoint.pivot, setpoint.telescope, setpoint.wrist);
@@ -147,10 +152,17 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Signals the wrist to home. The wrist will make no attempt to reach a setpoint while it is homing.
+     */
     public void homeWrist() {
         wrist.home();
     }
 
+    /**
+     * Signals the telescope to home. The telescope will make no attempt to reach a setpoint while
+     * it is homing.
+     */
     public void homeTelescope() {
         telescope.home();
     }
@@ -194,6 +206,10 @@ public class ArmSubsystem extends SubsystemBase {
         wrist.jogSetpointNegative();
     }
 
+    /**
+     * Toggles all joints between being active or inactive. This method forces them to all have the 
+     * same state
+     */
     public void toggleAllActive() {
         // this method forces all joints into the same active state; subject to change
         allActive = !allActive;
@@ -203,6 +219,9 @@ public class ArmSubsystem extends SubsystemBase {
         wrist.setActive(allActive);
     }
 
+    /**
+     * Changes the neutral mode of all arm motors to brake or coast
+     */
     public void setBrakeMode(boolean brake) {
         pivot.setBrakeMode(brake);
         telescope.setBrakeMode(brake);
@@ -227,6 +246,11 @@ public class ArmSubsystem extends SubsystemBase {
         }
     }
 
+    /**
+     * Builds a command that moves the arm to the setpoint in question
+     * @param wait If this is true, the command will not finish until the arm is done moving. Otherwise,
+     * the command finishes instantly.
+     */
     public Command move(ArmPosition setpoint, boolean wait) {
         if (wait) {
             return new InstantCommand(() -> this.setSetpoint(setpoint))
