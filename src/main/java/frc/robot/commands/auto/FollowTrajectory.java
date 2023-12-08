@@ -12,10 +12,10 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.RobotState;
 import frc.robot.Constants.AutoConstants;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.drive.Drive;
 
-public class FollowTrajectory extends CommandBase {
+public class FollowTrajectory extends Command {
 
     private final Drive drive;
     private Pose2d latestFieldToVehicle;

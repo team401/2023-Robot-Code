@@ -8,13 +8,13 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.RobotState;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.CustomHolonomicDrive;
 import frc.robot.util.ExtendedPathPoint;
 
-public class SnapHeading extends CommandBase {
+public class SnapHeading extends Command {
     private final Drive drive;
     
     private final CustomHolonomicDrive holonomicDrive;

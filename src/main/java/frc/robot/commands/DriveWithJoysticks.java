@@ -7,11 +7,11 @@ package frc.robot.commands;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.drive.Drive;
 
-public class DriveWithJoysticks extends CommandBase {
+public class DriveWithJoysticks extends Command {
     private final Drive drive;
     private final DoubleSupplier xPercent;
     private final DoubleSupplier yPercent;
