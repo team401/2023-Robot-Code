@@ -5,11 +5,8 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -19,8 +16,13 @@ import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
 import frc.robot.subsystems.arm.ArmSubsystem;
-import frc.robot.subsystems.arm.ArmSubsystem.ActiveArmSide;
 import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
+import frc.robot.subsystems.arm.pivot.PivotIO;
+import frc.robot.subsystems.arm.pivot.PivotIOFalcon;
+import frc.robot.subsystems.arm.telescope.TelescopeIO;
+import frc.robot.subsystems.arm.telescope.TelescopeIOFalcon;
+import frc.robot.subsystems.arm.wrist.WristIO;
+import frc.robot.subsystems.arm.wrist.WristIOFalcon;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 // import frc.robot.subsystems.drive.Drive;
@@ -32,11 +34,11 @@ import frc.robot.oi.Thrustmaster;
 public class RobotContainer {
     
     // private final Drive drive = new Drive();
-    private final ArmSubsystem arm = new ArmSubsystem();
-    private final IntakeSubsystem intake = new IntakeSubsystem(() -> arm.getArmSide());
+    private final ArmSubsystem arm;
+    private final IntakeSubsystem intake;
     @SuppressWarnings("unused")
     private final Vision vision = new Vision();
-    private final LEDManager ledManager = new LEDManager(() -> arm.getArmSide());
+    private final LEDManager ledManager;
 
     private final Thrustmaster leftStick = new Thrustmaster(0);
     private final Thrustmaster rightStick = new Thrustmaster(1);
@@ -51,6 +53,22 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        switch (Constants.mode) {
+            case REAL:
+                arm = new ArmSubsystem(
+                    new PivotIOFalcon(),
+                    new TelescopeIOFalcon(),
+                    new WristIOFalcon());
+                break;
+            default:
+                arm = new ArmSubsystem(
+                    new PivotIO() {},
+                    new TelescopeIO() {},
+                    new WristIO() {});
+        }
+
+        intake = new IntakeSubsystem(arm::getArmSide);
+        ledManager = new LEDManager(arm::getArmSide);
 
         configureSubsystems();
         configureCompBindings();

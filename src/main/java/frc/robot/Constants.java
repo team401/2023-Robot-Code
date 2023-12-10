@@ -23,6 +23,14 @@ import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 
 public final class Constants {
 
+    public enum Mode {
+        REAL,
+        SIM,
+        REPLAY,
+    }
+
+    public static final Mode mode = Mode.REAL;
+
     public static final double loopTime = 0.02;
 
     public static final class CANDevices {

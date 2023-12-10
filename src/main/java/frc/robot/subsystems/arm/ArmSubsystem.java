@@ -15,6 +15,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.TelescopeConstants;
 import frc.robot.Constants.WristConstants;
+import frc.robot.subsystems.arm.pivot.Pivot;
+import frc.robot.subsystems.arm.pivot.PivotIO;
+import frc.robot.subsystems.arm.telescope.Telescope;
+import frc.robot.subsystems.arm.telescope.TelescopeIO;
+import frc.robot.subsystems.arm.wrist.Wrist;
+import frc.robot.subsystems.arm.wrist.WristIO;
 
 public class ArmSubsystem extends SubsystemBase {
 
@@ -59,18 +65,21 @@ public class ArmSubsystem extends SubsystemBase {
             new Color8Bit(Color.kCoral)));
 
 
-    public ArmSubsystem() {
+    public ArmSubsystem(PivotIO pivotIO, TelescopeIO telescopeIO, WristIO wristIO) {
         pivot = new Pivot(
+                pivotIO,
                 new TrapezoidProfile.Constraints(
                         Units.degreesToRadians(360),
                         Units.degreesToRadians(600)),
                 () -> telescope.getPosition());
 
         telescope = new Telescope(
+                telescopeIO,
                 new TrapezoidProfile.Constraints(3, 3),
                 () -> pivot.getPosition());
 
         wrist = new Wrist(
+                wristIO,
                 new TrapezoidProfile.Constraints(
                         Units.degreesToRadians(630),
                         Units.degreesToRadians(810)),

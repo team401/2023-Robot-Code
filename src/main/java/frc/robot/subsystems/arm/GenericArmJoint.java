@@ -41,7 +41,7 @@ public abstract class GenericArmJoint {
     }
 
     public void runControls() {
-        update();
+        updateInputs();
 
         if (!active) {
             setOutput(0.0);
@@ -67,11 +67,7 @@ public abstract class GenericArmJoint {
 
     public abstract void setBrakeMode(boolean brake);
 
-    /**
-     * Optional Override: Update internal state periodically
-     */
-    protected void update() {
-    }
+    protected abstract void updateInputs();
 
     /**
      * Set the control input to this joint, in volts

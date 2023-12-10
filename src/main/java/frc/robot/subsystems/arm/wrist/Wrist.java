@@ -1,30 +1,25 @@
-package frc.robot.subsystems.arm;
+package frc.robot.subsystems.arm.wrist;
 
 import java.util.function.DoubleSupplier;
-
-import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.StaticBrake;
-import com.ctre.phoenix6.controls.VoltageOut;
-import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
-import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
+import frc.robot.subsystems.arm.GenericArmJoint;
 
 public class Wrist extends GenericArmJoint {
 
-    private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
-    
-    private final PIDController controller = 
-        new PIDController(WristConstants.kP, WristConstants.kI, WristConstants.kD);
+    private final WristIO io;
+    private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
+
+    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, WristConstants.kD);
     private final ArmFeedforward feedforward = new ArmFeedforward(
-        WristConstants.kS,
-        WristConstants.kG,
-        WristConstants.kV,
-        WristConstants.kA);
+            WristConstants.kS,
+            WristConstants.kG,
+            WristConstants.kV,
+            WristConstants.kA);
 
     private final DoubleSupplier pivotAngleSupplier;
 
@@ -32,56 +27,57 @@ public class Wrist extends GenericArmJoint {
     private boolean homingSecondStep = false;
 
     public Wrist(
-        TrapezoidProfile.Constraints constraints,
-        DoubleSupplier pivotAngleSupplier,
-        double range,
-        double defaultSetpoint
-    ) {
+            WristIO io,
+            TrapezoidProfile.Constraints constraints,
+            DoubleSupplier pivotAngleSupplier,
+            double range,
+            double defaultSetpoint) {
         super(constraints, range, defaultSetpoint);
 
         this.pivotAngleSupplier = pivotAngleSupplier;
-
-        motor.setInverted(false);
-
-        motor.setControl(new StaticBrake());
-
-        //I have no idea how to set a current limit from the API
+        this.io = io;
 
         controller.setTolerance(0.05);
     }
 
-    public Wrist(TrapezoidProfile.Constraints constraints, DoubleSupplier pivotAngleSupplier, double range) {
-        this(constraints, pivotAngleSupplier, range, 0.0);
+    public Wrist(WristIO io, TrapezoidProfile.Constraints constraints, DoubleSupplier pivotAngleSupplier,
+            double range) {
+        this(io, constraints, pivotAngleSupplier, range, 0.0);
     }
 
-    public Wrist(TrapezoidProfile.Constraints constraints, DoubleSupplier pivotAngleSupplier) {
-        this(constraints, pivotAngleSupplier, 0.01);
+    public Wrist(WristIO io, TrapezoidProfile.Constraints constraints, DoubleSupplier pivotAngleSupplier) {
+        this(io, constraints, pivotAngleSupplier, 0.01);
+    }
+
+    @Override
+    protected void updateInputs() {
+        io.updateInputs(inputs);
     }
 
     @Override
     public double getPosition() {
-        return motor.getPosition().getValueAsDouble() * 2 * Math.PI * WristConstants.gearRatio;
+        return inputs.positionRad;
     }
 
     @Override
     public double getVelocity() {
-        return motor.getVelocity().getValueAsDouble() * 2 * Math.PI * WristConstants.gearRatio;
+        return inputs.velocityRadS;
     }
 
     @Override
     public void setBrakeMode(boolean brake) {
-        motor.setControl(brake ? new StaticBrake() : new CoastOut());
+        io.setBrakeMode(brake);
     }
 
     @Override
     public void jogSetpointPositive() {
-        //No clamping because the home is very unreliable
+        // No clamping because the home is very unreliable
         setpoint += Math.PI / 24;
     }
 
     @Override
     public void jogSetpointNegative() {
-        //No clamping because the home is very unreliable
+        // No clamping because the home is very unreliable
         setpoint -= Math.PI / 24;
     }
 
@@ -100,11 +96,13 @@ public class Wrist extends GenericArmJoint {
     protected boolean runHomingLogic() {
         /*
          * The homing logic runs in two steps:
-         * Step 1: Run the motor until it experiences resistence, assumed to be from the arm
-         * Step 2: Wait a little bit for the compliant wheels to squish back, ensuring an accurate reading
+         * Step 1: Run the motor until it experiences resistence, assumed to be from the
+         * arm
+         * Step 2: Wait a little bit for the compliant wheels to squish back, ensuring
+         * an accurate reading
          */
         if (!homingSecondStep) {
-            if (Math.abs(motor.getStatorCurrent().getValueAsDouble()) < 60) {
+            if (Math.abs(inputs.statorCurrent) < 60) {
                 homeTimer.reset();
             } else if (homeTimer.hasElapsed(0.2)) {
                 homeTimer.reset();
@@ -122,22 +120,22 @@ public class Wrist extends GenericArmJoint {
     }
 
     private void resetOffset() {
-        motor.setPosition(
-            WristConstants.homedPosition / (2 * Math.PI) / WristConstants.gearRatio);
+        io.setSensorPosition(WristConstants.homedPosition);
     }
 
     @Override
     protected double calculateControl(TrapezoidProfile.State setpoint) {
         double adjustedPosition = getPosition() + pivotAngleSupplier.getAsDouble();
 
-        // TODO: Investigate the merits of having separate PID constants for when the wrist isn't moving
+        // TODO: Investigate the merits of having separate PID constants for when the
+        // wrist isn't moving
         return controller.calculate(adjustedPosition, setpoint.position)
-            + feedforward.calculate(setpoint.position, setpoint.velocity);
+                + feedforward.calculate(setpoint.position, setpoint.velocity);
     }
 
     @Override
     public void setOutput(double volts) {
-        motor.setControl(new VoltageOut(volts));
+        io.setOuput(volts);
     }
 
     @Override
