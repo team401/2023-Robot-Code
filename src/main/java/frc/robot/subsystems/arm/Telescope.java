@@ -2,12 +2,10 @@ package frc.robot.subsystems.arm;
 
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
@@ -42,16 +40,10 @@ public class Telescope extends GenericArmJoint {
 
         this.pivotAngleSupplier = pivotAngleSupplier;
 
-        motor.setInverted(InvertType.None);
-        motor.setNeutralMode(NeutralMode.Brake);
+        motor.setInverted(false);
+        motor.setControl(new StaticBrake());
         
-        motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
-        motor.setSensorPhase(false);
-
-        motor.configNeutralDeadband(0.004);
-
-        motor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(true, 40, 50, 0.5));
+        //I have no idea how to set a current limit from the API
     }
 
     public Telescope(TrapezoidProfile.Constraints constraints, DoubleSupplier pivotPositionSupplier, double range) {
@@ -64,19 +56,19 @@ public class Telescope extends GenericArmJoint {
 
     @Override
     public double getPosition() {
-        return motor.getSelectedSensorPosition() / 4096
-            * 2 * Math.PI  * TelescopeConstants.conversionM;
+        return motor.getPosition().getValueAsDouble() * 2 * Math.PI
+            * TelescopeConstants.conversionM;
     }
 
     @Override
     public double getVelocity() {
-        return motor.getSelectedSensorVelocity() / 4096
-            * 2 * Math.PI * TelescopeConstants.conversionM * 10;
+        return motor.getVelocity().getValueAsDouble() * 2 * Math.PI
+            * TelescopeConstants.conversionM;
     }
 
     @Override
     public void setBrakeMode(boolean brake) {
-        motor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+        motor.setControl(brake ? new StaticBrake() : new CoastOut());
     }
 
     @Override
@@ -107,12 +99,12 @@ public class Telescope extends GenericArmJoint {
 
     @Override
     protected boolean runHomingLogic() {
-        if (motor.getStatorCurrent() < 30) {
+        if (motor.getStatorCurrent().getValue() < 30) {
             homeTimer.reset();
         }
 
         if (homeTimer.hasElapsed(0.3)) {
-            motor.setSelectedSensorPosition(0);
+            motor.setPosition(0);
 
             homing = false;
             return true;
@@ -132,7 +124,7 @@ public class Telescope extends GenericArmJoint {
 
     @Override
     protected void setOutput(double volts) {
-        motor.set(ControlMode.PercentOutput, volts / 12);
+        motor.setControl(new VoltageOut(volts));
     }
 
     @Override

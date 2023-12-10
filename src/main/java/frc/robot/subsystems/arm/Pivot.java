@@ -2,11 +2,11 @@ package frc.robot.subsystems.arm;
 
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
@@ -50,29 +50,13 @@ public class Pivot extends GenericArmJoint {
 
         this.telescopePositionSupplier = telescopePositionSupplier;
 
-        rightMotor.setInverted(InvertType.None);
+        rightMotor.setInverted(false);
 
-        leftMotor.follow(rightMotor);
-        leftMotor.setInverted(InvertType.OpposeMaster);
+        leftMotor.setControl(new Follower(CANDevices.rightPivotMotorID, true));
 
-        leftMotor.configNeutralDeadband(0.004);
-        rightMotor.configNeutralDeadband(0.004);
+        rightMotor.setControl(new StaticBrake());
 
-        leftMotor.setNeutralMode(NeutralMode.Brake);
-        rightMotor.setNeutralMode(NeutralMode.Brake);
-
-        rightMotor.configStatorCurrentLimit(
-                new StatorCurrentLimitConfiguration(
-                        true,
-                        70,
-                        80,
-                        1));
-        rightMotor.configStatorCurrentLimit(
-                new StatorCurrentLimitConfiguration(
-                        true,
-                        70,
-                        80,
-                        1));
+        //I have no idea how to set a current limit from the API
 
         lastPosition = getPosition();
     }
@@ -97,8 +81,7 @@ public class Pivot extends GenericArmJoint {
 
     @Override
     public void setBrakeMode(boolean brake) {
-        leftMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
-        rightMotor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+        rightMotor.setControl(brake ? new StaticBrake() : new CoastOut());
     }
 
     @Override
@@ -136,7 +119,7 @@ public class Pivot extends GenericArmJoint {
 
     @Override
     protected void setOutput(double volts) {
-        rightMotor.set(ControlMode.PercentOutput, volts / 12);
+        rightMotor.setControl(new VoltageOut(volts));
     }
 
     @Override

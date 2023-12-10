@@ -2,12 +2,10 @@ package frc.robot.subsystems.arm;
 
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
-import com.ctre.phoenix.motorcontrol.FeedbackDevice;
-import com.ctre.phoenix.motorcontrol.InvertType;
-import com.ctre.phoenix.motorcontrol.NeutralMode;
-import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
-import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix6.controls.CoastOut;
+import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.controls.VoltageOut;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -44,16 +42,10 @@ public class Wrist extends GenericArmJoint {
         this.pivotAngleSupplier = pivotAngleSupplier;
 
         motor.setInverted(false);
-        motor.setInverted(InvertType.None);
 
-        motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor);
+        motor.setControl(new StaticBrake());
 
-        motor.setNeutralMode(NeutralMode.Brake);
-
-        motor.configNeutralDeadband(0.004);
-        
-        motor.configStatorCurrentLimit(
-            new StatorCurrentLimitConfiguration(true, 70, 80, 0.5));
+        //I have no idea how to set a current limit from the API
 
         controller.setTolerance(0.05);
     }
@@ -68,17 +60,17 @@ public class Wrist extends GenericArmJoint {
 
     @Override
     public double getPosition() {
-        return motor.getSelectedSensorPosition() / 2048 * 2 * Math.PI * WristConstants.gearRatio;
+        return motor.getPosition().getValueAsDouble() * 2 * Math.PI * WristConstants.gearRatio;
     }
 
     @Override
     public double getVelocity() {
-        return motor.getSelectedSensorVelocity() / 2048 * 2 * Math.PI * 10 * WristConstants.gearRatio;
+        return motor.getVelocity().getValueAsDouble() * 2 * Math.PI * WristConstants.gearRatio;
     }
 
     @Override
     public void setBrakeMode(boolean brake) {
-        motor.setNeutralMode(brake ? NeutralMode.Brake : NeutralMode.Coast);
+        motor.setControl(brake ? new StaticBrake() : new CoastOut());
     }
 
     @Override
@@ -112,7 +104,7 @@ public class Wrist extends GenericArmJoint {
          * Step 2: Wait a little bit for the compliant wheels to squish back, ensuring an accurate reading
          */
         if (!homingSecondStep) {
-            if (Math.abs(motor.getStatorCurrent()) < 60) {
+            if (Math.abs(motor.getStatorCurrent().getValueAsDouble()) < 60) {
                 homeTimer.reset();
             } else if (homeTimer.hasElapsed(0.2)) {
                 homeTimer.reset();
@@ -130,8 +122,8 @@ public class Wrist extends GenericArmJoint {
     }
 
     private void resetOffset() {
-        motor.setSelectedSensorPosition(
-            WristConstants.homedPosition / (2 * Math.PI) * 2048 / WristConstants.gearRatio);
+        motor.setPosition(
+            WristConstants.homedPosition / (2 * Math.PI) / WristConstants.gearRatio);
     }
 
     @Override
@@ -145,7 +137,7 @@ public class Wrist extends GenericArmJoint {
 
     @Override
     public void setOutput(double volts) {
-        motor.set(ControlMode.PercentOutput, volts);
+        motor.setControl(new VoltageOut(volts));
     }
 
     @Override

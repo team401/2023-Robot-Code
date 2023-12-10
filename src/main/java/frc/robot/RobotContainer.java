@@ -18,15 +18,12 @@ import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.commands.DriveWithJoysticks;
-import frc.robot.commands.auto.Align;
-import frc.robot.commands.auto.AutoRoutines;
 import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.ActiveArmSide;
 import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
-import frc.robot.subsystems.drive.Drive;
+// import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PositionHelper;
 import frc.robot.oi.ButtonMasher;
@@ -34,10 +31,7 @@ import frc.robot.oi.Thrustmaster;
 
 public class RobotContainer {
     
-    private final Drive drive = new Drive();
-    // private final PivotSubsystem pivot = new PivotSubsystem();
-    // private final TelescopeSubsystem telescope = new TelescopeSubsystem();
-    // private final WristSubsystem wrist = new WristSubsystem();
+    // private final Drive drive = new Drive();
     private final ArmSubsystem arm = new ArmSubsystem();
     private final IntakeSubsystem intake = new IntakeSubsystem(() -> arm.getArmSide());
     @SuppressWarnings("unused")
@@ -65,84 +59,54 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-        drive.setDefaultCommand(new DriveWithJoysticks(
-            drive,
-            () -> -leftStick.getRawAxis(1),
-            () -> -leftStick.getRawAxis(0),
-            () -> -rightStick.getRawAxis(0),
-            true
-        ));
+        // drive.setDefaultCommand(new DriveWithJoysticks(
+        //     drive,
+        //     () -> -leftStick.getRawAxis(1),
+        //     () -> -leftStick.getRawAxis(0),
+        //     () -> -rightStick.getRawAxis(0),
+        //     true
+        // ));
     }
 
     @SuppressWarnings("unused")
     private void configureTestBindings() {
-        // masher.back()
-        //     .onTrue(new MovePivot(pivot, 0.8))
-        //     .onTrue(new MoveTelescope(telescope, pivot, 0.74))
-        //     .onTrue(new MoveWrist(wrist, pivot, -0.43));
 
-        // masher.start()
-        //     .onTrue(new MovePivot(pivot, 0.69))
-        //     .onTrue(new MoveTelescope(telescope, pivot, 0.78))
-        //     .onTrue(new MoveWrist(wrist, pivot, -0.379));
-        
-        // masher.a()
-        //     .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
-
-        drive.setDefaultCommand(new DriveWithJoysticks(
-            drive,
-            () -> -masher.getLeftY(),
-            () -> -masher.getLeftX(),
-            () -> -masher.getRightX(),
-            true
-        ));
-
-        masher.a()
-            .onTrue(new InstantCommand(() -> {
-                drive.resetHeading(); 
-                drive.setFieldToVehicle(
-                    new Pose2d(
-                        RobotState.getInstance().getFieldToVehicle().getTranslation(),
-                        new Rotation2d(0)));
-            }));
-        
-        // masher.b().onTrue(new TuneArmS(wrist));
     }   
 
     private void configureCompBindings() {
         // Reset heading
-        rightStick.top()
-            .onTrue(new InstantCommand(() -> {
-                drive.resetHeading(); 
-                drive.setFieldToVehicle(
-                    new Pose2d(
-                        RobotState.getInstance().getFieldToVehicle().getTranslation(),
-                        new Rotation2d(0)));
-            }));
+        // rightStick.top()
+        //     .onTrue(new InstantCommand(() -> {
+        //         drive.resetHeading(); 
+        //         drive.setFieldToVehicle(
+        //             new Pose2d(
+        //                 RobotState.getInstance().getFieldToVehicle().getTranslation(),
+        //                 new Rotation2d(0)));
+        //     }));
 
         // Slow down drive
-        leftStick.trigger()
-            .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
-            .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+        // leftStick.trigger()
+        //     .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
+        //     .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         // Robot Relative Drive
-        rightStick.trigger()
-            .whileTrue(
-                new DriveWithJoysticks(
-                    drive,
-                    () -> -leftStick.getRawAxis(1),
-                    () -> -leftStick.getRawAxis(0),
-                    () -> -rightStick.getRawAxis(0),
-                    false
-                )
-            );
+        // rightStick.trigger()
+        //     .whileTrue(
+        //         new DriveWithJoysticks(
+        //             drive,
+        //             () -> -leftStick.getRawAxis(1),
+        //             () -> -leftStick.getRawAxis(0),
+        //             () -> -rightStick.getRawAxis(0),
+        //             false
+        //         )
+        //     );
 
         // Snap robot heading to y-axis
         // leftStick.top().whileTrue(new SnapHeading(drive));
 
         // Auto-align
-        leftStick.topLeft().whileTrue(new Align(drive, true));
-        leftStick.topRight().whileTrue(new Align(drive, false));
+        // leftStick.topLeft().whileTrue(new Align(drive, true));
+        // leftStick.topRight().whileTrue(new Align(drive, false));
 
         // Home
         rightStick.lowerButton(12).onTrue(new InstantCommand(arm::homeWrist)); // Home wrist
@@ -235,18 +199,18 @@ public class RobotContainer {
 
     public void disabledPeriodic() {
         if (activeAutoCommand == null || !activeAutoName.equals(autoChooser.getSelected())) {
-            activeAutoCommand = new AutoRoutines(autoChooser.getSelected(), drive, arm, intake);
+            // activeAutoCommand = new AutoRoutines(autoChooser.getSelected(), drive, arm, intake);
             activeAutoName = autoChooser.getSelected();
         }
 
-        drive.setBrakeMode(!brakeSwitch.get());
+        // drive.setBrakeMode(!brakeSwitch.get());
         arm.setBrakeMode(!brakeSwitch.get());
 
         ledManager.setOff(ledsSwitch.get());
     }
 
     public void enabledInit() {
-        drive.setBrakeMode(true);
+        // drive.setBrakeMode(true);
         arm.setBrakeMode(true);
 
         ledManager.setOff(false);
@@ -277,14 +241,14 @@ public class RobotContainer {
             ArmPosition setpoint = PositionHelper.getPosition(position, RobotState.getInstance().getMode());
             
             if (position == Position.High || position == Position.Mid) {
-                ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
-                    ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
-                arm.setArmSide(side);
+                // ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
+                //     ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
+                // arm.setArmSide(side);
             }
             else if (position == Position.Shelf) {
-                ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
-                    ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
-                arm.setArmSide(side);
+                // ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
+                //     ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
+                // arm.setArmSide(side);
             }
             
             // move
