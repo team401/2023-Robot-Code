@@ -1,8 +1,7 @@
 package frc.robot.subsystems.arm;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
+import edu.wpi.first.wpilibj.Timer;
 
 public abstract class GenericArmJoint {
 
@@ -13,12 +12,14 @@ public abstract class GenericArmJoint {
 
     protected double range;
 
-    protected TrapezoidProfile.Constraints constraints;
+    protected TrapezoidProfile motionProfile;
+    protected Timer motionTimer = new Timer();
 
     public GenericArmJoint(TrapezoidProfile.Constraints constraints, double range, double defaultSetpoint) {
-        this.constraints = constraints;
+        this.motionProfile = new TrapezoidProfile(constraints);
         this.range = range;
         setpoint = defaultSetpoint;
+        motionTimer.start();
     }
 
     public GenericArmJoint(TrapezoidProfile.Constraints constraints, double range) {
@@ -35,6 +36,7 @@ public abstract class GenericArmJoint {
 
     public void setSetpoint(double setpoint) {
         this.setpoint = setpoint;
+        motionTimer.reset();
         resetControlLoop();
     }
 
@@ -54,14 +56,13 @@ public abstract class GenericArmJoint {
         TrapezoidProfile.State goalState = new TrapezoidProfile.State(setpoint, 0);
         TrapezoidProfile.State currentState = new TrapezoidProfile.State(getPosition(), getVelocity());
 
-        TrapezoidProfile profile = new TrapezoidProfile(constraints, goalState, currentState);
-
-        double output = calculateControl(profile.calculate(Constants.loopTime));
+        double output = calculateControl(
+                motionProfile.calculate(motionTimer.get(), goalState, currentState));
         setOutput(output);
     }
 
     public abstract void jogSetpointPositive();
-    
+
     public abstract void jogSetpointNegative();
 
     public abstract void setBrakeMode(boolean brake);
@@ -69,7 +70,8 @@ public abstract class GenericArmJoint {
     /**
      * Optional Override: Update internal state periodically
      */
-    protected void update() {}
+    protected void update() {
+    }
 
     /**
      * Set the control input to this joint, in volts
@@ -96,10 +98,13 @@ public abstract class GenericArmJoint {
     protected abstract double calculateControl(TrapezoidProfile.State setpointState);
 
     /**
-     * Called every time the setpoint position is updated.<p>
-     * Intended to be used to avoid PID integral windup amoung other strange effects.
+     * Called every time the setpoint position is updated.
+     * <p>
+     * Intended to be used to avoid PID integral windup amoung other strange
+     * effects.
      */
-    protected void resetControlLoop() {}
+    protected void resetControlLoop() {
+    }
 
     /**
      * Returns the current absolute position of this joint
@@ -121,6 +126,7 @@ public abstract class GenericArmJoint {
 
     /**
      * If the joint is inactive, it will not provide power to its motors.
+     * 
      * @return
      */
     public boolean isActive() {
@@ -128,8 +134,10 @@ public abstract class GenericArmJoint {
     }
 
     /**
-     * If this joint is active, it is 'alive,' and will attempt to drive itself to its setpoint
-     * using a control loop. If it is not, it is 'dead,' and will never apply output power.
+     * If this joint is active, it is 'alive,' and will attempt to drive itself to
+     * its setpoint
+     * using a control loop. If it is not, it is 'dead,' and will never apply output
+     * power.
      */
     public void setActive(boolean active) {
         this.active = active;

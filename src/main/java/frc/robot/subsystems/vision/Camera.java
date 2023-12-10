@@ -38,7 +38,12 @@ public class Camera {
 
     public Camera(String cameraName, Transform3d vehicleToCamera) {
         camera = new PhotonCamera(cameraName);
-        poseEstimator = new PhotonPoseEstimator(tagLayout, PoseStrategy.MULTI_TAG_PNP, camera, vehicleToCamera);
+        poseEstimator = 
+        new PhotonPoseEstimator(
+            tagLayout,
+            PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+            camera,
+            vehicleToCamera);
         poseEstimator.setMultiTagFallbackStrategy(PhotonPoseEstimator.PoseStrategy.LOWEST_AMBIGUITY);
 
         name = cameraName;
