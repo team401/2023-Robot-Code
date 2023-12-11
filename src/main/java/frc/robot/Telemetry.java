@@ -1,5 +1,7 @@
 package frc.robot;
 
+import java.lang.reflect.Field;
+
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.Utils;
@@ -12,6 +14,7 @@ import edu.wpi.first.networktables.DoublePublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StringPublisher;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -88,7 +91,10 @@ public class Telemetry {
                 pose.getRotation().getDegrees()
         });
 
-        Logger.recordOutput("Robot Pose", pose);
+        Logger.recordOutput("pose/Pose2d", pose);
+        // Field2d field = new Field2d();
+        // field.setRobotPose(pose);
+        Logger.recordOutput("pose/fieldPose", table.getDoubleArrayTopic("robotPose"));
 
         robotRotation = pose.getRotation().getRadians();
 

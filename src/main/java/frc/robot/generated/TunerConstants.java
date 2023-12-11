@@ -13,14 +13,14 @@ public class TunerConstants {
     // Both sets of gains need to be tuned to your individual robot
     // The steer motor uses MotionMagicVoltage control
     private static final Slot0Configs steerGains = new Slot0Configs()
-        .withKP(7).withKI(0).withKD(0)
-        .withKS(0).withKV(1.5).withKA(0);
+            .withKP(7).withKI(0).withKD(0)
+            .withKS(0).withKV(1.5).withKA(0);
     // When using closed-loop control, the drive motor uses:
     // - VelocityVoltage, if DrivetrainConstants.SupportsPro is false (default)
     // - VelocityTorqueCurrentFOC, if DrivetrainConstants.SupportsPro is true
     private static final Slot0Configs driveGains = new Slot0Configs()
-        .withKP(0.7).withKI(0).withKD(3.5)
-        .withKS(0).withKV(0).withKA(0);
+            .withKP(0.7).withKI(0).withKD(3.5)
+            .withKS(0).withKV(0).withKA(0);
 
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
@@ -45,7 +45,6 @@ public class TunerConstants {
     private static final String kCANbusName = "Canivore";
     private static final int kPigeonId = 20;
 
-
     // These are only used for simulation
     private static final double kSteerInertia = 0.00001;
     private static final double kDriveInertia = 0.001;
@@ -67,7 +66,6 @@ public class TunerConstants {
             .withFeedbackSource(SwerveModuleSteerFeedbackType.FusedCANcoder)
             .withCouplingGearRatio(kCoupleRatio)
             .withSteerMotorInverted(kSteerMotorReversed);
-
 
     // Front Left
     private static final int kFrontLeftDriveMotorId = 2;
@@ -105,15 +103,18 @@ public class TunerConstants {
     private static final double kBackRightXPosInches = -11.875;
     private static final double kBackRightYPosInches = -8.875;
 
-
     private static final SwerveModuleConstants FrontLeft = ConstantCreator.createModuleConstants(
-            kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset, Units.inchesToMeters(kFrontLeftXPosInches), Units.inchesToMeters(kFrontLeftYPosInches), kInvertLeftSide);
+            kFrontLeftSteerMotorId, kFrontLeftDriveMotorId, kFrontLeftEncoderId, kFrontLeftEncoderOffset,
+            Units.inchesToMeters(kFrontLeftXPosInches), Units.inchesToMeters(kFrontLeftYPosInches), kInvertLeftSide);
     private static final SwerveModuleConstants FrontRight = ConstantCreator.createModuleConstants(
-            kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId, kFrontRightEncoderOffset, Units.inchesToMeters(kFrontRightXPosInches), Units.inchesToMeters(kFrontRightYPosInches), kInvertRightSide);
+            kFrontRightSteerMotorId, kFrontRightDriveMotorId, kFrontRightEncoderId, kFrontRightEncoderOffset,
+            Units.inchesToMeters(kFrontRightXPosInches), Units.inchesToMeters(kFrontRightYPosInches), kInvertRightSide);
     private static final SwerveModuleConstants BackLeft = ConstantCreator.createModuleConstants(
-            kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId, kBackLeftEncoderOffset, Units.inchesToMeters(kBackLeftXPosInches), Units.inchesToMeters(kBackLeftYPosInches), kInvertLeftSide);
+            kBackLeftSteerMotorId, kBackLeftDriveMotorId, kBackLeftEncoderId, kBackLeftEncoderOffset,
+            Units.inchesToMeters(kBackLeftXPosInches), Units.inchesToMeters(kBackLeftYPosInches), kInvertLeftSide);
     private static final SwerveModuleConstants BackRight = ConstantCreator.createModuleConstants(
-            kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset, Units.inchesToMeters(kBackRightXPosInches), Units.inchesToMeters(kBackRightYPosInches), kInvertRightSide);
+            kBackRightSteerMotorId, kBackRightDriveMotorId, kBackRightEncoderId, kBackRightEncoderOffset,
+            Units.inchesToMeters(kBackRightXPosInches), Units.inchesToMeters(kBackRightYPosInches), kInvertRightSide);
 
     public static final CommandSwerveDrivetrain DriveTrain = new CommandSwerveDrivetrain(DrivetrainConstants, FrontLeft,
             FrontRight, BackLeft, BackRight);

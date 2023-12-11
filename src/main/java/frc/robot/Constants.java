@@ -20,6 +20,15 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
+
+    public static final Mode currentMode = Mode.SIM;
+
+    public static enum Mode {
+        REAL,
+        SIM,
+        REPLAY
+    }
+
     public static final class CANDevices {
 
         public static final String canivoreName = "Canivore";

@@ -28,7 +28,6 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void simulationPeriodic() {
-        /* Assume  */
         updateSimState(0.02, 12);
     }
 }
