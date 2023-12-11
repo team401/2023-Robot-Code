@@ -1,76 +1,76 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
+// // Copyright (c) FIRST and other WPILib contributors.
+// // Open Source Software; you can modify and/or share it under the terms of
+// // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.commands;
+// package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
+// import java.util.function.DoubleSupplier;
 
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants.DriveConstants;
-import frc.robot.subsystems.drive.Drive;
+// import edu.wpi.first.math.kinematics.ChassisSpeeds;
+// import edu.wpi.first.wpilibj2.command.Command;
+// import frc.robot.Constants.DriveConstants;
+// import frc.robot.subsystems.drive.Drive;
 
-public class DriveWithJoysticks extends CommandBase {
-    private final Drive drive;
-    private final DoubleSupplier xPercent;
-    private final DoubleSupplier yPercent;
-    private final DoubleSupplier omegaPercent;
-    private final boolean fieldRelative;
+// public class DriveWithJoysticks extends Command {
+//     private final Drive drive;
+//     private final DoubleSupplier xPercent;
+//     private final DoubleSupplier yPercent;
+//     private final DoubleSupplier omegaPercent;
+//     private final boolean fieldRelative;
 
-    /** Creates a new DriveWithJoysticks. */
-    public DriveWithJoysticks(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, DoubleSupplier omegaPercent, boolean fieldRelative) {
-        this.drive = drive;
-        this.xPercent = xPercent;
-        this.yPercent = yPercent;
-        this.omegaPercent = omegaPercent;
-        this.fieldRelative = fieldRelative;
+//     /** Creates a new DriveWithJoysticks. */
+//     public DriveWithJoysticks(Drive drive, DoubleSupplier xPercent, DoubleSupplier yPercent, DoubleSupplier omegaPercent, boolean fieldRelative) {
+//         this.drive = drive;
+//         this.xPercent = xPercent;
+//         this.yPercent = yPercent;
+//         this.omegaPercent = omegaPercent;
+//         this.fieldRelative = fieldRelative;
 
-        addRequirements(drive);
-    }
+//         addRequirements(drive);
+//     }
 
-    // Called when the command is initially scheduled.
-    @Override
-    public void initialize() {
-    }
+//     // Called when the command is initially scheduled.
+//     @Override
+//     public void initialize() {
+//     }
 
-    // Called every time the scheduler runs while the command is scheduled.
-    @Override
-    public void execute() {
-        double xMPerS = processJoystickInputs(xPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
-        double yMPerS = processJoystickInputs(yPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
-        double omegaRadPerS = processJoystickInputs(omegaPercent.getAsDouble(), true) * DriveConstants.maxTurnRate;
+//     // Called every time the scheduler runs while the command is scheduled.
+//     @Override
+//     public void execute() {
+//         double xMPerS = processJoystickInputs(xPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
+//         double yMPerS = processJoystickInputs(yPercent.getAsDouble(), false) * DriveConstants.maxDriveSpeed;
+//         double omegaRadPerS = processJoystickInputs(omegaPercent.getAsDouble(), true) * DriveConstants.maxTurnRate;
 
-        //Convert to field relative speeds
-        ChassisSpeeds targetSpeeds = fieldRelative
-            ? ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, yMPerS, omegaRadPerS, drive.getRotation())
-            : new ChassisSpeeds(xMPerS, yMPerS, omegaRadPerS);
+//         //Convert to field relative speeds
+//         ChassisSpeeds targetSpeeds = fieldRelative
+//             ? ChassisSpeeds.fromFieldRelativeSpeeds(xMPerS, yMPerS, omegaRadPerS, drive.getRotation())
+//             : new ChassisSpeeds(xMPerS, yMPerS, omegaRadPerS);
 
-        drive.setGoalChassisSpeeds(targetSpeeds);
-    }
+//         drive.setGoalChassisSpeeds(targetSpeeds);
+//     }
 
-    // Called once the command ends or is interrupted.
-    @Override
-    public void end(boolean interrupted) {}
+//     // Called once the command ends or is interrupted.
+//     @Override
+//     public void end(boolean interrupted) {}
 
-    // Returns true when the command should end.
-    @Override
-    public boolean isFinished() {
-        return false;
-    }
+//     // Returns true when the command should end.
+//     @Override
+//     public boolean isFinished() {
+//         return false;
+//     }
 
-    private double processJoystickInputs(double value, boolean square) {
-        double scaledValue = 0.0;
-        double deadband = DriveConstants.driveJoystickDeadbandPercent;
-        if (Math.abs(value) > deadband) {
-            scaledValue = (Math.abs(value) - deadband) / (1 - deadband);
-            if (square) {
-                scaledValue = Math.copySign(scaledValue * scaledValue, value);
-            } else {
-                scaledValue = Math.copySign(scaledValue, value);
-            }
-        }
-        return scaledValue;
-    }
+//     private double processJoystickInputs(double value, boolean square) {
+//         double scaledValue = 0.0;
+//         double deadband = DriveConstants.driveJoystickDeadbandPercent;
+//         if (Math.abs(value) > deadband) {
+//             scaledValue = (Math.abs(value) - deadband) / (1 - deadband);
+//             if (square) {
+//                 scaledValue = Math.copySign(scaledValue * scaledValue, value);
+//             } else {
+//                 scaledValue = Math.copySign(scaledValue, value);
+//             }
+//         }
+//         return scaledValue;
+//     }
 
-}
+// }

@@ -4,7 +4,7 @@ import java.util.function.Consumer;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 /*
@@ -21,7 +21,7 @@ telescope.setDefaultCommand(new CharacterizeMechanism(telescope, masher.getGamep
 */
 
 @Deprecated
-public class CharacterizeMechanism extends CommandBase {
+public class CharacterizeMechanism extends Command {
 
     private final XboxController controller;
     private final Consumer<Double> setValue;

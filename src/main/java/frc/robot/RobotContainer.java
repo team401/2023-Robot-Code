@@ -5,58 +5,40 @@
 
 package frc.robot;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
-import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import frc.robot.Constants.ArmPositions;
 import frc.robot.Constants.DIOPorts;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.Position;
-import frc.robot.commands.DriveWithJoysticks;
-import frc.robot.commands.FeedForward.TuneArmS;
-import frc.robot.commands.auto.Align;
-import frc.robot.commands.auto.AutoRoutines;
-import frc.robot.commands.auto.SnapHeading;
+import frc.robot.subsystems.arm.ArmSubsystem;
+import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
+import frc.robot.subsystems.arm.pivot.PivotIO;
+import frc.robot.subsystems.arm.pivot.PivotIOFalcon;
+import frc.robot.subsystems.arm.telescope.TelescopeIO;
+import frc.robot.subsystems.arm.telescope.TelescopeIOFalcon;
+import frc.robot.subsystems.arm.wrist.WristIO;
+import frc.robot.subsystems.arm.wrist.WristIOFalcon;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
-import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.TelescopeSubsystem;
-import frc.robot.subsystems.WristSubsystem;
-import frc.robot.subsystems.drive.Drive;
+// import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PositionHelper;
-import frc.robot.commands.pivot.HoldPivot;
-import frc.robot.commands.pivot.MovePivot;
-import frc.robot.commands.telescope.HoldTelescope;
-import frc.robot.commands.telescope.HomeTelescope;
-import frc.robot.commands.telescope.MoveTelescope;
-import frc.robot.commands.wrist.HoldWrist;
-import frc.robot.commands.wrist.HomeWrist;
-import frc.robot.commands.wrist.MoveWrist;
 import frc.robot.oi.ButtonMasher;
 import frc.robot.oi.Thrustmaster;
 
 public class RobotContainer {
     
-    private final Drive drive = new Drive();
-    private final PivotSubsystem pivot = new PivotSubsystem();
-    private final TelescopeSubsystem telescope = new TelescopeSubsystem();
-    private final WristSubsystem wrist = new WristSubsystem();
-    private final IntakeSubsystem intake = new IntakeSubsystem();
+    // private final Drive drive = new Drive();
+    private final ArmSubsystem arm;
+    private final IntakeSubsystem intake;
     @SuppressWarnings("unused")
     private final Vision vision = new Vision();
-    private final LEDManager ledManager = new LEDManager();
+    private final LEDManager ledManager;
 
     private final Thrustmaster leftStick = new Thrustmaster(0);
     private final Thrustmaster rightStick = new Thrustmaster(1);
@@ -71,6 +53,22 @@ public class RobotContainer {
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
+        switch (Constants.mode) {
+            case REAL:
+                arm = new ArmSubsystem(
+                    new PivotIOFalcon(),
+                    new TelescopeIOFalcon(),
+                    new WristIOFalcon());
+                break;
+            default:
+                arm = new ArmSubsystem(
+                    new PivotIO() {},
+                    new TelescopeIO() {},
+                    new WristIO() {});
+        }
+
+        intake = new IntakeSubsystem(arm::getArmSide);
+        ledManager = new LEDManager(arm::getArmSide);
 
         configureSubsystems();
         configureCompBindings();
@@ -79,104 +77,68 @@ public class RobotContainer {
     }
 
     private void configureSubsystems() {
-        drive.setDefaultCommand(new DriveWithJoysticks(
-            drive,
-            () -> -leftStick.getRawAxis(1),
-            () -> -leftStick.getRawAxis(0),
-            () -> -rightStick.getRawAxis(0),
-            true
-        ));
-
-        pivot.setDefaultCommand(new HoldPivot(pivot, telescope));
-        telescope.setDefaultCommand(new HoldTelescope(telescope, pivot));
-        wrist.setDefaultCommand(new HoldWrist(wrist, pivot));
+        // drive.setDefaultCommand(new DriveWithJoysticks(
+        //     drive,
+        //     () -> -leftStick.getRawAxis(1),
+        //     () -> -leftStick.getRawAxis(0),
+        //     () -> -rightStick.getRawAxis(0),
+        //     true
+        // ));
     }
 
     @SuppressWarnings("unused")
     private void configureTestBindings() {
-        // masher.back()
-        //     .onTrue(new MovePivot(pivot, 0.8))
-        //     .onTrue(new MoveTelescope(telescope, pivot, 0.74))
-        //     .onTrue(new MoveWrist(wrist, pivot, -0.43));
 
-        // masher.start()
-        //     .onTrue(new MovePivot(pivot, 0.69))
-        //     .onTrue(new MoveTelescope(telescope, pivot, 0.78))
-        //     .onTrue(new MoveWrist(wrist, pivot, -0.379));
-        
-        // masher.a()
-        //     .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
-
-        drive.setDefaultCommand(new DriveWithJoysticks(
-            drive,
-            () -> -masher.getLeftY(),
-            () -> -masher.getLeftX(),
-            () -> -masher.getRightX(),
-            true
-        ));
-
-        masher.a()
-            .onTrue(new InstantCommand(() -> {
-                drive.resetHeading(); 
-                drive.setFieldToVehicle(
-                    new Pose2d(
-                        RobotState.getInstance().getFieldToVehicle().getTranslation(),
-                        new Rotation2d(0)));
-            }));
-        
-        masher.b().onTrue(new TuneArmS(wrist));
     }   
 
     private void configureCompBindings() {
         // Reset heading
-        rightStick.top()
-            .onTrue(new InstantCommand(() -> {
-                drive.resetHeading(); 
-                drive.setFieldToVehicle(
-                    new Pose2d(
-                        RobotState.getInstance().getFieldToVehicle().getTranslation(),
-                        new Rotation2d(0)));
-            }));
+        // rightStick.top()
+        //     .onTrue(new InstantCommand(() -> {
+        //         drive.resetHeading(); 
+        //         drive.setFieldToVehicle(
+        //             new Pose2d(
+        //                 RobotState.getInstance().getFieldToVehicle().getTranslation(),
+        //                 new Rotation2d(0)));
+        //     }));
 
         // Slow down drive
-        leftStick.trigger()
-            .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
-            .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
+        // leftStick.trigger()
+        //     .onTrue(new InstantCommand(() -> drive.setBabyMode(true)))
+        //     .onFalse(new InstantCommand(() -> drive.setBabyMode(false)));
 
         // Robot Relative Drive
-        rightStick.trigger()
-            .whileTrue(
-                new DriveWithJoysticks(
-                    drive,
-                    () -> -leftStick.getRawAxis(1),
-                    () -> -leftStick.getRawAxis(0),
-                    () -> -rightStick.getRawAxis(0),
-                    false
-                )
-            );
+        // rightStick.trigger()
+        //     .whileTrue(
+        //         new DriveWithJoysticks(
+        //             drive,
+        //             () -> -leftStick.getRawAxis(1),
+        //             () -> -leftStick.getRawAxis(0),
+        //             () -> -rightStick.getRawAxis(0),
+        //             false
+        //         )
+        //     );
 
         // Snap robot heading to y-axis
         // leftStick.top().whileTrue(new SnapHeading(drive));
 
         // Auto-align
-        leftStick.topLeft().whileTrue(new Align(drive, true));
-        leftStick.topRight().whileTrue(new Align(drive, false));
+        // leftStick.topLeft().whileTrue(new Align(drive, true));
+        // leftStick.topRight().whileTrue(new Align(drive, false));
 
         // Home
-        rightStick.lowerButton(12).onTrue(new HomeWrist(wrist)); // Home wrist
-        rightStick.lowerButton(13).onTrue(new HomeTelescope(telescope)); // Home telescope
+        rightStick.lowerButton(12).onTrue(new InstantCommand(arm::homeWrist)); // Home wrist
+        rightStick.lowerButton(13).onTrue(new InstantCommand(arm::homeTelescope)); // Home telescope
         
         // Manually disable (kill) subsystems
         leftStick.lowerButton(7)
-            .onTrue(new InstantCommand(pivot::toggleKill, pivot));
+            .onTrue(new InstantCommand(arm::togglePivotActive));
         leftStick.lowerButton(6)
-            .onTrue(new InstantCommand(telescope::toggleKill, telescope));
+            .onTrue(new InstantCommand(arm::toggleTelescopeActive));
         leftStick.lowerButton(5)
-            .onTrue(new InstantCommand(wrist::toggleKill, wrist));
+            .onTrue(new InstantCommand(arm::toggleWristActive));
         leftStick.lowerButton(8)
-            .onTrue(new InstantCommand(pivot::toggleKill))
-            .onTrue(new InstantCommand(telescope::toggleKill))
-            .onTrue(new InstantCommand(wrist::toggleKill));
+            .onTrue(new InstantCommand(arm::toggleAllActive));
         
         // Set game piece mode
         masher.leftBumper().onTrue(new InstantCommand(() ->
@@ -193,28 +155,24 @@ public class RobotContainer {
         masher.pov(270).onTrue(getMoveArmCommand(Position.Stow)); // move to stow    
         masher.x().onTrue(getMoveArmCommand(Position.Shelf)); // move to shelf
 
-        masher.a().onTrue(new MoveWrist(wrist, pivot, ArmPositions.wristConePlace)); // Dunk cone
-        masher.b().onTrue(new MoveWrist(wrist, pivot, ArmPositions.placeConeDownHigh[2])); // Un-dunk cone
-        
-        // TODO: let masher flip sides
-        // masher.??????().onTrue(
-        //     new InstantCommand(() -> RobotState.getInstance().invertBack())); // flip side
-
+        masher.a().onTrue(getWristDunkCommand(true)); // Dunk cone
+        masher.b().onTrue(getWristDunkCommand(false)); // Un-dunk cone
+       
         // Manually jog arm
         masher.leftStickLeft()
-            .onTrue(new InstantCommand(pivot::jogSetpointForward, pivot)); // jog pivot left
+            .onTrue(new InstantCommand(arm::jogPivotBackward)); // jog pivot back
         masher.leftStickRight()
-            .onTrue(new InstantCommand(pivot::jogSetpointBack, pivot)); // jog pivot right
+            .onTrue(new InstantCommand(arm::jogPivotForward)); // jog pivot forward
 
         masher.rightStickRight()
-            .onTrue(new InstantCommand(telescope::jogSetpointForward, telescope)); // jog telescope up
+            .onTrue(new InstantCommand(arm::jogTelescopeIn)); // jog telescope in
         masher.rightStickLeft()
-            .onTrue(new InstantCommand(telescope::jogSetpointBackward, telescope)); // jog telescope down
+            .onTrue(new InstantCommand(arm::jogTelescopeOut)); // jog telescope out
 
         masher.rightStickUp()
-            .onTrue(new InstantCommand(wrist::jogSetpointForward, wrist)); // jog wrist right
+            .onTrue(new InstantCommand(arm::jogWristBackward)); // jog wrist back
         masher.rightStickDown()
-            .onTrue(new InstantCommand(wrist::jogSetpointBack, wrist)); // jog wrist left
+            .onTrue(new InstantCommand(arm::jogWristForward)); // jog wrist forward
 
         // Intake
         masher.leftTrigger()
@@ -225,10 +183,10 @@ public class RobotContainer {
             .onFalse(new InstantCommand(intake::stop)); // stop place
 
         masher.back()
-            .onTrue(new HomeWrist(wrist));
+            .onTrue(new InstantCommand(arm::homeWrist)); // home wrist
 
         masher.start()
-            .onTrue(new InstantCommand(() -> RobotState.getInstance().invertBack()));
+            .onTrue(new InstantCommand(arm::invertActiveSide)); // flip side
     }
 
     private void configureAutos() {
@@ -259,86 +217,60 @@ public class RobotContainer {
 
     public void disabledPeriodic() {
         if (activeAutoCommand == null || !activeAutoName.equals(autoChooser.getSelected())) {
-            activeAutoCommand = new AutoRoutines(autoChooser.getSelected(), drive, pivot, telescope, wrist, intake);
+            // activeAutoCommand = new AutoRoutines(autoChooser.getSelected(), drive, arm, intake);
             activeAutoName = autoChooser.getSelected();
         }
 
-        drive.setBrakeMode(!brakeSwitch.get());
-        pivot.setBrakeMode(!brakeSwitch.get());
-        telescope.setBrakeMode(!brakeSwitch.get());
-        wrist.setBrakeMode(!brakeSwitch.get());
+        // drive.setBrakeMode(!brakeSwitch.get());
+        arm.setBrakeMode(!brakeSwitch.get());
 
         ledManager.setOff(ledsSwitch.get());
     }
 
     public void enabledInit() {
-        drive.setBrakeMode(true);
-        pivot.setBrakeMode(true);
-        telescope.setBrakeMode(true);
-        wrist.setBrakeMode(true);
+        // drive.setBrakeMode(true);
+        arm.setBrakeMode(true);
 
         ledManager.setOff(false);
 
         if (DriverStation.isTeleop()) {
-            new HomeTelescope(telescope).schedule();
+            arm.homeTelescope();
             if (!RobotState.getInstance().hasIntaked()) {
-                new HomeWrist(wrist).schedule();
+                arm.homeWrist();
             }
-            pivot.normalConstrain();
+            // pivot.normalConstrain();
         }
 
-        pivot.setDesiredSetpointRad(new State(ArmPositions.stow[0], 0));
-        telescope.setDesiredSetpoint(new State(ArmPositions.stow[1], 0));
-        wrist.updateDesiredSetpointRad(new State(ArmPositions.stow[2], 0));
+        arm.setSetpoint(ArmPositions.stow);
+    }
+
+    private Command getWristDunkCommand(boolean up) {
+        return arm.move(
+            new ArmPosition(
+                arm.getPosition().pivot(),
+                arm.getPosition().telescope(),
+                up ? ArmPositions.wristConePlace : ArmPositions.placeConeDownHigh.wrist()),
+            false
+        );
     }
 
     private Command getMoveArmCommand(Position position) {
         return new InstantCommand(() -> {
-            
-            RobotState.getInstance().setStow(position == Position.Stow);
-            double[] positions = PositionHelper.getDouble(position, RobotState.getInstance().getMode());
+            ArmPosition setpoint = PositionHelper.getPosition(position, RobotState.getInstance().getMode());
             
             if (position == Position.High || position == Position.Mid) {
-                boolean atBack = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2;
-                RobotState.getInstance().setBack(atBack);
+                // ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
+                //     ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
+                // arm.setArmSide(side);
             }
             else if (position == Position.Shelf) {
-                boolean atBack = Math.abs(drive.getRotation().getRadians()) > Math.PI / 2;
-                RobotState.getInstance().setBack(atBack);
+                // ActiveArmSide side = Math.abs(drive.getRotation().getRadians()) < Math.PI / 2
+                //     ? ActiveArmSide.BACK : ActiveArmSide.FRONT;
+                // arm.setArmSide(side);
             }
             
-            Timer timer = new Timer();
-            timer.reset();
-            timer.start();
-
-            if (telescope.getPositionM() > 0.15 || positions[1] > 0.15) {
-                // move telescope to 0.05, then move pivot and wrist, then move telescope to goal
-                new SequentialCommandGroup(
-                    new ParallelRaceGroup(
-                        new HoldPivot(pivot, telescope),
-                        new MoveTelescope(telescope, pivot, 0.05, true),
-                        new HoldWrist(wrist, pivot)
-                    ),
-                    new ParallelRaceGroup(
-                        new MovePivot(pivot, positions[0], true).andThen(new HoldPivot(pivot, telescope)),
-                        new HoldTelescope(telescope, pivot),
-                        new MoveWrist(wrist, pivot, positions[2], true).andThen(new HoldWrist(wrist, pivot)),
-                        new WaitUntilCommand(() -> (pivot.atGoal && wrist.atGoal))
-                    ),
-                    new ParallelRaceGroup(
-                        new MovePivot(pivot, positions[0], false).andThen(new HoldPivot(pivot, telescope)),
-                        new MoveTelescope(telescope, pivot, positions[1], false).andThen(new HoldTelescope(telescope, pivot)),
-                        new MoveWrist(wrist, pivot, positions[2], false).andThen(new HoldWrist(wrist, pivot)),
-                        new WaitUntilCommand(() -> (telescope.atGoal && pivot.atGoal && wrist.atGoal))
-                    )
-                ).schedule();
-            }
-            else {
-                // move
-                new MovePivot(pivot, positions[0]).schedule();
-                new MoveTelescope(telescope, pivot, positions[1]).schedule();
-                new MoveWrist(wrist, pivot, positions[2]).schedule();
-            }
+            // move
+            arm.move(setpoint, false).schedule();
         });
     }
 

@@ -19,7 +19,20 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.util.Color;
 
+import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
+
 public final class Constants {
+
+    public enum Mode {
+        REAL,
+        SIM,
+        REPLAY,
+    }
+
+    public static final Mode mode = Mode.REAL;
+
+    public static final double loopTime = 0.02;
+
     public static final class CANDevices {
 
         public static final String canivoreName = "Canivore";
@@ -151,12 +164,16 @@ public final class Constants {
         public static final double kA = 0.09; // estimate
         public static final double kG = 0.32; 
         public static final double kS = 0.25;
+
+        public static final double stowedPosition = 0.1;
     }
 
     public static final class WristConstants {
         //TODO: set limits
         public static final double positiveLimitRad = Units.degreesToRadians(160);
         public static final double negativeLimitRad = Units.degreesToRadians(-160);
+
+        public static final double homedPosition = 2.81;
 
         public static final double intakeLengthM = Units.inchesToMeters(10);
 
@@ -176,34 +193,29 @@ public final class Constants {
     }
 
     public static final class ArmPositions {
-        public static final double[] intakeCubeShelf = {0.63, 0.55, 0.15};
-        public static final double[] intakeCubeGround = {-0.36, 0.09, 0.55};
-        public static final double[] placeCubeHigh = {0.590, 0.781, 1.5};
-        public static final double[] placeCubeMid = {0.555, 0.276, 1.5};
-        public static final double[] placeCubeLow = {0, 0.1, 1.4};
+        public static final ArmPosition intakeCubeGround = new ArmPosition(-0.36, 0.09, 0.55);
+        public static final ArmPosition placeCubeHigh = new ArmPosition(0.590, 0.781, 1.5);
+        public static final ArmPosition placeCubeMid = new ArmPosition(0.555, 0.276, 1.5);
+        public static final ArmPosition placeCubeLow = new ArmPosition(0, 0.1, 1.4);
         
-        public static final double[] intakeConeDownFrontGround = {-0.05, 0.059, -1.1};
-        public static final double[] intakeConeDownBackGround = {-0.02, 0.059, -1.1};
-        public static final double[] intakeConeDownShelf = {0.81, 0.2, -0.28};
-        public static final double[] placeConeDownHigh = {0.59, 0.71, 0.8};
-        public static final double[] placeConeDownMid = {0.58, 0.22, 0.8};
+        public static final ArmPosition intakeConeDownGround = new ArmPosition(-0.05, 0.059, -1.1);
+        public static final ArmPosition placeConeDownHigh = new ArmPosition(0.59, 0.71, -0.28);
+        public static final ArmPosition placeConeDownMid = new ArmPosition(0.58, 0.22, 0.8);
         
-        public static final double[] intakeConeUpFrontGround = {0.095, 0.05, -1.15};
-        public static final double[] intakeConeUpBackGround = {0.095, 0.05, -0.85};
-        public static final double[] intakeConeUpShelf = {0.95, 0.05, -0.13};
-        public static final double[] placeConeUpHigh = {0.69, 0.78, -0.379};
-        public static final double[] placeConeUpHighAuto = {0.69, 0.7, -0.379};
-        public static final double[] placeConeUpMid = {0.7, 0.37, -0.6,};
+        public static final ArmPosition intakeConeUpGround = new ArmPosition(0.095, 0.05, -1.15);
+        public static final ArmPosition intakeConeUpShelf = new ArmPosition(0.95, 0.05, -0.13);
+        public static final ArmPosition placeConeUpHigh = new ArmPosition(0.69, 0.78, -0.379);
+        public static final ArmPosition placeConeUpHighAuto = new ArmPosition(0.69, 0.7, -0.379);
+        public static final ArmPosition placeConeUpMid = new ArmPosition(0.7, 0.37, -0.6);
         
-        public static final double[] stow = {1.5, 0.1, Math.PI / 2};
+        public static final ArmPosition stow = new ArmPosition(1.5, 0.1, Math.PI / 2);
         
         public static final double wristConePlace = -0.88;
         
-        public static final double[] preFlingCube = {0.4, 0.1, 0.78};
-        public static final double[] postFlingCube = {Math.PI / 1.5, 0.1, 1.8};
-        public static final double[] placeConeUpHighPrepare = {0.8, 0.65, -0.5};
-        public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.5};
-        public static final double[] placeCubeAuto = {0.590, 0.781, 1.8};
+        // public static final double[] placeConeUpHighPrepare = {0.8, 0.65, -0.5};
+        public static final ArmPosition placeConeUpHighPrepare = new ArmPosition(0.8, 0.65, -0.5);
+        // public static final double[] intakeCubeGroundBump = {-0.36, 0.09, 0.5};
+        // public static final double[] placeCubeAuto = {0.590, 0.781, 1.8};
 
     }
 

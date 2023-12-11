@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.function.Supplier;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -9,6 +11,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotState;
 import frc.robot.Constants.GamePieceMode;
 import frc.robot.Constants.LEDConstants;
+import frc.robot.subsystems.arm.ArmSubsystem.ActiveArmSide;
 
 public class LEDManager extends SubsystemBase {
 
@@ -23,7 +26,9 @@ public class LEDManager extends SubsystemBase {
     private final Timer flashTimer = new Timer();
     private boolean off = false;
 
-    public LEDManager() {
+    private final Supplier<ActiveArmSide> sideSupplier;
+
+    public LEDManager(Supplier<ActiveArmSide> sideSupplier) {
 
         led = new AddressableLED(LEDConstants.ledPort);
         ledBuffer = new AddressableLEDBuffer(LEDConstants.baseLedCount + LEDConstants.armLedCount);
@@ -34,6 +39,7 @@ public class LEDManager extends SubsystemBase {
         flashTimer.reset();
         flashTimer.start();
 
+        this.sideSupplier = sideSupplier;
     }
 
     @Override
@@ -138,7 +144,7 @@ public class LEDManager extends SubsystemBase {
             return;
         }
 
-        if (!RobotState.getInstance().atBack()) {
+        if (sideSupplier.get() != ActiveArmSide.BACK) {
             for (int i = LEDConstants.baseLedCount/2; i < 3*LEDConstants.baseLedCount/4; i++) {
                 setBaseLED(i, LEDConstants.activeSideFlashColor);
             }
