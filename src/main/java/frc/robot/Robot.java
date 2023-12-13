@@ -11,6 +11,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -109,6 +111,7 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void autonomousInit() {
 		// m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+		autonomousCommand = new PathPlannerAuto("Test Auto");
 
 		if (autonomousCommand != null) {
 			autonomousCommand.schedule();

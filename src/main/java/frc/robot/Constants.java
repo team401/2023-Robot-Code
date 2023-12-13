@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.util.Color;
 
 public final class Constants {
 
-    public static final Mode currentMode = Mode.SIM;
+    public static final Mode currentMode = Mode.REAL;
 
     public static enum Mode {
         REAL,

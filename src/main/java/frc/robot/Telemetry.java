@@ -1,7 +1,5 @@
 package frc.robot;
 
-import java.lang.reflect.Field;
-
 import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.Utils;
@@ -94,7 +92,7 @@ public class Telemetry {
         Logger.recordOutput("pose/Pose2d", pose);
         // Field2d field = new Field2d();
         // field.setRobotPose(pose);
-        Logger.recordOutput("pose/fieldPose", table.getDoubleArrayTopic("robotPose"));
+        Logger.recordOutput("pose/fieldPose", table.getDoubleArrayTopic("/Pose/robotPose"));
 
         robotRotation = pose.getRotation().getRadians();
 
