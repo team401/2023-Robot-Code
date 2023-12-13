@@ -4,130 +4,149 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
-import edu.wpi.first.wpilibj.livewindow.LiveWindow;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
-/**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
- * project.
- */
-public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+public class Robot extends LoggedRobot {
+	private Command autonomousCommand;
 
-  private RobotContainer m_robotContainer;
+	private RobotContainer robotContainer;
 
-  private PowerDistribution pdh;
+	private PowerDistribution pdh;
 
-  private final Timer loopTimer = new Timer();
+	@Override
+	public void robotInit() {
+		// Record metadata
+		Logger.recordMetadata("ProjectName", BuildConstants.MAVEN_NAME);
+		Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+		Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+		Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+		Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+		switch (BuildConstants.DIRTY) {
+			case 0:
+				Logger.recordMetadata("GitDirty", "All changes committed");
+				break;
+			case 1:
+				Logger.recordMetadata("GitDirty", "Uncomitted changes");
+				break;
+			default:
+				Logger.recordMetadata("GitDirty", "Unknown");
+				break;
+		}
 
-  public Robot() {
-}
+		Logger.recordMetadata("ProjectName", "2024-Mushussu");
 
-/**
- * This function is run when the robot is first started up and should be used for any
- * initialization code.
- */
-@Override
-public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
-    pdh = new PowerDistribution(1, ModuleType.kRev);
-    pdh.setSwitchableChannel(false);
+		switch (Constants.currentMode) {
+			case REAL:
+				// Running on a real robot, log to a USB stick
+				Logger.addDataReceiver(new WPILOGWriter("/U"));
+				Logger.addDataReceiver(new NT4Publisher());
+				pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+				pdh.setSwitchableChannel(false);
+				break;
 
-    LiveWindow.disableAllTelemetry();
-  }
+			case SIM:
+				// Running a physics simulator, log to NT
+				Logger.addDataReceiver(new NT4Publisher());
+				break;
 
-  /**
-   * This function is called every 20 ms, no matter the mode. Use this for items like diagnostics
-   * that you want ran during disabled, autonomous, teleoperated and test.
-   *
-   * <p>This runs after the mode specific periodic functions, but before LiveWindow and
-   * SmartDashboard integrated updating.
-   */
-  @Override
-  public void robotPeriodic() {
-    // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
-    // commands, running already-scheduled commands, removing finished or interrupted commands,
-    // and running subsystem periodic() methods.  This must be called from the robot's periodic
-    // block in order for anything in the Command-based framework to work.
-    CommandScheduler.getInstance().run();
+			case REPLAY:
+				// Replaying a log, set up replay source
+				setUseTiming(false); // Run as fast as possible
+				String logPath = LogFileUtil.findReplayLog();
+				Logger.setReplaySource(new WPILOGReader(logPath));
+				Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
+				break;
+		}
 
-    SmartDashboard.putNumber("Loop Time", loopTimer.get() * 1000);
-    loopTimer.reset();
-    loopTimer.start();
-  }
+		Logger.start();
 
-  /** This function is called once each time the robot enters Disabled mode. */
-  @Override
-  public void disabledInit() {
-    pdh.setSwitchableChannel(false);
-  }
+		robotContainer = new RobotContainer();
+	}
 
-  @Override
-  public void disabledPeriodic() {
-    m_robotContainer.disabledPeriodic();
-  }
+	@Override
+	public void robotPeriodic() {
+		CommandScheduler.getInstance().run();
+	}
 
-  /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
-  @Override
-  public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+	@Override
+	public void disabledInit() {
+		if(Constants.currentMode == Constants.Mode.REAL) {
+			pdh.setSwitchableChannel(false);
+		}
+	}
 
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+	@Override
+	public void disabledPeriodic() {
+	}
 
-    m_robotContainer.enabledInit();
-    pdh.setSwitchableChannel(true);
-  }
+	@Override
+	public void disabledExit() {
+	}
 
-  /** This function is called periodically during autonomous. */
-  @Override
-  public void autonomousPeriodic() {}
+	@Override
+	public void teleopInit() {
+		if (autonomousCommand != null) {
+			autonomousCommand.cancel();
+		}
 
-  @Override
-  public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+		robotContainer.enabledInit();
+		if(Constants.currentMode == Constants.Mode.REAL) {
+			pdh.setSwitchableChannel(true);
+		}
+	}
 
-    m_robotContainer.enabledInit();
-    pdh.setSwitchableChannel(true);
-  }
+	@Override
+	public void autonomousInit() {
+		// m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+		autonomousCommand = new PathPlannerAuto("Test Auto");
 
-  /** This function is called periodically during operator control. */
-  @Override
-  public void teleopPeriodic() {}
+		if (autonomousCommand != null) {
+			autonomousCommand.schedule();
+		}
+	}
 
-  @Override
-  public void testInit() {
-    // Cancels all running commands at the start of test mode.
-    CommandScheduler.getInstance().cancelAll();
-  }
+	@Override
+	public void autonomousPeriodic() {
+	}
 
-  /** This function is called periodically during test mode. */
-  @Override
-  public void testPeriodic() {}
+	@Override
+	public void autonomousExit() {
+	}
 
-  /** This function is called once when the robot is first started up. */
-  @Override
-  public void simulationInit() {}
+	@Override
+	public void teleopPeriodic() {
+	}
 
-  /** This function is called periodically whilst in simulation. */
-  @Override
-  public void simulationPeriodic() {}
+	@Override
+	public void teleopExit() {
+	}
+
+	@Override
+	public void testInit() {
+		CommandScheduler.getInstance().cancelAll();
+	}
+
+	@Override
+	public void testPeriodic() {
+	}
+
+	@Override
+	public void testExit() {
+	}
+
+	@Override
+	public void simulationPeriodic() {
+	}
 }
