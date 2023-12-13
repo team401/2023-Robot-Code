@@ -1,5 +1,7 @@
 package frc.robot.subsystems.arm;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -36,9 +38,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     private ArmPosition setpoint = new ArmPosition(0, 0, 0);
 
-    private Mechanism2d displayMechanism = 
+    private Mechanism2d positionMechanism = 
         new Mechanism2d(5, 5, new Color8Bit(Color.kWhite));
-    private MechanismRoot2d root = displayMechanism.getRoot("arm", 2.5, 0.43);
+    private MechanismRoot2d root = positionMechanism.getRoot("arm", 2.5, 0.43);
 
     private MechanismLigament2d pivotLigament = root.append(
         new MechanismLigament2d(
@@ -102,28 +104,32 @@ public class ArmSubsystem extends SubsystemBase {
                     state = ArmMovementState.DEFAULT;
                 }
                 break;
-            default:
-                pivot.runControls();
-                telescope.runControls();
-                wrist.runControls();
+            case DEFAULT:
                 break;
         }
+
+        pivot.runControls();
+        telescope.runControls();
+        wrist.runControls();
         
-        SmartDashboard.putString("Arm/Side", activeSide.name());
+        Logger.recordOutput("Arm/Side", activeSide.name());
+        Logger.recordOutput("Arm/MovementState", state.name());
 
         pivotLigament.setAngle(Units.radiansToDegrees(pivot.getPosition()));
         telescopeLigament.setLength(telescope.getPosition());
         wristLigament.setAngle(Units.radiansToDegrees(wrist.getPosition()));
 
-        SmartDashboard.putData("Arm/Mechanism", displayMechanism);
+        Logger.recordOutput("Arm/Mechanism", positionMechanism);
 
-        SmartDashboard.putNumber("Arm/Pivot/Setpoint", pivot.setpoint);
-        SmartDashboard.putNumber("Arm/Telescope/Setpoint", telescope.setpoint);
-        SmartDashboard.putNumber("Arm/Wrist/Setpoint", wrist.setpoint);
+        Logger.recordOutput("Arm/Pivot/Setpoint", pivot.setpoint);
+        Logger.recordOutput("Arm/Telescope/Setpoint", telescope.setpoint);
+        Logger.recordOutput("Arm/Wrist/Setpoint", wrist.setpoint);
 
-        SmartDashboard.putNumber("Arm/Pivot/Position", pivot.getPosition());
-        SmartDashboard.putNumber("Arm/Telescope/Position", telescope.getPosition());
-        SmartDashboard.putNumber("Arm/Wrist/Position", wrist.getPosition());
+        Logger.recordOutput("Arm/Pivot/Position", pivot.getPosition());
+        Logger.recordOutput("Arm/Telescope/Position", telescope.getPosition());
+        Logger.recordOutput("Arm/Wrist/Position", wrist.getPosition());
+
+        SmartDashboard.putNumber("Arm/time", System.currentTimeMillis());
     }
 
     public boolean atSetpoint() {

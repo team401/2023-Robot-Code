@@ -29,7 +29,7 @@ public final class Constants {
         REPLAY,
     }
 
-    public static final Mode mode = Mode.REAL;
+    public static final Mode mode = Mode.SIM;
 
     public static final double loopTime = 0.02;
 
@@ -129,7 +129,7 @@ public final class Constants {
     public static final class PivotConstants {
         public static final double encoderOffsetRad = -Units.rotationsToRadians(0.1775) + 0.01;
 
-        public static final double armToMotorGearRatio = 1 / 90;
+        public static final double armToMotorGearRatio = 1.0 / 90.0;
 
         public static final double maxFwdRotationRad = Units.degreesToRadians(-30);
         public static final double maxBackRotationRad = Units.degreesToRadians(210);

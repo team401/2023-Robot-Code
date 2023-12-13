@@ -25,7 +25,17 @@ public class RobotState {
         return instance;
     }
     
-    private SwerveDrivePoseEstimator poseEstimator;
+    private SwerveDrivePoseEstimator poseEstimator = 
+        new SwerveDrivePoseEstimator(
+            DriveConstants.kinematics,
+            new Rotation2d(),
+            new SwerveModulePosition[]{
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition(),
+                new SwerveModulePosition()
+            },
+            new Pose2d());
 
     private boolean hasIntaked = false;
     

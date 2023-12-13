@@ -16,7 +16,7 @@ public interface WristIO {
 
     public default void setBrakeMode(boolean brake) {}
 
-    public default void setOuput(double volts) {}
+    public default void setOutput(double volts) {}
     
     public default void setSensorPosition(double position) {}
 }

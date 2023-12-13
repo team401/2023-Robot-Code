@@ -2,6 +2,8 @@ package frc.robot.subsystems.arm.telescope;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -51,6 +53,7 @@ public class Telescope extends GenericArmJoint {
     @Override
     public void updateInputs() {
         io.updateInputs(inputs);
+        Logger.processInputs("Telescope", inputs);
     }
 
     @Override

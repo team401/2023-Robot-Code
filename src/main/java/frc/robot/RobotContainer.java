@@ -19,14 +19,16 @@ import frc.robot.subsystems.arm.ArmSubsystem;
 import frc.robot.subsystems.arm.ArmSubsystem.ArmPosition;
 import frc.robot.subsystems.arm.pivot.PivotIO;
 import frc.robot.subsystems.arm.pivot.PivotIOFalcon;
+import frc.robot.subsystems.arm.pivot.PivotIOSim;
 import frc.robot.subsystems.arm.telescope.TelescopeIO;
 import frc.robot.subsystems.arm.telescope.TelescopeIOFalcon;
+import frc.robot.subsystems.arm.telescope.TelescopeIOSim;
 import frc.robot.subsystems.arm.wrist.WristIO;
 import frc.robot.subsystems.arm.wrist.WristIOFalcon;
+import frc.robot.subsystems.arm.wrist.WristIOSim;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDManager;
 // import frc.robot.subsystems.drive.Drive;
-import frc.robot.subsystems.vision.Vision;
 import frc.robot.util.PositionHelper;
 import frc.robot.oi.ButtonMasher;
 import frc.robot.oi.Thrustmaster;
@@ -37,7 +39,6 @@ public class RobotContainer {
     private final ArmSubsystem arm;
     private final IntakeSubsystem intake;
     @SuppressWarnings("unused")
-    private final Vision vision = new Vision();
     private final LEDManager ledManager;
 
     private final Thrustmaster leftStick = new Thrustmaster(0);
@@ -59,6 +60,13 @@ public class RobotContainer {
                     new PivotIOFalcon(),
                     new TelescopeIOFalcon(),
                     new WristIOFalcon());
+                break;
+            case SIM:
+                arm = new ArmSubsystem(
+                    new PivotIOSim(),
+                    new TelescopeIOSim(),
+                    new WristIOSim()
+                );
                 break;
             default:
                 arm = new ArmSubsystem(
@@ -233,13 +241,13 @@ public class RobotContainer {
 
         ledManager.setOff(false);
 
-        if (DriverStation.isTeleop()) {
-            arm.homeTelescope();
-            if (!RobotState.getInstance().hasIntaked()) {
-                arm.homeWrist();
-            }
-            // pivot.normalConstrain();
-        }
+        // if (DriverStation.isTeleop()) {
+        //     arm.homeTelescope();
+        //     if (!RobotState.getInstance().hasIntaked()) {
+        //         arm.homeWrist();
+        //     }
+        //     // pivot.normalConstrain();
+        // }
 
         arm.setSetpoint(ArmPositions.stow);
     }

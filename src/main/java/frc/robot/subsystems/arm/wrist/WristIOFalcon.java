@@ -34,7 +34,7 @@ public class WristIOFalcon implements WristIO {
     }
 
     @Override
-    public void setOuput(double volts) {
+    public void setOutput(double volts) {
         motor.setControl(new VoltageOut(volts));
     }
 

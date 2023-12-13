@@ -2,6 +2,8 @@ package frc.robot.subsystems.arm.wrist;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -52,6 +54,7 @@ public class Wrist extends GenericArmJoint {
     @Override
     protected void updateInputs() {
         io.updateInputs(inputs);
+        Logger.processInputs("Wrist", inputs);
     }
 
     @Override
@@ -135,7 +138,7 @@ public class Wrist extends GenericArmJoint {
 
     @Override
     public void setOutput(double volts) {
-        io.setOuput(volts);
+        io.setOutput(volts);
     }
 
     @Override

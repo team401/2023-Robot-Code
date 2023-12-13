@@ -1,0 +1,17 @@
+{
+  "NTProvider": {
+    "types": {
+      "/AdvantageKit/RealOutputs/Arm/Mechanism": "Mechanism2d",
+      "/FMSInfo": "FMSInfo",
+      "/LiveWindow/ArmSubsystem": "Subsystem",
+      "/LiveWindow/Ungrouped/DigitalInput[1]": "Digital Input",
+      "/LiveWindow/Ungrouped/DigitalInput[2]": "Digital Input",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Arm/Mechanism": "Mechanism2d",
+      "/SmartDashboard/Auto Mode": "String Chooser"
+    }
+  }
+}

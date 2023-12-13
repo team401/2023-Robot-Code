@@ -2,6 +2,8 @@ package frc.robot.subsystems.arm.pivot;
 
 import java.util.function.DoubleSupplier;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
@@ -85,7 +87,7 @@ public class Pivot extends GenericArmJoint {
 
     @Override
     protected double calculateControl(TrapezoidProfile.State setpointState) {
-        SmartDashboard.putNumber("Pivot/control-setpoint", setpointState.position);
+        Logger.recordOutput("Pivot/control-setpoint", setpointState.position);
         return feedbackController.calculate(getPosition(), setpointState.position)
                 + feedforward.calculate(setpointState.position, setpointState.velocity)
                 // Compensates for telescope extention
@@ -98,6 +100,7 @@ public class Pivot extends GenericArmJoint {
     @Override
     protected void updateInputs() {
         io.updateInputs(inputs);
+        Logger.processInputs("Pivot", inputs);
     }
 
     @Override
