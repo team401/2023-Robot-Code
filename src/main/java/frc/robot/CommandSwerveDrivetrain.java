@@ -28,7 +28,8 @@ public class CommandSwerveDrivetrain extends SwerveDrivetrain implements Subsyst
 
     @Override
     public void periodic() {
-        if(Constants.currentMode == Constants.Mode.SIM)
+        if(Constants.currentMode == Constants.Mode.SIM) {
             updateSimState(0.02, 12);
+        }
     }
 }

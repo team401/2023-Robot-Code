@@ -90,8 +90,6 @@ public class Telemetry {
         });
 
         Logger.recordOutput("pose/Pose2d", pose);
-        // Field2d field = new Field2d();
-        // field.setRobotPose(pose);
         Logger.recordOutput("pose/fieldPose", table.getDoubleArrayTopic("/Pose/robotPose"));
 
         robotRotation = pose.getRotation().getRadians();

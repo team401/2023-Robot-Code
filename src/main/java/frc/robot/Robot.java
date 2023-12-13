@@ -45,7 +45,7 @@ public class Robot extends LoggedRobot {
 				break;
 		}
 
-		Logger.recordMetadata("ProjectName", "2024-Mushussu"); // Set a metadata value
+		Logger.recordMetadata("ProjectName", "2024-Mushussu");
 
 		switch (Constants.currentMode) {
 			case REAL:
@@ -70,10 +70,7 @@ public class Robot extends LoggedRobot {
 				break;
 		}
 
-		// Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in
-		// the "Understanding Data Flow" page
-		Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may
-						// be added.
+		Logger.start();
 
 		robotContainer = new RobotContainer();
 	}
@@ -85,8 +82,9 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void disabledInit() {
-		if(Constants.currentMode == Constants.Mode.REAL)
+		if(Constants.currentMode == Constants.Mode.REAL) {
 			pdh.setSwitchableChannel(false);
+		}
 	}
 
 	@Override
@@ -104,8 +102,9 @@ public class Robot extends LoggedRobot {
 		}
 
 		robotContainer.enabledInit();
-		if(Constants.currentMode == Constants.Mode.REAL)
+		if(Constants.currentMode == Constants.Mode.REAL) {
 			pdh.setSwitchableChannel(true);
+		}
 	}
 
 	@Override
