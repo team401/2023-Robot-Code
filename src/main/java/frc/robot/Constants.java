@@ -74,6 +74,10 @@ public final class Constants {
     
     public static final class DriveConstants {
 
+        public static final double MaxSpeedMetPerSec = 6;
+        public static final double MaxAngularRateRadiansPerSec = Math.PI * 2; // 2 PI is one full rotation per second
+        public static final double deadbandPercent = 0.16;
+
         public static final double trackWidth = Units.inchesToMeters(17.75); // distance between the left and right wheels
         public static final double wheelBase = Units.inchesToMeters(23.75); // distance between the front and rear wheels
         public static final double wheelRadiusM = Units.inchesToMeters(2.02);
