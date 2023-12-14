@@ -22,7 +22,7 @@ public class RobotContainer {
     CommandXboxController controller = new CommandXboxController(2);
     CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain;
 
-    Telemetry logger = new Telemetry(DriveConstants.MaxSpeedMetPerSec);
+    Telemetry driveTelemetry = new Telemetry(DriveConstants.MaxSpeedMetPerSec);
 
     private void configureBindings() {
         drivetrain.setDefaultCommand(new DriveWithJoysticks(drivetrain,
@@ -38,7 +38,7 @@ public class RobotContainer {
         if (Utils.isSimulation()) {
             drivetrain.seedFieldRelative(new Pose2d(new Translation2d(), Rotation2d.fromDegrees(90)));
         }
-        drivetrain.registerTelemetry(logger::telemeterize);
+        drivetrain.registerTelemetry(driveTelemetry::telemeterize);
     }
 
     public void configureSubsystems() {
