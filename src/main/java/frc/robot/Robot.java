@@ -50,7 +50,7 @@ public class Robot extends LoggedRobot {
 		switch (Constants.currentMode) {
 			case REAL:
 				// Running on a real robot, log to a USB stick
-				Logger.addDataReceiver(new WPILOGWriter("/U"));
+				// Logger.addDataReceiver(new WPILOGWriter("/U")); TODO: Add this later
 				Logger.addDataReceiver(new NT4Publisher());
 				pdh = new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
 				pdh.setSwitchableChannel(false);
