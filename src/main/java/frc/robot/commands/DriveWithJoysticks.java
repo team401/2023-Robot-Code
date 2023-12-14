@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
@@ -14,8 +15,8 @@ public class DriveWithJoysticks extends Command {
     DoubleSupplier x;
     DoubleSupplier y;
     DoubleSupplier rot;
-    boolean fieldCentric;
-    boolean babyMode;
+    BooleanSupplier fieldCentric;
+    BooleanSupplier babyMode;
 
     double xMpS;
     double yMpS;
@@ -27,7 +28,7 @@ public class DriveWithJoysticks extends Command {
     SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public DriveWithJoysticks(CommandSwerveDrivetrain drivetrain, DoubleSupplier x, DoubleSupplier y,
-            DoubleSupplier rot, boolean fieldCentric, boolean babyMode) {
+            DoubleSupplier rot, BooleanSupplier fieldCentric, BooleanSupplier babyMode) {
         this.drivetrain = drivetrain;
         this.x = x;
         this.y = y;
@@ -46,13 +47,13 @@ public class DriveWithJoysticks extends Command {
     public void execute() {
         double[] joystickInputsFiltered = Deadband.twoAxisDeadband(x.getAsDouble(), y.getAsDouble(),
                 DriveConstants.deadbandPercent);
-                
+
         xMpS = joystickInputsFiltered[0] * DriveConstants.MaxSpeedMetPerSec;
         yMpS = joystickInputsFiltered[1] * DriveConstants.MaxSpeedMetPerSec;
         rotRadpS = Deadband.oneAxisDeadband(rot.getAsDouble(), DriveConstants.deadbandPercent)
                 * DriveConstants.MaxAngularRateRadiansPerSec;
 
-        if (babyMode) {
+        if (babyMode.getAsBoolean()) {
             xMpS *= 0.5;
             yMpS *= 0.5;
             rotRadpS *= 0.5;
@@ -61,7 +62,7 @@ public class DriveWithJoysticks extends Command {
         if (xMpS == 0 && yMpS == 0 && rotRadpS == 0) {
             // If not moving, brake
             drivetrain.applyRequest(() -> brake);
-        } else if (fieldCentric) {
+        } else if (fieldCentric.getAsBoolean()) {
             drivetrain.applyRequest(() -> drive.withVelocityX(-xMpS)
                     .withVelocityY(-yMpS)
                     .withRotationalRate(-rotRadpS));

@@ -29,8 +29,8 @@ public class RobotContainer {
                 () -> leftJoystick.getY(),
                 () -> leftJoystick.getX(),
                 () -> rightJoystick.getX(),
-                rightJoystick.trigger().getAsBoolean(),
-                leftJoystick.trigger().getAsBoolean()));
+                () -> rightJoystick.trigger().getAsBoolean(),
+                () -> leftJoystick.trigger().getAsBoolean()));
 
         rightJoystick.button(2)
                 .whileTrue(new InstantCommand(() -> drivetrain.seedFieldRelative()));
