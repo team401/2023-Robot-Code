@@ -11,13 +11,14 @@ import frc.robot.Constants.WristConstants;
 
 public class WristIOSim implements WristIO {
     
+    // TODO: simulate pink-arm dynamics more accurately
     private SingleJointedArmSim armSim = new SingleJointedArmSim(
         LinearSystemId.createSingleJointedArmSystem(
             DCMotor.getFalcon500(1),
-            SingleJointedArmSim.estimateMOI(WristConstants.intakeLengthM, 1),
-            WristConstants.gearRatio),
+            SingleJointedArmSim.estimateMOI(WristConstants.intakeLengthM, 2),
+            1 / WristConstants.gearRatio),
         DCMotor.getFalcon500(1),
-        WristConstants.gearRatio,
+        1 / WristConstants.gearRatio,
         WristConstants.intakeLengthM,
         WristConstants.negativeLimitRad,
         WristConstants.positiveLimitRad,
@@ -44,6 +45,8 @@ public class WristIOSim implements WristIO {
     public void setOutput(double volts) {
         if (DriverStation.isEnabled()) {
             appliedVolts = MathUtil.clamp(volts, -12, 12);
+        } else {
+            appliedVolts = 0.0;
         }
     }
 }

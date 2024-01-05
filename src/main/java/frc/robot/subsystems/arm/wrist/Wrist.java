@@ -8,6 +8,8 @@ import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.Constants.WristConstants;
 import frc.robot.subsystems.arm.GenericArmJoint;
 
@@ -16,7 +18,10 @@ public class Wrist extends GenericArmJoint {
     private final WristIO io;
     private final WristIOInputsAutoLogged inputs = new WristIOInputsAutoLogged();
 
-    private final PIDController controller = new PIDController(WristConstants.kP, WristConstants.kI, WristConstants.kD);
+    //FIXME: Refactor WristIO to remove this branch
+    private final PIDController controller = Robot.isReal() ? 
+        new PIDController(WristConstants.kP, WristConstants.kI, WristConstants.kD)
+        : new PIDController(1, 0, 0, Constants.loopTime);
     private final ArmFeedforward feedforward = new ArmFeedforward(
             WristConstants.kS,
             WristConstants.kG,
@@ -130,10 +135,15 @@ public class Wrist extends GenericArmJoint {
     protected double calculateControl(TrapezoidProfile.State setpoint) {
         double adjustedPosition = getPosition() + pivotAngleSupplier.getAsDouble();
 
-        // TODO: Investigate the merits of having separate PID constants for when the
-        // wrist isn't moving
-        return controller.calculate(adjustedPosition, setpoint.position)
-                + feedforward.calculate(setpoint.position, setpoint.velocity);
+        //FIXME: Refactor WristIO to remove this branch
+        if (Robot.isReal()) {
+            // TODO: Investigate the merits of having separate PID constants for when the
+            // wrist isn't moving
+            return controller.calculate(adjustedPosition, setpoint.position)
+                    + feedforward.calculate(setpoint.position, setpoint.velocity);
+        } else {
+            return controller.calculate(adjustedPosition, setpoint.position);
+        }
     }
 
     @Override

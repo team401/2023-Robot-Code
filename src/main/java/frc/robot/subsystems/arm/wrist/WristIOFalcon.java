@@ -1,9 +1,11 @@
 package frc.robot.subsystems.arm.wrist;
 
-import com.ctre.phoenix6.controls.CoastOut;
-import com.ctre.phoenix6.controls.StaticBrake;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.MotorOutputConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants.CANDevices;
 import frc.robot.Constants.WristConstants;
@@ -13,11 +15,15 @@ public class WristIOFalcon implements WristIO {
     private TalonFX motor = new TalonFX(CANDevices.wristMotorID);
 
     public WristIOFalcon() {
+        TalonFXConfigurator config = motor.getConfigurator();
+        config.apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
+        config.apply(new CurrentLimitsConfigs()
+            .withSupplyCurrentLimit(70.0)
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentThreshold(80.0)
+            .withSupplyTimeThreshold(0.5));
+
         motor.setInverted(false);
-
-        motor.setControl(new StaticBrake());
-
-        //I have no idea how to set a current limit from the API
     }
 
     @Override
@@ -30,7 +36,12 @@ public class WristIOFalcon implements WristIO {
 
     @Override
     public void setBrakeMode(boolean brake) {
-        motor.setControl(brake ? new StaticBrake() : new CoastOut());
+        TalonFXConfigurator config = motor.getConfigurator();
+        if (brake) {
+            config.apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Brake));
+        } else {
+            config.apply(new MotorOutputConfigs().withNeutralMode(NeutralModeValue.Coast));
+        }
     }
 
     @Override

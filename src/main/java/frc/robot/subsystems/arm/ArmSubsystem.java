@@ -86,6 +86,10 @@ public class ArmSubsystem extends SubsystemBase {
                         Units.degreesToRadians(630),
                         Units.degreesToRadians(810)),
                 () -> pivot.getPosition());
+
+        // telescope.setActive(false);
+        wrist.setActive(false);
+        pivot.setActive(false);
     }
 
     @Override

@@ -241,13 +241,13 @@ public class RobotContainer {
 
         ledManager.setOff(false);
 
-        // if (DriverStation.isTeleop()) {
-        //     arm.homeTelescope();
-        //     if (!RobotState.getInstance().hasIntaked()) {
-        //         arm.homeWrist();
-        //     }
-        //     // pivot.normalConstrain();
-        // }
+        if (DriverStation.isTeleop()) {
+            arm.homeTelescope();
+            // if (!RobotState.getInstance().hasIntaked()) {
+            //     arm.homeWrist();
+            // }
+            // pivot.normalConstrain();
+        }
 
         arm.setSetpoint(ArmPositions.stow);
     }

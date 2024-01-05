@@ -1,5 +1,7 @@
 package frc.robot;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -111,6 +113,7 @@ public class RobotState {
 
     public void setMode(Constants.GamePieceMode mode) {
         gamePieceMode = mode;
+        Logger.recordOutput("Arm/GamePieceMode", mode.name());
     }
 
     public boolean hasIntaked() {

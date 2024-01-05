@@ -19,7 +19,7 @@ public class TelescopeIOSim implements TelescopeIO {
                     // TODO: find actual radius
                     0.03,
                     // TODO: find actual gear ratio
-                    0.125),
+                    8),
             DCMotor.getFalcon500(1),
             0.0,
             TelescopeConstants.maxPosM,
@@ -46,6 +46,8 @@ public class TelescopeIOSim implements TelescopeIO {
     public void setOutput(double volts) {
         if (DriverStation.isEnabled()) {
             appliedVolts = MathUtil.clamp(volts, -12, 12);
+        } else {
+            appliedVolts = 0;
         }
     }
 }

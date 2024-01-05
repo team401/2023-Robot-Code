@@ -12,9 +12,9 @@ public class PivotIOSim implements PivotIO {
     // TODO: simulate pink-arm dynamics more accurately
     private SingleJointedArmSim armSim = new SingleJointedArmSim(
         DCMotor.getFalcon500(2),
-        PivotConstants.armToMotorGearRatio,
+        1 / PivotConstants.armToMotorGearRatio,
         // TODO: weigh the arm, investigate calculating MOI manually
-        SingleJointedArmSim.estimateMOI(PivotConstants.lengthWOTeleM, 0.5),
+        SingleJointedArmSim.estimateMOI(PivotConstants.lengthWOTeleM, 2),
         PivotConstants.lengthWOTeleM,
         PivotConstants.maxFwdRotationRad,
         PivotConstants.maxBackRotationRad,
